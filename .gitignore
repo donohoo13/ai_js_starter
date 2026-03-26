@@ -1,0 +1,5 @@
+.ai/worktrees
+.ai/implementations
+.claude/settings.local.json
+.env*
+node_modules
