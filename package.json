@@ -1,7 +1,7 @@
 {
   "name": "barebooks",
   "version": "1.0.0",
-  "description": "",
+  "description": "Opinionated JS/TS starter template optimized for AI-assisted development with Claude Code",
   "main": "index.js",
   "scripts": {
     "format": "prettier --write .",
