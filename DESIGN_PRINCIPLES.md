@@ -1,12 +1,15 @@
 # Design Principles
 
-This file provides an oppinionated UI/UX reference to Claude Code (claude.ai/code) when working with code on the frontend in this repository.
+UI/UX reference for `apps/web`. These are guardrails, not handcuffs — use judgment and creativity to build beautiful, polished interfaces within this system.
 
 ## Core Principles
 
-- No decorative borders/shadows/gradients unless they communicate hierarchy, state, or grouping.
-- WCAG 2.1 AA standards at a minimum must be followed but striving for 2.2.
-- Prioritize native CSS (Flexbox, Grid, Custom Properties) over third-party packages or CSS-in-JS libraries.
+- **Source of truth**: Prioritize root level fixes to core stylistic issues by making updates to our root theme. `@apps/talon-ui/styles/theme.css`
+- **Functional clarity**: No decorative borders/shadows/gradients unless they communicate hierarchy, state, or grouping.
+- **Consistency across pages**: Same loading states, card shapes, button hierarchy, spacing rhythm everywhere.
+- **Semantic tokens over raw palette**: Avoid raw palette values or `dark:` overrides.
+- **WCAG 2.1 AA minimum**: Keyboard-navigable, visible focus, `aria-label` on icon-only buttons.
+- **Tailwind first**: Use Tailwind utility classes as the primary styling method while utilizing `@utility` & `@layer` components for multi-property patterns repeated across 3+ files.
 
 ## CSS Standards
 
@@ -16,6 +19,7 @@ This file provides an oppinionated UI/UX reference to Claude Code (claude.ai/cod
 - **Do not use px** for layout or typography; use only for thin borders (1px) or where absolute precision is required.
 - Use `clamp()` for fluid typography (e.g., `font-size: clamp(1rem, 2vw + 1rem, 2.5rem)`) instead of fixed `em` or `rem` values for headings and body text to ensure responsiveness.
 - Assume a base font size of 16px (1rem = 16px).
+- If a class isn't mapped to a `--color-*` var in theme.css, Tailwind v4 silently drops it — always verify against the file.
 
 ## UI and Design Rules
 
