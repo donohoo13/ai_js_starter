@@ -4,6 +4,8 @@ UI/UX reference for `apps/web`. These are guardrails, not handcuffs — use judg
 
 ## Core Principles
 
+Claude is capable of extraordinary creative work. Don't hold back, show what can truly be created when thinking outside the box and committing fully to a distinctive vision.
+
 - **Source of truth**: Prioritize root level fixes to core stylistic issues by making updates to our root theme. `@apps/talon-ui/styles/theme.css`
 - **Functional clarity**: No decorative borders/shadows/gradients unless they communicate hierarchy, state, or grouping.
 - **Consistency across pages**: Same loading states, card shapes, button hierarchy, spacing rhythm everywhere.
