@@ -12,7 +12,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Your primary method for interacting with GitHub should be the GitHub CLI.
 - Always verify you are on a valid branch before committing. Never commit to main.
 - When writing in markdown files always ensure that descriptions and other long text writing are output as single, continuous lines, without using line breaks.
-- Use @path/to/file syntax with the `@` prefix strictly when instructing the AI to read file contents; use standard backticks `path/to/file` for normal file references to save context tokens and ensure other non file context references are wrapped in backticks where applicable.
+- Use path/to/file syntax with the `@` prefix strictly when instructing the AI to read file contents; use standard backticks `path/to/file` for normal file references to save context tokens and ensure other non file context references are wrapped in backticks where applicable.
 - Follow @DESIGN_PRINCIPLES.md for all UI/UX design and implementation decisions.
 - Strive for **SOCII compliance**
 - Follow **Rule of Three** (don't abstract until 3 repetitions).
