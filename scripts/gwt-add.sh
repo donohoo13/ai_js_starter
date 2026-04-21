@@ -32,15 +32,15 @@ else
   echo "  Skipped .env.local (not present at repo root)"
 fi
 
-echo "Installing dependencies..."
-(cd "$target" && pnpm install)
-
 if command -v zed >/dev/null 2>&1; then
   echo "Opening $target in Zed..."
   zed "$target"
 else
   echo "Warning: 'zed' not found on PATH — skipping editor launch."
 fi
+
+echo "Installing dependencies..."
+(cd "$target" && pnpm install)
 
 echo ""
 echo "── Worktree ready ────────────────────────────"
