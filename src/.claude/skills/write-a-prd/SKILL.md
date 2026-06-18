@@ -4,43 +4,35 @@ description: Create a PRD through user interview, codebase exploration, and modu
 argument-hint: '[optional: feature description OR GitHub issue number]'
 ---
 
-This skill will be invoked when the user wants to create a PRD. You may skip steps if you don't consider them necessary or already complete.
+This skill turns a rough ask into a PRD issue. The spine is: get the seed, reach shared understanding by exploring the code together, _then_ decide scope, design modules, and write it up. Skip any step you can see is already done.
 
-1. **Seed the PRD.** Two paths — and the path chosen here decides whether step 5 **promotes an existing issue in place** or **creates a new one**:
-   - **From an existing GitHub issue (promote in place).** If `$ARGUMENTS` contains a GitHub issue number, or the user references one (e.g., "write a PRD for #234", "build on the bug I captured", "expand issue 567 into a PRD"), fetch it with `gh issue view <number> --comments` and treat the issue body — especially its `Context for planning` section — as the seed. This is the common path when extending a capture filed via `/capture-task` or any other issue that already describes a problem in detail. **Record this issue number; in step 5 you will rewrite this same issue into the PRD rather than minting a new one** (this is what prevents the original capture from lingering open after the work ships). Confirm the seed with the user, then ask any follow-ups needed to reach the level of detail the rest of this skill assumes (problem framing, user impact, possible solutions).
-     - If the seed issue carries a capture label (`outline` or `field-report`), promote it automatically. If it carries **neither** capture label, it may be a long-standing tracking issue the user wants kept distinct — ask once: "#N isn't a capture artifact. Promote it into the PRD in place, or create a separate PRD issue and leave #N open?" Default to promote.
-   - **From scratch (create new).** Otherwise, ask the user for a long, detailed description of the problem they want to solve and any potential ideas for solutions if any. There is no seed issue, so step 5 creates a new PRD issue.
+1. **Seed the PRD.** Where the seed comes from decides whether step 6 **promotes an existing issue in place** or **creates a new one** — so settle it now and remember the choice.
+   - **From an existing issue** (a number in `$ARGUMENTS`, or the user pointing at one — "write a PRD for #234", "expand the bug I captured"): fetch it with `gh issue view <number> --comments` and treat its body, especially any `Context for planning` section, as the seed. **Record the number** — step 6 rewrites _this same issue_ into the PRD instead of minting a new one, which is what stops the original capture from lingering open after the work ships. If it carries a capture label (`outline` or `field-report`), promote it without asking. If it carries neither, it may be a tracking issue the user wants kept separate, so ask once: "#N isn't a capture artifact — promote it into the PRD in place, or leave it open and create a separate PRD?" Default to promote.
+   - **From scratch:** ask the user for a detailed description of the problem and any solution ideas they have. No seed issue exists, so step 6 creates one.
 
-   **Scope gate (before going deeper).** Check whether this is one feature or several independent ones. If the pieces have independent value and would ship separately (e.g. a new onboarding wizard + a HubSpot integration + an analytics dashboard), this is multiple PRDs, not one. Default to a single PRD; only split when the independence is clear. When you do split: pick one to PRD now, and file the deferred siblings via `/capture-task` so they are not lost. Do NOT pre-split a single coherent feature into multiple PRDs, intra-feature slicing is `/prd-to-issues`'s job downstream.
+2. **Reach shared understanding.** Invoke `/grill-me` to interview the user and explore the codebase until the plan is unambiguous. This is the codebase-exploration step — grill-me reads the actual code to verify assumptions, so by the end you know the real surface area, not just the pitch. **Skip if grill-me already ran for this topic in the conversation.**
 
-2. Interview the user relentlessly about every aspect of this plan until you reach a shared understanding by using the `/grill-me` skill. **Skip this if the grill-me skill has already been invoked in this conversation for the topic at hand.** Invoke `/grill-me` here only if no such interview has occurred.
+3. **Scope check.** Now that exploration has shown you the true surface area, ask: is this genuinely one feature, or several independent ones? Default hard to a single PRD — exploration usually reveals the "separate" pieces share schema, modules, or sequencing, which makes them one feature delivered in slices (and slicing is `/prd-to-issues`'s job downstream, not yours). Split only when two pieces share almost no code and could ship in either order with independent value (e.g. an onboarding wizard vs. a HubSpot integration). When you do split: PRD one now, and file the deferred siblings via `/capture-task` so nothing is lost. Never pre-slice a single coherent feature.
 
-3. Sketch out the major modules you will need to build or modify to complete the implementation. Actively look for opportunities to extract deep modules that can be tested in isolation.
+4. **Design the modules.** Sketch the major modules to build or modify. Actively look for deep modules — ones that hide a lot of functionality behind a simple, testable interface that rarely changes — since those are what make the implementation testable in isolation. Check the module list against the user's expectations, and ask which modules they want tests written for.
 
-A deep module (as opposed to a shallow module) is one which encapsulates a lot of functionality in a simple, testable interface which rarely changes.
-
-Check with the user that these modules match their expectations. Check with the user which modules they want tests written for.
-
-4. Once you have a complete understanding of the problem and solution, use the template below to write the PRD (Product Requirement Document). First ensure the `prd` label exists (both paths below apply it); create it if missing:
+5. **Write the PRD.** Fill in the template below. First ensure the `prd` label exists (both paths use it):
 
    ```bash
    gh label list --json name --jq '.[] | select(.name == "prd")' | grep -q prd || \
      gh label create prd --description "Parent PRD issue — full spec, decomposed into Task sub-issues" --color 5319E7
    ```
 
-   How the PRD lands as a GitHub issue depends on the step-1 path:
-   - **Promote in place (seeded from an existing issue).** Rewrite **that same issue** into the PRD rather than creating a new one: `gh issue edit <seed-number> --body "<filled PRD template>"`, preserve the raw original capture text under the PRD's **Further Notes** (a collapsed `<details>` block) so nothing is lost, then swap the capture label for `prd`: `gh issue edit <seed-number> --add-label prd --remove-label outline --remove-label field-report` (the `--remove-label` for whichever capture label is absent is a harmless no-op). This is what guarantees the original capture closes when the work ships — there is no second issue to orphan, and `/implement-prd`'s `Closes #<seed-number>` retires it on merge.
-   - **Create new (seeded from scratch).** No seed issue exists, so create one: `gh issue create --title "<title>" --body "<filled PRD template>" --label prd`.
+6. **Land it as an issue** — which command depends on the step-1 path:
+   - **Promote (seeded from an issue):** rewrite that same issue — `gh issue edit <seed-number> --body "<filled PRD template>"` — preserving the raw original capture text under **Further Notes** in a collapsed `<details>` block so nothing is lost, then swap labels: `gh issue edit <seed-number> --add-label prd --remove-label outline --remove-label field-report` (removing whichever capture label is absent is a harmless no-op). No second issue means nothing to orphan; `/implement-prd`'s `Closes #<seed-number>` retires it on merge.
+   - **Create (seeded from scratch):** `gh issue create --title "<title>" --body "<filled PRD template>" --label prd`.
 
-5. After the PRD issue exists (promoted or created), invoke `/gh-cli` to set its issue type to **Feature** (or **Bug** if the PRD describes a bug fix). The `gh` CLI does not support `--type`, so `/gh-cli` handles the GraphQL: repo `issueTypes` lookup → issue node ID → `updateIssueIssueType` mutation. On the promote path this retypes the seed issue from its capture type (Task/Feature/Bug) to the PRD type.
+7. **Set the issue type.** Invoke `/gh-cli` to set the issue type to **Feature** (or **Bug** if the PRD describes a bug fix). The `gh` CLI has no `--type`, so `/gh-cli` handles the GraphQL: repo `issueTypes` lookup → issue node ID → `updateIssueIssueType` mutation. On the promote path this retypes the seed from its capture type.
 
-6. After the PRD issue is ready and typed, ask the user how to proceed:
-
-- **Continue to slicing** — invoke the `/prd-to-issues` skill. Default for normal-sized features.
-- **Skip slicing, implement directly** — invoke the `/implement-prd` skill. Use when the PRD is essentially a single vertical slice (small bug fix, one-module enhancement, trivial feature).
-- **Stop** — user wants to pause before continuing.
-
-The PRD is already in conversation context, so downstream skills pick it up without re-fetching.
+8. **Hand off.** The PRD is in conversation context, so downstream skills pick it up without re-fetching. Ask the user how to proceed:
+   - **Continue to slicing** — invoke `/prd-to-issues`. Default for normal-sized features.
+   - **Skip slicing, implement directly** — invoke `/implement-prd`. Use when the PRD is essentially one vertical slice (small bug fix, one-module enhancement, trivial feature).
+   - **Stop** — pause before continuing.
 
 <prd-template>
 
