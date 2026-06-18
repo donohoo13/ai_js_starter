@@ -1,5 +1,5 @@
 {
-  "name": "barebooks",
+  "name": "ai_js_starter",
   "version": "1.0.0",
   "description": "Opinionated JS/TS starter template optimized for AI-assisted development with Claude Code",
   "main": "index.js",
@@ -13,7 +13,8 @@
   "license": "ISC",
   "packageManager": "pnpm@10.32.1",
   "devDependencies": {
-    "husky": "^9.1.7",
-    "prettier": "^3.8.1"
+    "husky": "9.1.7",
+    "prettier": "^3.8.4",
+    "skills": "1.5.11"
   }
 }

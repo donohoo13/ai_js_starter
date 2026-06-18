@@ -31,6 +31,7 @@ Opinionated JS/TS starter template optimized for AI-assisted development with Cl
   - Reason: Prevents premature abstraction; with 3 examples, commonalities are clearer and you avoid wrong abstractions
   - Break the rule if: The abstraction is obvious and clearly named, or duplication will definitely grow. Prefer duplication over the _wrong_ abstraction, but don't fear _right_ abstractions.
 - Operational errors (invalid input, DB timeout) = handle gracefully. Programmer errors (bugs, missing state) = crash and restart.
+- Don't propose a bug fix from reading code alone. If a bug can't be root-caused by inspection, invoke `/diagnose` to reproduce and prove the cause before changing code.
 - Structure tests using AAA: Arrange (setup), Act (execute), Assert (verify). Keep these sections visually separated
 - Use environment variables for configuration (ports, DB URLs, secrets). Never hardcode sensitive values.
 
@@ -75,6 +76,7 @@ Opinionated JS/TS starter template optimized for AI-assisted development with Cl
 ### Skills
 
 - Use project skills when applicable instead of improvising. See `.agents/skills/README.md` for the full skill chain map.
+- Domain vocabulary and architectural decisions live OUTSIDE this file: glossaries in `CONTEXT.md` (or per-context `CONTEXT.md` indexed by a root `CONTEXT-MAP.md`) and decisions in `docs/adr/`. Read them for ubiquitous language; invoke the `domain-modeling` skill (or `/grill-with-docs`, which wraps it) to change the model.
 - Task capture is user's responsibility (tracking system, not memory). Suggest `/capture-task` once when user voices actionable asides or conversation drifts. Suggest, never auto-file. One nudge; if user doesn't bite, drop it. Do not use memory for work items.
 
 ## Project Overview

@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "playwright-local": {
+      "command": "npx",
+      "args": [
+        "@playwright/mcp@latest",
+        "--user-data-dir",
+        ".playwright/mcp-profile",
+        "--headless",
+        "--browser=chromium"
+      ]
+    }
+  }
+}

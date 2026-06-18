@@ -9,6 +9,7 @@
     "ENABLE_LSP_TOOL": "1"
   },
   "hooks": {},
+  "claudeMdExcludes": [],
   "permissions": {
     "allow": [
       "Bash",
