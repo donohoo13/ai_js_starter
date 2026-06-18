@@ -71,10 +71,11 @@ Opinionated JS/TS starter template optimized for AI-assisted development with Cl
 - Use `playwright-local` MCP server for UI/UX verification (more reliable than plugin) (`mcp__playwright_local__*`).
 - Use Chrome DevTools plugin for performance traces and heap analysis (`mcp__chrome_devtools__*`).
 - Use Context7 for context gathering when applicable (`mcp__context7__*`).
+- Use the `linear` MCP for Linear issue, project, and cycle operations (`mcp__linear__*`). Configured at project scope in `.mcp.json`; requires per-user approval and OAuth via `/mcp`.
 
 ### Skills
 
-- Use project skills when applicable instead of improvising. See `.agents/skills/README.md` for the full skill chain map.
+- Use project skills when applicable instead of improvising. See `src/.claude/skills/README.md` for the full skill chain map.
 - Task capture is user's responsibility (tracking system, not memory). Suggest `/capture-task` once when user voices actionable asides or conversation drifts. Suggest, never auto-file. One nudge; if user doesn't bite, drop it. Do not use memory for work items.
 
 ## Project Overview

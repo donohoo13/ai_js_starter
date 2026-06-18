@@ -1,11 +1,11 @@
 ---
 name: diagnose
-description: Iteratively root-cause a tough bug, test failure, or unexpected behavior that cannot be discerned from the code alone. A front-of-chain precursor that investigates to a proven root cause, then hands off to /capture-task or /write-a-prd. Does NOT implement the fix. Use when a bug needs reproduction, instrumentation, and hypothesis testing rather than a quick code read.
+description: Iteratively root-cause a tough bug, test failure, or unexpected behavior that cannot be discerned from the code alone. A front-of-chain precursor that investigates to a proven root cause, then hands off to /capture-task or /write-a-trd. Does NOT implement the fix. Use when a bug needs reproduction, instrumentation, and hypothesis testing rather than a quick code read.
 ---
 
 # Diagnose
 
-Find the root cause of a hard bug through systematic investigation, then hand the finding off to be captured or planned. This skill **investigates; it does not fix.** When the root cause is proven, it terminates into `/capture-task` (file the bug with the diagnosis as its seed) or `/write-a-prd` (if the fix needs planning).
+Find the root cause of a hard bug through systematic investigation, then hand the finding off to be captured or planned. This skill **investigates; it does not fix.** When the root cause is proven, it terminates into `/capture-task` (file the bug with the diagnosis as its seed) or `/write-a-trd` (if the fix needs a design before building). A bug is engineering work, so it does not route through `/write-a-prd` — there is no product spec for a defect.
 
 Use it for bugs you cannot understand by reading the code: intermittent failures, "works locally but not in prod," wrong values with no obvious source, multi-component breakage. For a bug you can already see in the code, skip this and go straight to `/capture-task` or the fix.
 
@@ -62,8 +62,8 @@ When the root cause is proven, produce:
 
 A bug that needed this skill is worth a written record. Default to filing it:
 
-- **`/capture-task`** (default) - file the bug; drop the root cause, evidence, and repro into its `Context for planning` so a later `/write-a-prd` starts rich instead of cold.
-- **`/write-a-prd`** - if the fix is non-trivial and needs planning now.
+- **`/capture-task`** (default) - file the bug; drop the root cause, evidence, and repro into its `Context for planning` so a later `/write-a-trd` starts rich instead of cold.
+- **`/write-a-trd`** - if the fix is non-trivial and needs a design now. The proven root cause and repro become the engineering seed on the TRD's low-barrier engineering on-ramp; no PRD is involved.
 - **Proceed to fix directly** - only when the diagnosis made the fix obvious and small; then implement via the normal path (`/tdd`).
 
 This skill never implements the fix itself, and never references the fix path beyond the handoff above.

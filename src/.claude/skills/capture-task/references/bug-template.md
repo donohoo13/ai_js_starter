@@ -37,11 +37,11 @@
 
 ## Context for planning
 
-<Distilled from the conversation this bug was captured in, so a later `/write-a-prd` has a rich seed. Do NOT interrogate the user further and do NOT run a code investigation to populate this — capture only what was already said, as terse bullets. Fold any suspected-scope pointers in here. Omit the whole section if the bug was captured cold with no surrounding discussion.
+<Distilled from the conversation this bug was captured in, so a later `/write-a-trd` has a rich seed. Do NOT interrogate the user further and do NOT run a code investigation to populate this — capture only what was already said, as terse bullets. Fold any suspected-scope pointers in here. Omit the whole section if the bug was captured cold with no surrounding discussion.
 
 - Constraints / decisions already voiced (e.g., "fix must stay org-scoped", "can't touch the Outreach token path")
 - Approaches considered or explicitly ruled out, with the one-line why
-- Open questions to resolve at PRD time
+- Open questions to resolve at TRD time
 - Suspected scope / pointers already mentioned (files, services, schema tables, surfaces, links, related issues)>
 
 ## Next steps
@@ -49,5 +49,4 @@
 <Pick one:
 
 - **Triage** — needs investigation before any work plan can be made
-- **Needs PRD** — well-understood enough to plan via `/write-a-prd`
-- **Ready to implement** — small enough to skip a PRD and go straight to `/implement-prd`>
+- **Needs TRD** — understood enough to spec; goes to `/write-a-trd` (a bug is engineering work, no PRD). Its single-slice path handles even a one-commit fix>

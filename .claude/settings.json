@@ -1,14 +1,8 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
-  "enabledPlugins": {
-    "typescript-lsp@claude-plugins-official": true,
-    "chrome-devtools-mcp@claude-plugins-official": true
-  },
-  "enableAllProjectMcpServers": true,
   "env": {
     "ENABLE_LSP_TOOL": "1"
   },
-  "hooks": {},
   "permissions": {
     "allow": [
       "Bash",
@@ -20,7 +14,8 @@
       "WebSearch",
       "mcp__context7__*",
       "mcp__playwright-local__*",
-      "mcp__chrome_devtools__*"
+      "mcp__chrome_devtools__*",
+      "mcp__linear__*"
     ],
     "deny": [
       "Read(./.env*)",
@@ -34,5 +29,12 @@
     ],
     "ask": ["Bash(git push)", "Bash(git reset --hard*)", "Bash(docker *)", "WebFetch"],
     "defaultMode": "default"
+  },
+  "enableAllProjectMcpServers": true,
+  "hooks": {},
+  "enabledPlugins": {
+    "typescript-lsp@claude-plugins-official": true,
+    "chrome-devtools-mcp@claude-plugins-official": true,
+    "linear@claude-plugins-official": true
   }
 }

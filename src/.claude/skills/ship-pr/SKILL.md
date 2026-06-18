@@ -1,6 +1,6 @@
 ---
 name: ship-pr
-description: Take a branch of committed work from draft PR to green CI. Creates a draft PR, pauses for the user's functional QA, runs the SOC2 AI code-review loop, marks the PR ready, then watches CI until all checks pass. Self-contained; also invoked by /implement-prd.
+description: Take a branch of committed work from draft PR to green CI. Creates a draft PR, pauses for the user's functional QA, runs the SOC2 AI code-review loop, marks the PR ready, then watches CI until all checks pass. Self-contained; also invoked by /implement-trd.
 ---
 
 # Ship PR
@@ -10,7 +10,7 @@ process: draft PR, functional QA gate, AI code review loop (SOC2 audit
 evidence), mark ready, watch CI to green.
 
 This skill is **self-contained** - it derives everything it needs from git
-and the current branch. `/implement-prd` invokes it after committing all
+and the current branch. `/implement-trd` invokes it after committing all
 sub-issue work; standalone usage is identical. No arguments.
 
 ## Step 1: Guard Branch

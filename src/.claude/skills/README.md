@@ -6,46 +6,54 @@ This is the canonical, git-tracked home for the project's skills. These are **pr
 
 ## The chain
 
-Most product work flows through one path, start to finish:
+The chain has a clear line in the sand between **product** (what to build and why) and **engineering** (how to build it). Product owns the PRD; engineering reviews it, specs it, and ships it. Work flows left to right:
 
 ```
-                 (tough bug?)
-                  /diagnose ──────────┐
-                                       v
-/grill-me ──────────> /write-a-prd ──> /prd-to-issues ──> /implement-prd ──> /ship-pr
-/grill-with-docs ────^  (the PRD)       (vertical slices)   (build, in        (draft PR ->
- (interview; also                                            isolation)        review -> QA ->
-  writes CONTEXT.md +                                            │             ready -> CI)
-  ADRs via                                                       │                  │
-  /domain-modeling)                                              └── /tdd           └── /requesting-code-review
-                                                                     (per change)       (the review subagent)
+  PRODUCT  │  ENGINEERING
+           │
+           │   (tough bug?)
+           │    /diagnose ──────────┐
+           │                         v
+/write-a-prd ─> /prd-feedback ⟲ ─> /write-a-trd ──> /implement-trd ──> /ship-pr
+ (the PRD,       (eng feasibility   (the TRD +       (build, in         (draft PR ->
+  product        review, loops      vertical         isolation)         review -> QA ->
+  altitude,      until accepted;    slices, eng      │                  ready -> CI)
+  versioned      writes Eng         altitude)        │                       │
+  at source)     Context back)           │           └── /tdd                └── /requesting-code-review
+           │           │                 │               (per change)            (the review subagent)
+           │     /grill-me (eng frame)    └── absorbs the old /prd-to-issues
+           │
+/grill-me ─┘  role-parameterized interview primitive — every skill above runs it under its own frame
+/grill-with-docs  same interview, but also writes CONTEXT.md + ADRs via /domain-modeling
 
 /capture-task ── file anything to revisit, at any point
 /codify ──────── distill the session's durable conventions into the right context file, at any point
 ```
 
-- **Start** with `/grill-me` (interview a plan to shared understanding) or `/diagnose` (root-cause a bug too hard to read from the code). Both are front-of-chain precursors. Use `/grill-with-docs` instead of `/grill-me` when the interview should also leave durable artifacts behind: it runs the same relentless interview but maintains the glossary (`CONTEXT.md`) and architectural decision records (`docs/adr/`) as you go, via `/domain-modeling`.
-- `/write-a-prd` turns shared understanding into a PRD issue. It skips re-interviewing if `/grill-me` already ran, and splits genuinely independent features into separate PRDs.
-- `/prd-to-issues` slices one PRD into vertical-slice sub-issues. Sub-issues are tracking/commit units, not delivery units: one PRD ships as ONE pull request, with each sub-issue landing as commits on the shared PRD branch.
-- `/implement-prd` builds the sub-issues in dependency order on a single feature branch, heads-down, surfacing only when truly blocked. It runs `/tdd` per change and hands the one branch to `/ship-pr` for the one PR.
+- `/grill-me` is now a **role-parameterized primitive**, not a front-of-chain step. Each skill invokes it under its own frame (product partner, engineering skeptic, implementer), restating the frame each run so roles don't bleed across a session. Run standalone, it defaults to interviewing the user as an engineering peer. `/grill-with-docs` is the same interview plus glossary/ADR upkeep via `/domain-modeling`.
+- `/write-a-prd` (product) generates a product-altitude PRD — problem, users, value, scope, **no implementation** — from a context source the user names (pasted, or pulled from any tracker with an MCP), and writes it back versioned to that source. It runs `/grill-me` in a product frame.
+- `/prd-feedback` (engineering) is the iterative bridge: it interrogates the PRD against the real codebase via `/grill-me` in an engineering frame, posts a feasibility verdict (constraints, required tradeoffs, recommended path) back to the PRD's source as a versioned thread, and loops as product revises. When product accepts a version, it writes the **Engineering Context** digest into the PRD and links any binding ADRs.
+- `/write-a-trd` (engineering) consumes the accepted PRD + Engineering Context, does the deep codebase dive, and produces the TRD — modules, schema, contracts, test strategy — sliced into vertical tracer bullets with a dependency graph. It lands the TRD as a parent GitHub issue with sub-issues, absorbing what used to be `/prd-to-issues`. One PRD → one TRD → one PR.
+- `/implement-trd` builds the slices in dependency order on a single branch, heads-down, surfacing only when truly blocked. It runs `/tdd` per change and hands the branch to `/ship-pr`.
 - `/ship-pr` drives a branch from draft PR through the AI review loop (`/requesting-code-review`), a user-QA gate, mark-ready, and CI to green.
 - `/capture-task` is the always-available side door: file a bug, feature, or chore as a GitHub issue so it is not forgotten. Its output is shaped to seed `/write-a-prd`.
 - `/codify` is the other always-available side door, at the end of work: it distills the few durable conventions a session produced into the narrowest correct context file.
 
 ## Chain skills
 
-| Skill                    | Use it when                                                 | Role                                                       |
-| ------------------------ | ----------------------------------------------------------- | ---------------------------------------------------------- |
-| `grill-me`               | You have a plan/design to stress-test before building       | Interview to shared understanding                          |
-| `grill-with-docs`        | That interview should also leave a glossary and ADRs behind | `grill-me` + `domain-modeling`, writing docs as it goes    |
-| `diagnose`               | A bug needs iterative investigation, not a quick code read  | Root-cause only; hands off to capture/PRD                  |
-| `capture-task`           | Anything worth tracking for later (bug/feature/chore)       | Quick-capture to a GitHub issue                            |
-| `write-a-prd`            | A feature/fix needs a real spec                             | PRD issue, seeded by grill-me or a capture                 |
-| `prd-to-issues`          | A PRD is big enough to slice                                | Vertical-slice sub-issues with a dependency graph          |
-| `implement-prd`          | Sub-issues are ready to build                               | Topological TDD implementation, then ship                  |
-| `tdd`                    | Writing any feature or bugfix                               | Red-green-refactor discipline                              |
-| `requesting-code-review` | Work needs review before merge                              | Dispatches the code-reviewer subagent (SOC2 audit comment) |
-| `ship-pr`                | Committed work needs to become a green PR                   | Draft -> review -> QA -> ready -> CI                       |
+| Skill                    | Side        | Use it when                                                 | Role                                                       |
+| ------------------------ | ----------- | ----------------------------------------------------------- | ---------------------------------------------------------- |
+| `grill-me`               | primitive   | Any skill (or you) needs a relentless framed interview      | Role-parameterized interview to shared understanding       |
+| `grill-with-docs`        | primitive   | That interview should also leave a glossary and ADRs behind | `grill-me` + `domain-modeling`, writing docs as it goes    |
+| `diagnose`               | front       | A bug needs iterative investigation, not a quick code read  | Root-cause only; hands off to capture/PRD                  |
+| `capture-task`           | front       | Anything worth tracking for later (bug/feature/chore)       | Quick-capture to a GitHub issue                            |
+| `write-a-prd`            | product     | A product brief needs a structured, versioned PRD           | Product-altitude PRD, sourced + written back to a tracker  |
+| `prd-feedback`           | engineering | A PRD needs an engineering feasibility reality check        | Iterative verdict + tradeoffs, looped until accepted       |
+| `write-a-trd`            | engineering | An accepted PRD is ready to be specced and sliced           | TRD design + vertical-slice sub-issues with a dep graph    |
+| `implement-trd`          | engineering | TRD slices are ready to build                               | Topological TDD implementation, then ship                  |
+| `tdd`                    | engineering | Writing any feature or bugfix                               | Red-green-refactor discipline                              |
+| `requesting-code-review` | engineering | Work needs review before merge                              | Dispatches the code-reviewer subagent (SOC2 audit comment) |
+| `ship-pr`                | engineering | Committed work needs to become a green PR                   | Draft -> review -> QA -> ready -> CI                       |
 
 ## Standalone utilities
 
@@ -58,9 +66,6 @@ Most product work flows through one path, start to finish:
 ## Conventions
 
 - Skills compose by invoking each other by name (`/tdd`, `/ship-pr`, `/domain-modeling`, etc.). When you edit one, check its callers and callees in the chain above.
-- Keep `SKILL.md` files concise and present-tense. Per-skill depth lives in sibling reference files (e.g. `domain-modeling/CONTEXT-FORMAT.md`, `domain-modeling/ADR-FORMAT.md`).
+- `/grill-me` is a primitive invoked under a caller-set frame; when you change a calling skill, make sure the frame it passes (role, subject, objective) is still right.
+- Keep `SKILL.md` files concise and present-tense. Per-skill depth lives in sibling reference files (e.g. `write-a-prd/references/example-prd.md`, `write-a-trd/references/example-trd.md`, `prd-feedback/references/example-feedback.md`).
 - This README is the only human-oriented file here; do not duplicate a skill's full instructions into it. Update the map when a skill's role or the chain's shape changes.
-
-```
-
-```

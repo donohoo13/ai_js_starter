@@ -75,7 +75,10 @@ Opinionated JS/TS starter template optimized for AI-assisted development with Cl
 
 ### Skills
 
-- Use project skills when applicable instead of improvising. See `.agents/skills/README.md` for the full skill chain map.
+- Use project skills when applicable instead of improvising; the full chain map and per-skill roles live in [the skills README](.claude/skills/README.md). When unsure which skill fits, read it before reaching for one.
+- Skills divide along a hard product/engineering line. Product owns the PRD (`/write-a-prd`) at product altitude (problem, users, value, scope) and states no implementation; engineering reviews, specs, and ships it (`/prd-feedback` → `/write-a-trd` → `/implement-trd` → `/ship-pr`). Schema, modules, interfaces, and test strategy belong in the TRD, never the PRD.
+- Pick the entry point by intent: a customer-facing feature starts at `/write-a-prd` and flows through `/prd-feedback` to an accepted PRD before `/write-a-trd`; a bug or chore has no product dimension and enters `/write-a-trd` directly on its low-barrier engineering on-ramp (no PRD); a bug you cannot root-cause by reading code goes to `/diagnose` first. The pipeline is one PRD → one TRD → one pull request.
+- `/grill-me` is a role-parameterized interview primitive other skills invoke under their own frame (product partner, engineering skeptic, implementer), not a standalone front-of-chain step; run it directly only to stress-test a plan as an engineering peer.
 - Domain vocabulary and architectural decisions live OUTSIDE this file: glossaries in `CONTEXT.md` (or per-context `CONTEXT.md` indexed by a root `CONTEXT-MAP.md`) and decisions in `docs/adr/`. Read them for ubiquitous language; invoke the `domain-modeling` skill (or `/grill-with-docs`, which wraps it) to change the model.
 - Task capture is user's responsibility (tracking system, not memory). Suggest `/capture-task` once when user voices actionable asides or conversation drifts. Suggest, never auto-file. One nudge; if user doesn't bite, drop it. Do not use memory for work items.
 

@@ -1,90 +1,98 @@
 ---
 name: write-a-prd
-description: Create a PRD through user interview, codebase exploration, and module design, then submit as a GitHub issue. Use when the user wants to write a PRD, plan a new feature, or expand an existing GitHub issue (e.g., a bug/feature/chore captured via /capture-task, or any issue referenced by number) into a full PRD.
-argument-hint: '[optional: feature description OR GitHub issue number]'
+description: Generate a product requirements document at product altitude (problem, users, value, scope) from a context source the user names, then write it back versioned to that source. Use when the user wants to write or update a PRD, turn a product idea/brief/ticket into a structured PRD, or expand a captured item into one. Platform-agnostic — the source can be pasted inline or pulled from any tracker with an MCP (Linear, Jira, GitHub, Notion, etc.).
+argument-hint: '[optional: pasted context, a source id/url, or a feature description]'
 ---
 
-This skill turns a rough ask into a PRD issue. The spine is: get the seed, reach shared understanding by exploring the code together, _then_ decide scope, design modules, and write it up. Skip any step you can see is already done.
+This skill turns a product brief into a structured PRD and lands it back where the product team works. It stays at **product altitude** — problem, users, value, priority, scope. It does NOT design modules, choose schemas, or write test strategy; that is engineering's job downstream (`/prd-feedback` then `/write-a-trd`). Keeping this document free of engineering decisions is the whole point of the product/engineering split — resist the pull to start solving.
 
-1. **Seed the PRD.** Where the seed comes from decides whether step 6 **promotes an existing issue in place** or **creates a new one** — so settle it now and remember the choice.
-   - **From an existing issue** (a number in `$ARGUMENTS`, or the user pointing at one — "write a PRD for #234", "expand the bug I captured"): fetch it with `gh issue view <number> --comments` and treat its body, especially any `Context for planning` section, as the seed. **Record the number** — step 6 rewrites _this same issue_ into the PRD instead of minting a new one, which is what stops the original capture from lingering open after the work ships. If it carries a capture label (`outline` or `field-report`), promote it without asking. If it carries neither, it may be a tracking issue the user wants kept separate, so ask once: "#N isn't a capture artifact — promote it into the PRD in place, or leave it open and create a separate PRD?" Default to promote.
-   - **From scratch:** ask the user for a detailed description of the problem and any solution ideas they have. No seed issue exists, so step 6 creates one.
+## 1. Resolve the context source
 
-2. **Reach shared understanding.** Invoke `/grill-me` to interview the user and explore the codebase until the plan is unambiguous. This is the codebase-exploration step — grill-me reads the actual code to verify assumptions, so by the end you know the real surface area, not just the pitch. **Skip if grill-me already ran for this topic in the conversation.**
+A PRD is generated _from_ something and written _back_ to something. Before anything else, establish where the context lives and where the result goes. The source is the user's responsibility to provide — do not assume a platform.
 
-3. **Scope check.** Now that exploration has shown you the true surface area, ask: is this genuinely one feature, or several independent ones? Default hard to a single PRD — exploration usually reveals the "separate" pieces share schema, modules, or sequencing, which makes them one feature delivered in slices (and slicing is `/prd-to-issues`'s job downstream, not yours). Split only when two pieces share almost no code and could ship in either order with independent value (e.g. an onboarding wizard vs. a HubSpot integration). When you do split: PRD one now, and file the deferred siblings via `/capture-task` so nothing is lost. Never pre-slice a single coherent feature.
+Resolve it one of these ways, in order:
 
-4. **Design the modules.** Sketch the major modules to build or modify. Actively look for deep modules — ones that hide a lot of functionality behind a simple, testable interface that rarely changes — since those are what make the implementation testable in isolation. Check the module list against the user's expectations, and ask which modules they want tests written for.
+- **Pasted inline** — context is already in `$ARGUMENTS` or the conversation. Use it directly. There is no system of record yet, so at step 5 ask the user where the PRD should live.
+- **A named platform** — the user points at a tracker ("the Linear project FOO-123", "this Jira epic", "GitHub issue #42", "our Notion brief at <url>"). Pull it through that platform's MCP. **If no MCP for that platform is connected, stop and say so** — ask the user to paste the context instead or wire up the MCP via `/mcp`. Never guess at a platform's contents.
+- **Nothing yet** — the user has only a rough idea. Ask for a description of the problem and who has it. The PRD will be generated from the interview alone, and step 5 asks where it should live.
 
-5. **Write the PRD.** Fill in the template below. First ensure the `prd` label exists (both paths use it):
+**Record the source handle** (the id/url and platform, or "pasted"). Step 5 writes the finished PRD back to exactly that place, so settle it now.
 
-   ```bash
-   gh label list --json name --jq '.[] | select(.name == "prd")' | grep -q prd || \
-     gh label create prd --description "Parent PRD issue — full spec, decomposed into Task sub-issues" --color 5319E7
-   ```
+## 2. Reach shared understanding — as a product partner
 
-6. **Land it as an issue** — which command depends on the step-1 path:
-   - **Promote (seeded from an issue):** rewrite that same issue — `gh issue edit <seed-number> --body "<filled PRD template>"` — preserving the raw original capture text under **Further Notes** in a collapsed `<details>` block so nothing is lost, then swap labels: `gh issue edit <seed-number> --add-label prd --remove-label outline --remove-label field-report` (removing whichever capture label is absent is a harmless no-op). No second issue means nothing to orphan; `/implement-prd`'s `Closes #<seed-number>` retires it on merge.
-   - **Create (seeded from scratch):** `gh issue create --title "<title>" --body "<filled PRD template>" --label prd`.
+Invoke `/grill-me` with this frame:
 
-7. **Set the issue type.** Invoke `/gh-cli` to set the issue type to **Feature** (or **Bug** if the PRD describes a bug fix). The `gh` CLI has no `--type`, so `/gh-cli` handles the GraphQL: repo `issueTypes` lookup → issue node ID → `updateIssueIssueType` mutation. On the promote path this retypes the seed from its capture type.
+- **Your role:** a product partner pressure-testing the brief — sharp on user value, scope, and priority, deliberately _not_ an implementer.
+- **Subject:** the sourced context.
+- **Objective:** a clear, unambiguous picture of the problem, who has it, what success looks like, and what is in vs out of scope.
+- **Stay out of:** how it gets built. If an engineering constraint comes up, note it as an open question for `/prd-feedback`; do not resolve it here.
 
-8. **Hand off.** The PRD is in conversation context, so downstream skills pick it up without re-fetching. Ask the user how to proceed:
-   - **Continue to slicing** — invoke `/prd-to-issues`. Default for normal-sized features.
-   - **Skip slicing, implement directly** — invoke `/implement-prd`. Use when the PRD is essentially one vertical slice (small bug fix, one-module enhancement, trivial feature).
-   - **Stop** — pause before continuing.
+Skip this step only if an equivalent product interview already happened in this conversation. You may still read the codebase to ground yourself in what exists today, but the questions stay at product altitude.
+
+## 3. Scope check
+
+Ask: is this genuinely one product capability, or several independent ones? Default hard to a single PRD — pieces that feel separate usually share a user journey and ship together. Split only when two capabilities serve different user goals and could each ship alone with standalone value. When you split, PRD one now and capture the deferred siblings to the same source so nothing is lost.
+
+## 4. Write the PRD
+
+Fill in the template below. It is deliberately product-only. There is an **Engineering Context** placeholder at the end — leave it empty; `/prd-feedback` fills it once engineering has reviewed, and an accepted PRD carries it into `/write-a-trd`. Read `references/example-prd.md` for the altitude to hit — if your draft names a technology or a data structure, you have dropped too low.
+
+## 5. Write it back to the source, versioned
+
+A PRD iterates — product and engineering pass it back and forth via `/prd-feedback` — so it must be versioned at its source, not dropped as a one-off.
+
+- **Stamp a version.** Put a `PRD vN — <status>` header at the top (v1 on first write; bump on every later rewrite). Status starts as `Draft`.
+- **Write to the recorded source.** If the source is an editable artifact (a Linear issue/doc, a Jira ticket, a GitHub issue), update it _in place_ through its MCP so the canonical current version lives where the team already looks, preserving any prior raw brief under a collapsed/appended note so nothing is lost. If the context was pasted with no home, ask the user where it should live and write it there.
+- **Versioning is an outcome, not a mechanism.** Different platforms version differently (issue description + comment history, a doc with revision headers, etc.). Achieve "current canonical body + recoverable history"; use whatever the platform's MCP makes natural. Do not hardcode one tracker's model.
+
+## 6. Hand off
+
+The PRD is now in conversation context and at its source. Ask the user how to proceed:
+
+- **Engineering review** — invoke `/prd-feedback` to get the feasibility-and-tradeoffs pass. This is the normal next step; a PRD should not go to `/write-a-trd` until engineering has weighed in at least once.
+- **Stop** — pause for product to circulate it first.
 
 <prd-template>
 
+# PRD vN — <Draft | In Review | Accepted>
+
 ## Problem Statement
 
-The problem that the user is facing, from the user's perspective.
+The problem the user faces, from the user's perspective. Why it matters, who it affects.
 
 ## Solution
 
-The solution to the problem, from the user's perspective.
+The solution from the user's perspective — the experience and outcome, not the implementation.
 
 ## User Stories
 
-A LONG, numbered list of user stories. Each user story should be in the format of:
+An extensive, numbered list covering all aspects of the capability:
 
-1. As an <actor>, I want a <feature>, so that <benefit>
+1. As an `<actor>`, I want `<capability>`, so that `<benefit>`.
 
 <user-story-example>
-1. As a mobile bank customer, I want to see balance on my accounts, so that I can make better informed decisions about my spending
+1. As a mobile bank customer, I want to see balances on my accounts, so that I can make better-informed spending decisions.
 </user-story-example>
 
-This list of user stories should be extremely extensive and cover all aspects of the feature.
+## Success Metrics
 
-## Implementation Decisions
+How we will know this worked — the user-facing or business signals that move. Avoid vanity metrics.
 
-A list of implementation decisions that were made. This can include:
+## Priority & Scope
 
-- The modules that will be built/modified
-- The interfaces of those modules that will be modified
-- Technical clarifications from the developer
-- Architectural decisions
-- Schema changes
-- API contracts
-- Specific interactions
-
-Do NOT include specific file paths or code snippets. They may end up being outdated very quickly.
-
-## Testing Decisions
-
-A list of testing decisions that were made. Include:
-
-- A description of what makes a good test (only test external behavior, not implementation details)
-- Which modules will be tested
-- Prior art for the tests (i.e. similar types of tests in the codebase)
+What ships first and why. Relative priority of the user stories if not all land at once.
 
 ## Out of Scope
 
-A description of the things that are specifically noted as out of scope for this PRD.
+What is explicitly NOT part of this PRD.
 
-## Further Notes
+## Open Questions
 
-Any additional notes about the feature or helpful context clues that don't fit neatly into this PRD but are worth including to preserve as much conversation context as possible in the final output.
+Unresolved product questions, and any engineering concerns surfaced during the interview that `/prd-feedback` should weigh. These are questions, not answers.
+
+## Engineering Context
+
+_Left empty by product. `/prd-feedback` fills this with the digest of the accepted feasibility review — agreed constraints, tradeoffs, and the chosen implementation path — and links any binding decisions recorded as ADRs in `docs/adr/`. An accepted PRD carries this section into `/write-a-trd`._
 
 </prd-template>
 

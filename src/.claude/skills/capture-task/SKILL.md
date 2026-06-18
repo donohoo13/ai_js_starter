@@ -1,6 +1,6 @@
 ---
 name: capture-task
-description: Quick-capture any unit of work — a bug, a feature idea, or a chore — as a structured GitHub issue. A "task" here is the umbrella: anything you want tracked for later. Lighter than `/write-a-prd`. Use whenever the user says "capture this", "log this", "track this for later", "file a follow-up", "create a task", "outline a feature", "we should do X later", "add this to the roadmap", "tech debt note", "park this", OR reports something broken: "capture this bug", "log this bug", "file an issue for this", "demo bug", "saw a bug in prod", "this just broke". Optimized for low-friction in-the-moment capture; the resulting issue is shaped to be consumed as a seed by `/write-a-prd`, `/prd-to-issues`, and `/implement-prd` downstream.
+description: Quick-capture any unit of work — a bug, a feature idea, or a chore — as a structured GitHub issue. A "task" here is the umbrella: anything you want tracked for later. Lighter than `/write-a-prd`. Use whenever the user says "capture this", "log this", "track this for later", "file a follow-up", "create a task", "outline a feature", "we should do X later", "add this to the roadmap", "tech debt note", "park this", OR reports something broken: "capture this bug", "log this bug", "file an issue for this", "demo bug", "saw a bug in prod", "this just broke". Optimized for low-friction in-the-moment capture; the resulting issue is shaped to seed `/write-a-prd` downstream (for features) or `/write-a-trd` (for bugs and chores).
 argument-hint: "[optional: brief outline of the bug, feature, or chore]"
 ---
 
@@ -8,9 +8,9 @@ argument-hint: "[optional: brief outline of the bug, feature, or chore]"
 
 The single quick-capture entry point for any unit of work. A "task" is the umbrella term: a **bug** (something broke), a **feature** (net-new product surface), or a **chore** (internal work, tech debt, deferred fix). Optimized for low friction: gather the minimum context, file the issue, get back to whatever the user was doing.
 
-The output is shaped so `/write-a-prd` can later consume the issue as a PRD seed when the work needs deeper planning. Don't push the user to escalate in the moment — most captures are deferred work that won't be planned for weeks. Just file it cleanly so it's there when someone picks it up.
+The output is shaped to seed the right downstream skill when the work needs deeper planning — `/write-a-prd` for a feature (it has a product dimension), `/write-a-trd` for a bug or chore (engineering-only, no PRD needed). Don't push the user to escalate in the moment — most captures are deferred work that won't be planned for weeks. Just file it cleanly so it's there when someone picks it up.
 
-This skill does **not** attempt PRD-level work. It captures a seed, optionally enriched with the surrounding conversation context (see step 5), and leaves the branching/expansion to `/write-a-prd`.
+This skill does **not** attempt PRD- or TRD-level work. It captures a seed, optionally enriched with the surrounding conversation context (see step 5), and leaves the branching/expansion to the downstream skill.
 
 ## Process
 
@@ -100,13 +100,14 @@ For bugs, add additional labels where they fit: `regression` (previously worked)
 
 ### 9. Report back, offer next steps, and keep the seed live
 
-Output the issue URL and ask:
+Output the issue URL and ask, routing by kind:
 
-> "Filed as #N. Want to `/write-a-prd` off this, `/implement-prd` it directly, or move on?"
+> Feature → "Filed as #N. Want to `/write-a-prd` off this, or move on?"
+> Bug / Chore → "Filed as #N. Want to `/write-a-trd` off this, or move on?"
 
 Most captures will be deferred — don't push escalation. Then leave this standing note in effect for the rest of the session:
 
-> **Keep #N's `Context for planning` live.** If later discussion in this session changes a decision, rules out an approach, shifts scope, or (for bugs) changes severity or repro details, offer to update issue #N so its seed stays current for a future `/write-a-prd`. Sync **material** changes only — not every tangent — and **confirm before editing** the issue. Update the body's `## Context for planning` section in place. This is best-effort within the active session; it does not persist across sessions.
+> **Keep #N's `Context for planning` live.** If later discussion in this session changes a decision, rules out an approach, shifts scope, or (for bugs) changes severity or repro details, offer to update issue #N so its seed stays current for a future `/write-a-prd` or `/write-a-trd`. Sync **material** changes only — not every tangent — and **confirm before editing** the issue. Update the body's `## Context for planning` section in place. This is best-effort within the active session; it does not persist across sessions.
 
 ## Title format
 
@@ -151,17 +152,20 @@ If the user describes data corruption, a permission / multi-tenancy boundary lea
 ### Next steps values
 
 - **Triage** — too vague or unexplored to plan against; needs investigation first.
-- **Needs PRD** — well-understood enough that `/write-a-prd <issue-number>` can lift it into a real spec.
-- **Ready to implement** — small, scoped, single-slice work where a PRD would be overhead; can go straight to `/implement-prd <issue-number>`.
+- **Needs PRD** — a _feature_ well-understood enough that `/write-a-prd <issue-number>` can lift it into a product spec, which then flows through `/prd-feedback` to a TRD.
+- **Needs TRD** — a _bug or chore_ with engineering substance but no product dimension; `/write-a-trd <issue-number>` takes it straight in on its engineering on-ramp. Even small, single-slice work goes here — `/write-a-trd`'s single-slice fast path makes it cheap, and the test-strategy framing is worth it for a one-commit fix.
 
-If the user didn't say which, infer from the level of detail. A one-line "we should add caching here someday" is `Triage`. "Re-enable the AI categorization toggle once billing is in place — known scope, blocked on infra X" is `Needs PRD`. "Bump the TanStack Query catalog dep to 5.85" is `Ready to implement`.
+If the user didn't say which, infer from kind and detail. A one-line "we should add caching here someday" is `Triage`. A feature like "re-enable the AI categorization toggle once billing is in place" is `Needs PRD`. "Bump the TanStack Query catalog dep to 5.85" or a diagnosed bug is `Needs TRD`.
 
 ## Why this format
 
-The templates mirror the inputs `/write-a-prd` will need to lift a capture into a PRD: `Summary` (plus `Observed`/`Expected` for bugs) maps to the PRD's Problem Statement; `Context for planning` gives the PRD's problem framing, implementation decisions, and codebase-exploration step a running start, including the dead ends already ruled out; `Affected area` scopes discovery; `Next steps` flags the escalation path.
+The templates mirror the inputs the downstream skill needs: `Summary` (plus `Observed`/`Expected` for bugs) frames the problem; `Context for planning` gives the downstream interview and codebase-exploration step a running start, including the dead ends already ruled out; `Affected area` scopes discovery; `Next steps` flags the escalation path.
 
-When the user later runs `/write-a-prd <issue-number>`, that skill **promotes this issue in place** — it rewrites the body into the PRD template, retypes the issue to Feature (or Bug), and swaps the capture label (`outline` / `field-report`) for `prd`. There is no separate PRD issue and no orphaned capture left behind; the single issue carries the work from capture through implementation, and `/implement-prd`'s `Closes #<issue>` closes it when the PR merges. The `Context for planning` section is what makes that promotion rich rather than a re-interview from scratch.
+What "later" looks like depends on kind:
 
-The `outline` and `field-report` labels keep one-off captures visually distinct from `prd`-labeled parent issues and from `Task`-typed PRD sub-issues, so triage queries stay clean (`is:open label:outline -label:prd`, `is:open label:field-report -label:prd`).
+- **Feature** → `/write-a-prd` consumes this issue as a **context source**. Because PRDs are platform-agnostic, the PRD may be written back here (if product also works in GitHub, the issue is promoted in place — body rewritten to the PRD, retyped to Feature, `outline` swapped for `prd`) or authored wherever product works (e.g. Linear), in which case this capture remains the linked seed. The downstream skill decides where the PRD lives.
+- **Bug / Chore** → `/write-a-trd` consumes this issue as its **engineering seed**, then creates the parent TRD issue and slices. The capture is the seed that makes the TRD's deep dive start rich rather than cold.
+
+The `outline` and `field-report` labels keep one-off captures visually distinct from `prd`-labeled PRDs, `trd`-labeled TRDs, and `Task`-typed sub-issues, so triage queries stay clean (`is:open label:outline -label:prd`, `is:open label:field-report -label:trd`).
 
 $ARGUMENTS
