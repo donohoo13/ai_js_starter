@@ -21,15 +21,20 @@
 
 ## Environment
 
-- **Env:** <production | staging | local>
+- **Env:** <production | staging | local. A demo report defaults to production — demos run against production OneView, don't ask. Mentions of `pnpm dev`, `localhost`, seed data, or a migration default to local.>
 - **Browser/client:** <Chrome 130 / Safari 18 / unknown — fill what's known, omit if not>
 - **User role:** <admin / member / consultant — if known>
 
 ## Severity
 
-<blocking-demo | customer-visible | internal | cosmetic>
+<Pick one:
 
-**Why this severity:** <one sentence>
+- **blocking-demo** — surfaced live in a customer-facing context; risk of repeat embarrassment
+- **customer-visible** — production users will hit this in normal use
+- **internal** — surfaces only for OneView staff or in test/seed data; customers don't see it
+- **cosmetic** — wrong-looking but functionally correct (alignment, copy, color, missing icon)>
+
+**Why this severity:** <one sentence. Data corruption, cross-org / multi-tenancy leaks, auth bypass, or anything touching PII handling is never below customer-visible no matter how it surfaced — flag the class of issue here.>
 
 ## Affected area
 
@@ -37,7 +42,7 @@
 
 ## Context for planning
 
-<Distilled from the conversation this bug was captured in, so a later `/write-a-trd` has a rich seed. Do NOT interrogate the user further and do NOT run a code investigation to populate this — capture only what was already said, as terse bullets. Fold any suspected-scope pointers in here. Omit the whole section if the bug was captured cold with no surrounding discussion.
+<The seed a future grilling session runs on — a later `/write-a-trd` opens in a new session with none of today's context, and this section is what it gets. Distill from the conversation this bug was captured in: do NOT interrogate the user further and do NOT run a code investigation to populate it — capture only what was already said, as terse bullets. Fold any suspected-scope pointers in here. Omit the whole section if the bug was captured cold with no surrounding discussion.
 
 - Constraints / decisions already voiced (e.g., "fix must stay org-scoped", "can't touch the Outreach token path")
 - Approaches considered or explicitly ruled out, with the one-line why

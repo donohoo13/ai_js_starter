@@ -8,7 +8,7 @@
 
 ## Context for planning
 
-<Distilled from the conversation this was captured in, so a later `/write-a-prd` (feature) or `/write-a-trd` (chore) has a rich seed instead of a bare one-liner. Do NOT interrogate the user further and do NOT run a code-side scan to populate this — capture only what was already said, as terse bullets. This block subsumes the older Motivation / Rough scope / Suspected scope sections. Omit the whole section if captured cold with no surrounding discussion.
+<The seed a future grilling session runs on — a later `/write-a-prd` (feature) or `/write-a-trd` (chore) opens in a new session with none of today's context, and this section is what it gets instead of a bare one-liner. Distill from the conversation this was captured in: do NOT interrogate the user further and do NOT run a code-side scan to populate it — capture only what was already said, as terse bullets. Omit the whole section if captured cold with no surrounding discussion.
 
 - What triggered this (blocked on X, deferred from launch decision Y, customer ask from Z, tech debt noticed during Q)
 - Constraints / decisions already voiced
