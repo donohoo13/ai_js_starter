@@ -11,3 +11,9 @@ Strictly human-in-the-loop: the report ends with "which findings should I addres
 Quick-captures a unit of work (bug, feature idea, or chore) as a structured task file at `docs/tasks/YYYY-MM-DD-<type>-<slug>.md`, built from `capture-task/assets/task-template.md` with every unknown kept explicit as `TBD (needs grilling)` rather than invented. No interviewing: it mines the current conversation for context (error text, file paths, decisions already made) so a fresh session can pick the task up cold with `/discuss`.
 
 Suggest it once when the user voices an actionable aside, reports something broken mid-flow, or drifts into "we should do X later" territory. Never auto-file; if the user doesn't bite, drop it.
+
+## stage-for-commit
+
+Stages exactly the files changed during the current session by explicit path (never `git add -A`) and hands back a ready-to-paste commit message, then stops: no commit, no branch, no push, no AI attribution — the user is the committer. Proves the staged set with `git diff --cached --stat` before writing the message, and is concurrent-session aware: files another session already staged stay in the index and get flagged in the handoff (a `git commit` takes the whole index), and same-file collisions with unrecognized hunks are surfaced for the user to decide instead of silently staged.
+
+Invoke at the end of a quick chore/feature/bug when the user wants to commit the work themselves — "stage my changes", "ready to commit", "write me a commit message for this".
