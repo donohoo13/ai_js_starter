@@ -2,9 +2,9 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## Overview
+## Project Overview
 
-Opinionated JS/TS starter template optimized for AI-assisted development with Claude Code.
+Opinionated JS/TS starter template optimized for AI-assisted development with Claude Code. Everything that exists within the `src` directory is the source with which is used as the template for new projects. Everything else is configuration and tooling used to set up and maintain the project.
 
 ## Standards
 
@@ -75,10 +75,16 @@ Opinionated JS/TS starter template optimized for AI-assisted development with Cl
 
 ### Skills
 
-- Use project skills when applicable instead of improvising. See `src/.claude/skills/README.md` for the full skill chain map.
+- Skill usage should be documented concisely inside `src/.claude/skills/README.md` as a human readable reference.
+- Use project skills when applicable instead of improvising.
 - Task capture is user's responsibility (tracking system, not memory). Suggest `/capture-task` once when user voices actionable asides or conversation drifts. Suggest, never auto-file. One nudge; if user doesn't bite, drop it. Do not use memory for work items.
 
-## Project Overview
+#### Project VS Template
+
+- The project and template source claude skills should be treated as separate.
+- Overlap is allowed between the project and template source skills but should be HITL (human-in-the-loop) to confirm the overlap is intentional.
+- When asked to use a skill, always use the project skill if available, and do not attempt to use the template skill unless specified by the user.
+- When asked to create or modify a skill, always clarify if we are doing so for the project or the template.
 
 ## Commands
 
