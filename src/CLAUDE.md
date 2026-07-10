@@ -82,12 +82,8 @@ Opinionated JS/TS starter template optimized for AI-assisted development with Cl
 - Domain vocabulary and architectural decisions live OUTSIDE this file: glossaries in `CONTEXT.md` (or per-context `CONTEXT.md` indexed by a root `CONTEXT-MAP.md`) and decisions in `docs/adr/`. Read them for ubiquitous language; invoke the `domain-modeling` skill (or `/grill-with-docs`, which wraps it) to change the model.
 - Task capture is user's responsibility (tracking system, not memory). Suggest `/capture-task` once when user voices actionable asides or conversation drifts. Suggest, never auto-file. One nudge; if user doesn't bite, drop it. Do not use memory for work items.
 
-## Project Overview
-
 ## Commands
 
 ## Architecture
-
-## Styling
 
 ## Deployment
