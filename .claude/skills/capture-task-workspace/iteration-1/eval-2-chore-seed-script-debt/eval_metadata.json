@@ -1,0 +1,13 @@
+{
+  "eval_id": 2,
+  "eval_name": "chore-seed-script-debt",
+  "prompt": "ugh the seed script is a mess, it hardcodes the admin password and takes like 5 minutes to run. log a tech debt note for cleaning up scripts/seed.ts",
+  "assertions": [
+    "Exactly one task file exists in docs/tasks/ named 2026-07-10-chore-<slug>.md (kebab-case slug)",
+    "Frontmatter contains type: chore, status: captured, created: 2026-07-10",
+    "File has Summary, Context, and Open questions sections",
+    "Context captures the hardcoded admin password, the ~5 minute runtime, and scripts/seed.ts",
+    "Open questions section has 2-5 items using - [ ] checkbox syntax",
+    "No cleanup attempted: fixture source files (src/, scripts/) are unmodified and no files besides the task file were created"
+  ]
+}

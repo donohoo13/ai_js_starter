@@ -78,6 +78,7 @@ Opinionated JS/TS starter template optimized for AI-assisted development with Cl
 - Skill usage should be documented concisely inside `src/.claude/skills/README.md` as a human readable reference.
 - Use project skills when applicable instead of improvising.
 - Task capture is user's responsibility (tracking system, not memory). Suggest `/capture-task` once when user voices actionable asides or conversation drifts. Suggest, never auto-file. One nudge; if user doesn't bite, drop it. Do not use memory for work items.
+- Captured tasks land in `docs/tasks/YYYY-MM-DD-<type>-<slug>.md` (`type`: `bug` | `feature` | `chore`), structured per `.claude/skills/capture-task/assets/task-template.md`: frontmatter (`type`, `status: captured`, `created`) plus Context, Problem, Scope, Requirements, Acceptance criteria, Dependencies, Risks / open questions, with unknowns kept explicit as `TBD (needs grilling)`.
 
 #### Project VS Template
 

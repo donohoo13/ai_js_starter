@@ -1,0 +1,45 @@
+{
+  "summary": {
+    "pass_rate": 1.0,
+    "passed": 7,
+    "failed": 0,
+    "total": 7
+  },
+  "expectations": [
+    {
+      "text": "Exactly one task file in docs/tasks/ named 2026-07-10-feature-<slug>.md",
+      "passed": true,
+      "evidence": "found: ['2026-07-10-feature-csv-export-reports.md']"
+    },
+    {
+      "text": "Frontmatter has type: feature, status: captured, created: 2026-07-10",
+      "passed": true,
+      "evidence": "type: feature\nstatus: captured\ncreated: 2026-07-10"
+    },
+    {
+      "text": "File has all seven template sections (Context, Problem, Scope, Requirements, Acceptance criteria, Dependencies, Risks / open questions)",
+      "passed": true,
+      "evidence": "present: ['Context', 'Problem', 'Scope', 'Requirements', 'Acceptance criteria', 'Dependencies', 'Risks / open questions']"
+    },
+    {
+      "text": "No leftover template guidance comments (<!-- -->) in the captured file",
+      "passed": true,
+      "evidence": "clean"
+    },
+    {
+      "text": "Context fidelity: customer demand and reports page captured",
+      "passed": true,
+      "evidence": "all facts present"
+    },
+    {
+      "text": "Risks / open questions: 2-5 items using - [ ] checkboxes",
+      "passed": true,
+      "evidence": "checkbox count in risks section: 5"
+    },
+    {
+      "text": "No fix/implementation attempted: fixtures unmodified, no extra files outside docs/tasks/",
+      "passed": true,
+      "evidence": "fixtures unmodified: True; extra files: none"
+    }
+  ]
+}

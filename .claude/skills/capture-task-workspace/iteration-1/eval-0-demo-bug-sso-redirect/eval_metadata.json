@@ -1,0 +1,14 @@
+{
+  "eval_id": 0,
+  "eval_name": "demo-bug-sso-redirect",
+  "prompt": "just hit a bug during the customer demo - after SSO login, navigating to /dashboard bounces you straight back to /login. console showed `TypeError: Cannot read properties of undefined (reading 'orgId')` coming from src/middleware/auth.ts. seems to only happen for users with no org membership. capture this bug, i don't have time to dig in right now",
+  "assertions": [
+    "Exactly one task file exists in docs/tasks/ named 2026-07-10-bug-<slug>.md (kebab-case slug)",
+    "Frontmatter contains type: bug, status: captured, created: 2026-07-10",
+    "File has Summary, Context, and Open questions sections",
+    "Context preserves the verbatim error text TypeError: Cannot read properties of undefined (reading 'orgId')",
+    "Context references src/middleware/auth.ts, the /dashboard to /login redirect symptom, and the no-org-membership condition",
+    "Open questions section has 2-5 items using - [ ] checkbox syntax",
+    "No fix attempted: fixture source files (src/, scripts/) are unmodified and no files besides the task file were created"
+  ]
+}

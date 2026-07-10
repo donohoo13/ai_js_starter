@@ -1,0 +1,13 @@
+{
+  "eval_id": 1,
+  "eval_name": "feature-csv-export-park",
+  "prompt": "customers keep asking for csv export on the reports page. we should do it eventually but not now - park this for later",
+  "assertions": [
+    "Exactly one task file exists in docs/tasks/ named 2026-07-10-feature-<slug>.md (kebab-case slug)",
+    "Frontmatter contains type: feature, status: captured, created: 2026-07-10",
+    "File has Summary, Context, and Open questions sections",
+    "Context captures the recurring customer demand and locates the reports page (src/app/reports/)",
+    "Open questions section has 2-5 items using - [ ] checkbox syntax",
+    "No implementation attempted: fixture source files (src/, scripts/) are unmodified and no files besides the task file were created"
+  ]
+}

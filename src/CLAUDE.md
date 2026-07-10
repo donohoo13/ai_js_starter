@@ -81,6 +81,7 @@ Opinionated JS/TS starter template optimized for AI-assisted development with Cl
 - `/grill-me` is a role-parameterized interview primitive other skills invoke under their own frame (product partner, engineering skeptic, implementer), not a standalone front-of-chain step; run it directly only to stress-test a plan as an engineering peer.
 - Domain vocabulary and architectural decisions live OUTSIDE this file: glossaries in `CONTEXT.md` (or per-context `CONTEXT.md` indexed by a root `CONTEXT-MAP.md`) and decisions in `docs/adr/`. Read them for ubiquitous language; invoke the `domain-modeling` skill (or `/grill-with-docs`, which wraps it) to change the model.
 - Task capture is user's responsibility (tracking system, not memory). Suggest `/capture-task` once when user voices actionable asides or conversation drifts. Suggest, never auto-file. One nudge; if user doesn't bite, drop it. Do not use memory for work items.
+- Captured tasks land in `docs/tasks/YYYY-MM-DD-<type>-<slug>.md` (`type`: `bug` | `feature` | `chore`), structured per `.claude/skills/capture-task/assets/task-template.md`: frontmatter (`type`, `status: captured`, `created`) plus Context, Problem, Scope, Requirements, Acceptance criteria, Dependencies, Risks / open questions, with unknowns kept explicit as `TBD (needs grilling)`.
 
 ## Commands
 

@@ -1,0 +1,45 @@
+{
+  "summary": {
+    "pass_rate": 1.0,
+    "passed": 7,
+    "failed": 0,
+    "total": 7
+  },
+  "expectations": [
+    {
+      "text": "Exactly one task file in docs/tasks/ named 2026-07-10-bug-<slug>.md",
+      "passed": true,
+      "evidence": "found: ['2026-07-10-bug-sso-dashboard-login-redirect.md']"
+    },
+    {
+      "text": "Frontmatter has type: bug, status: captured, created: 2026-07-10",
+      "passed": true,
+      "evidence": "type: bug\nstatus: captured\ncreated: 2026-07-10"
+    },
+    {
+      "text": "File has Summary, Context, and Open questions sections",
+      "passed": true,
+      "evidence": "present: ['## Summary', '## Context', '## Open questions']"
+    },
+    {
+      "text": "Context fidelity: verbatim error text preserved",
+      "passed": true,
+      "evidence": "all facts present"
+    },
+    {
+      "text": "Context fidelity: symptom, file, and condition captured",
+      "passed": true,
+      "evidence": "all facts present"
+    },
+    {
+      "text": "Open questions: 2-5 items using - [ ] checkboxes",
+      "passed": true,
+      "evidence": "checkbox count: 5"
+    },
+    {
+      "text": "No fix/implementation attempted: fixtures unmodified, no extra files outside docs/tasks/",
+      "passed": true,
+      "evidence": "fixtures unmodified: True; extra files: none"
+    }
+  ]
+}

@@ -1,0 +1,364 @@
+{
+  "metadata": {
+    "skill_name": "capture-task",
+    "skill_path": "<path/to/skill>",
+    "executor_model": "<model-name>",
+    "analyzer_model": "<model-name>",
+    "timestamp": "2026-07-10T18:46:34Z",
+    "evals_run": [0, 1, 2],
+    "runs_per_configuration": 3
+  },
+  "runs": [
+    {
+      "eval_id": 0,
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 7,
+        "failed": 0,
+        "total": 7,
+        "time_seconds": 117.3,
+        "tokens": 32124,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Exactly one task file in docs/tasks/ named 2026-07-10-bug-<slug>.md",
+          "passed": true,
+          "evidence": "found: ['2026-07-10-bug-sso-dashboard-login-redirect.md']"
+        },
+        {
+          "text": "Frontmatter has type: bug, status: captured, created: 2026-07-10",
+          "passed": true,
+          "evidence": "type: bug\nstatus: captured\ncreated: 2026-07-10"
+        },
+        {
+          "text": "File has Summary, Context, and Open questions sections",
+          "passed": true,
+          "evidence": "present: ['## Summary', '## Context', '## Open questions']"
+        },
+        {
+          "text": "Context fidelity: verbatim error text preserved",
+          "passed": true,
+          "evidence": "all facts present"
+        },
+        {
+          "text": "Context fidelity: symptom, file, and condition captured",
+          "passed": true,
+          "evidence": "all facts present"
+        },
+        {
+          "text": "Open questions: 2-5 items using - [ ] checkboxes",
+          "passed": true,
+          "evidence": "checkbox count: 5"
+        },
+        {
+          "text": "No fix/implementation attempted: fixtures unmodified, no extra files outside docs/tasks/",
+          "passed": true,
+          "evidence": "fixtures unmodified: True; extra files: none"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 1,
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 6,
+        "failed": 0,
+        "total": 6,
+        "time_seconds": 113.7,
+        "tokens": 31333,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Exactly one task file in docs/tasks/ named 2026-07-10-feature-<slug>.md",
+          "passed": true,
+          "evidence": "found: ['2026-07-10-feature-csv-export-reports.md']"
+        },
+        {
+          "text": "Frontmatter has type: feature, status: captured, created: 2026-07-10",
+          "passed": true,
+          "evidence": "type: feature\nstatus: captured\ncreated: 2026-07-10"
+        },
+        {
+          "text": "File has Summary, Context, and Open questions sections",
+          "passed": true,
+          "evidence": "present: ['## Summary', '## Context', '## Open questions']"
+        },
+        {
+          "text": "Context fidelity: customer demand and reports page captured",
+          "passed": true,
+          "evidence": "all facts present"
+        },
+        {
+          "text": "Open questions: 2-5 items using - [ ] checkboxes",
+          "passed": true,
+          "evidence": "checkbox count: 5"
+        },
+        {
+          "text": "No fix/implementation attempted: fixtures unmodified, no extra files outside docs/tasks/",
+          "passed": true,
+          "evidence": "fixtures unmodified: True; extra files: none"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 2,
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 6,
+        "failed": 0,
+        "total": 6,
+        "time_seconds": 108.4,
+        "tokens": 32182,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Exactly one task file in docs/tasks/ named 2026-07-10-chore-<slug>.md",
+          "passed": true,
+          "evidence": "found: ['2026-07-10-chore-seed-script-cleanup.md']"
+        },
+        {
+          "text": "Frontmatter has type: chore, status: captured, created: 2026-07-10",
+          "passed": true,
+          "evidence": "type: chore\nstatus: captured\ncreated: 2026-07-10"
+        },
+        {
+          "text": "File has Summary, Context, and Open questions sections",
+          "passed": true,
+          "evidence": "present: ['## Summary', '## Context', '## Open questions']"
+        },
+        {
+          "text": "Context fidelity: password, runtime, and file captured",
+          "passed": true,
+          "evidence": "all facts present"
+        },
+        {
+          "text": "Open questions: 2-5 items using - [ ] checkboxes",
+          "passed": true,
+          "evidence": "checkbox count: 5"
+        },
+        {
+          "text": "No fix/implementation attempted: fixtures unmodified, no extra files outside docs/tasks/",
+          "passed": true,
+          "evidence": "fixtures unmodified: True; extra files: none"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 0,
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.5714,
+        "passed": 4,
+        "failed": 3,
+        "total": 7,
+        "time_seconds": 118.8,
+        "tokens": 32190,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Exactly one task file in docs/tasks/ named 2026-07-10-bug-<slug>.md",
+          "passed": true,
+          "evidence": "found: ['2026-07-10-bug-sso-no-org-dashboard-redirect.md']"
+        },
+        {
+          "text": "Frontmatter has type: bug, status: captured, created: 2026-07-10",
+          "passed": false,
+          "evidence": "no frontmatter found"
+        },
+        {
+          "text": "File has Summary, Context, and Open questions sections",
+          "passed": false,
+          "evidence": "present: ['## Open questions']"
+        },
+        {
+          "text": "Context fidelity: verbatim error text preserved",
+          "passed": true,
+          "evidence": "all facts present"
+        },
+        {
+          "text": "Context fidelity: symptom, file, and condition captured",
+          "passed": true,
+          "evidence": "all facts present"
+        },
+        {
+          "text": "Open questions: 2-5 items using - [ ] checkboxes",
+          "passed": false,
+          "evidence": "checkbox count: 7"
+        },
+        {
+          "text": "No fix/implementation attempted: fixtures unmodified, no extra files outside docs/tasks/",
+          "passed": true,
+          "evidence": "fixtures unmodified: True; extra files: none"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 1,
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.6667,
+        "passed": 4,
+        "failed": 2,
+        "total": 6,
+        "time_seconds": 111.6,
+        "tokens": 31025,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Exactly one task file in docs/tasks/ named 2026-07-10-feature-<slug>.md",
+          "passed": false,
+          "evidence": "found: ['csv-export-reports-page.md']"
+        },
+        {
+          "text": "Frontmatter has type: feature, status: captured, created: 2026-07-10",
+          "passed": false,
+          "evidence": "no frontmatter found"
+        },
+        {
+          "text": "File has Summary, Context, and Open questions sections",
+          "passed": true,
+          "evidence": "present: ['## Summary', '## Context', '## Open questions']"
+        },
+        {
+          "text": "Context fidelity: customer demand and reports page captured",
+          "passed": true,
+          "evidence": "all facts present"
+        },
+        {
+          "text": "Open questions: 2-5 items using - [ ] checkboxes",
+          "passed": true,
+          "evidence": "checkbox count: 4"
+        },
+        {
+          "text": "No fix/implementation attempted: fixtures unmodified, no extra files outside docs/tasks/",
+          "passed": true,
+          "evidence": "fixtures unmodified: True; extra files: none"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 2,
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.3333,
+        "passed": 2,
+        "failed": 4,
+        "total": 6,
+        "time_seconds": 106.6,
+        "tokens": 31724,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Exactly one task file in docs/tasks/ named 2026-07-10-chore-<slug>.md",
+          "passed": false,
+          "evidence": "found: no docs/tasks/*.md"
+        },
+        {
+          "text": "Frontmatter has type: chore, status: captured, created: 2026-07-10",
+          "passed": false,
+          "evidence": "no frontmatter found"
+        },
+        {
+          "text": "File has Summary, Context, and Open questions sections",
+          "passed": false,
+          "evidence": "present: []"
+        },
+        {
+          "text": "Context fidelity: password, runtime, and file captured",
+          "passed": true,
+          "evidence": "all facts present"
+        },
+        {
+          "text": "Open questions: 2-5 items using - [ ] checkboxes",
+          "passed": true,
+          "evidence": "checkbox count: 4"
+        },
+        {
+          "text": "No fix/implementation attempted: fixtures unmodified, no extra files outside docs/tasks/",
+          "passed": false,
+          "evidence": "fixtures unmodified: True; extra files: ['docs/tech-debt.md']"
+        }
+      ],
+      "notes": []
+    }
+  ],
+  "run_summary": {
+    "with_skill": {
+      "pass_rate": {
+        "mean": 1.0,
+        "stddev": 0.0,
+        "min": 1.0,
+        "max": 1.0
+      },
+      "time_seconds": {
+        "mean": 113.1333,
+        "stddev": 4.477,
+        "min": 108.4,
+        "max": 117.3
+      },
+      "tokens": {
+        "mean": 31879.6667,
+        "stddev": 474.3146,
+        "min": 31333,
+        "max": 32182
+      }
+    },
+    "without_skill": {
+      "pass_rate": {
+        "mean": 0.5238,
+        "stddev": 0.1717,
+        "min": 0.3333,
+        "max": 0.6667
+      },
+      "time_seconds": {
+        "mean": 112.3333,
+        "stddev": 6.133,
+        "min": 106.6,
+        "max": 118.8
+      },
+      "tokens": {
+        "mean": 31646.3333,
+        "stddev": 586.3705,
+        "min": 31025,
+        "max": 32190
+      }
+    },
+    "delta": {
+      "pass_rate": "+0.48",
+      "time_seconds": "+0.8",
+      "tokens": "+233"
+    }
+  },
+  "notes": [
+    "Baselines produced good CONTENT everywhere (all context-fidelity assertions passed in both configs), but each baseline invented a different structure: eval-0 coincidentally used docs/tasks/ with near-identical dated naming, eval-1 used docs/tasks/ but an undated filename and a 'Parked' status, eval-2 wrote docs/tech-debt.md instead. The skill's measured value is the consistent contract (location, naming, frontmatter, grill-able sections), not raw capture ability.",
+    "Baselines solutioned: eval-0 baseline included a fix sketch (optional chaining + regression test), eval-2 baseline included acceptance criteria and a target runtime. With-skill runs correctly deferred design to the future grill session.",
+    "Non-discriminating assertions: context-fidelity checks passed in all 6 runs; they guard against information loss but do not separate configs.",
+    "No cost overhead: with-skill and baseline runs were within ~2% on tokens (~31-32k) and duration (~107-119s). Single run per config, so stddev is not meaningful this iteration."
+  ]
+}
