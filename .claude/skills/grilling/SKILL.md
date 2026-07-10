@@ -1,5 +1,5 @@
 ---
-name: grill-me
+name: grilling
 description: Interview the user relentlessly about a plan or design until a shared understanding is reached. Use when user wants to discuss a new request, idea, concept, issue, or stress-test a plan. Grilling sessions are best had before an implementation and should be used when the user uses any 'grill' trigger phrases.
 ---
 
