@@ -2,14 +2,14 @@
 
 ## The chain
 
-One front door for interview sessions, three lenses behind it, and a task file that carries work from capture to done. Keystone principle, written into the skills verbatim: **ceremony scales with size; engineering discipline never does** — a one-line chore still gets grilled, built test-first, and validated; what collapses for small work is artifacts and process, never rigor.
+One front door for interview sessions, three lenses behind it, and a task file that carries work from capture to done. Keystone principle, written into the skills verbatim: **ceremony scales with size; engineering discipline never does** — a one-line chore still gets grilled, built test-first, and validated; what collapses for small work is artifacts and process, never rigor. One fixed stop on every implementation path: the **human QA gate** — the session hands the user instructions to see the change in action and waits for their verdict; nothing is marked done and neither `/review-board` nor `/stage-for-commit` gets recommended until the user has seen it work.
 
 ```
 /grill-me (router)
-   ├─> grill-engineer (≈8/10) ──┬─ build now ─> /tdd ─> /stage-for-commit (user commits)
+   ├─> grill-engineer (≈8/10) ──┬─ build now ─> /tdd ─> human QA gate ─> /stage-for-commit (user commits)
    │                            ├─ spec it ──> docs/tasks file (status: scoped)
    │                            │                 └─> /implement-task ─> slice loop (/tdd, commit per slice)
-   │                            │                        └─> /review-board offer ─> stop (user pushes/PRs)
+   │                            │                        └─> human QA gate ─> /review-board offer ─> stop (user pushes/PRs)
    │                            └─ park it ──> /capture-task
    ├─> grill-product ──> design docs / product brief (docs/briefs/) / ADRs / capture / nothing
    └─> grill-research ─> summary writeup / capture / nothing
@@ -31,7 +31,7 @@ Relentless one-question-at-a-time interview that walks the decision tree of a pl
 
 ## grill-engineer
 
-The engineering lens (roughly 8 of 10 sessions): runs `grilling` with `domain-modeling` active, framed as an implementing-engineer peer with the codebase as ground truth for what exists and Context7 (falling back to web search → web fetch) as ground truth for how the stack's libraries actually behave. At objective-met it asks one exit question with a size-based recommendation — build now (`/tdd`, validate, `/stage-for-commit`), spec it (evolve or create the docs/tasks file with design decisions, test strategy, and vertical tracer-bullet slices, flipping `status: scoped`), or park it (`/capture-task`) — and pure discussions simply end with no forced exit. Carries the old write-a-trd guts (deep dive, design, slicing) as spec-it behavior, minus all GitHub ceremony, with `references/example-scoped-task.md` as the worked example of a scoped file's shape and altitude. A product brief from `docs/briefs/` can seed the session the same way a captured task can.
+The engineering lens (roughly 8 of 10 sessions): runs `grilling` with `domain-modeling` active, framed as an implementing-engineer peer with the codebase as ground truth for what exists and Context7 (falling back to web search → web fetch) as ground truth for how the stack's libraries actually behave. At objective-met it asks one exit question with a size-based recommendation — build now (`/tdd`, validate, human QA gate, then `/stage-for-commit`), spec it (evolve or create the docs/tasks file with design decisions, test strategy, and vertical tracer-bullet slices, flipping `status: scoped`), or park it (`/capture-task`) — and pure discussions simply end with no forced exit. Carries the old write-a-trd guts (deep dive, design, slicing) as spec-it behavior, minus all GitHub ceremony, with `references/example-scoped-task.md` as the worked example of a scoped file's shape and altitude. A product brief from `docs/briefs/` can seed the session the same way a captured task can.
 
 ## grill-product
 
@@ -43,7 +43,7 @@ The research lens: runs `grilling` framed as a research analyst, facts sourced v
 
 ## implement-task
 
-The fresh-session resume door: reads a `scoped` task file from `docs/tasks/`, refuses to build on main or on under-specified files (those get routed back to a grilling first), then builds slice by slice — deep plan, `/tdd`, validate (typecheck and single test files regularly; never the full suite mid-task), commit per slice with the task file's checkboxes riding along — flipping status `scoped → in-progress → done`. DONE and DONE_WITH_CONCERNS continue automatically; only BLOCKED stops. Runs the full test suite once at the very end, then offers `/review-board` (recommending yes for anything non-trivial) and stops before any push or PR.
+The fresh-session resume door: reads a `scoped` task file from `docs/tasks/`, refuses to build on main or on under-specified files (those get routed back to a grilling first), then builds slice by slice — deep plan, `/tdd`, validate (typecheck and single test files regularly; never the full suite mid-task), commit per slice with the task file's checkboxes riding along — flipping status `scoped → in-progress → done`. DONE and DONE_WITH_CONCERNS continue automatically; only BLOCKED stops. Runs the full test suite once at the very end, then stops at the human QA gate — a QA script the user runs to see the change in action, with nothing marked `done` until they confirm — then offers `/review-board` (recommending yes for anything non-trivial) and stops before any push or PR.
 
 ## tdd
 
@@ -69,7 +69,7 @@ Suggest it once when the user voices an actionable aside, reports something brok
 
 Stages exactly the files changed during the current session by explicit path (never `git add -A`) and hands back a ready-to-paste commit message, then stops: no commit, no branch, no push, no AI attribution — the user is the committer. Proves the staged set with `git diff --cached --stat` before writing the message, and is concurrent-session aware: files another session already staged stay in the index and get flagged in the handoff (a `git commit` takes the whole index), and same-file collisions with unrecognized hunks are surfaced for the user to decide instead of silently staged.
 
-Invoke at the end of a quick chore/feature/bug when the user wants to commit the work themselves — "stage my changes", "ready to commit", "write me a commit message for this". Also the landing step for grill-engineer's build-now exit.
+Invoke at the end of a quick chore/feature/bug when the user wants to commit the work themselves — "stage my changes", "ready to commit", "write me a commit message for this". Also the landing step for grill-engineer's build-now exit, but only after the user's human-QA confirmation — never auto-chained straight from an implementation.
 
 ## domain-modeling
 
@@ -93,5 +93,5 @@ Strictly HITL and never a session-end ritual: user-invoked ("codify", "add this 
 | Interview mechanics   | `grilling`                                                         | Rarely — lens skills run it                           |
 | Glossary + ADRs       | `domain-modeling`                                                  | Rarely — active inside lens sessions                  |
 | Pre-merge review      | `review-board`                                                     | Yes, or offered by implement-task                     |
-| Hand back a commit    | `stage-for-commit`                                                 | Yes, or the build-now landing                         |
+| Hand back a commit    | `stage-for-commit`                                                 | Yes, or the build-now landing (after human QA)        |
 | Codify lessons        | `codify`                                                           | Yes, or suggested once when a durable lesson surfaces |

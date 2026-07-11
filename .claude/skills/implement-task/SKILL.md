@@ -1,6 +1,6 @@
 ---
 name: implement-task
-description: Build a scoped task file from docs/tasks/ slice by slice — guard a non-main branch, deep-plan each slice, implement it with /tdd, validate, commit per slice, and keep the task file's checkboxes and status current (scoped → in-progress → done), ending with a review-board offer and stopping before any push or PR. Use when the user points at a task file to build, says "implement this task", "pick up the task we scoped", "build the scoped task", or resumes scoped work in a fresh session.
+description: Build a scoped task file from docs/tasks/ slice by slice — guard a non-main branch, deep-plan each slice, implement it with /tdd, validate, commit per slice, and keep the task file's checkboxes and status current (scoped → in-progress → done), stopping for a human QA check before anything is marked done, then ending with a review-board offer and stopping before any push or PR. Use when the user points at a task file to build, says "implement this task", "pick up the task we scoped", "build the scoped task", or resumes scoped work in a fresh session.
 argument-hint: '[path to a docs/tasks/*.md file, or blank to pick from scoped tasks]'
 ---
 
@@ -37,6 +37,10 @@ For each slice:
 
 ## 4. Land
 
-All slices DONE and every acceptance criterion checked: run the full test suite once — its first and only run, there to catch cross-slice regressions that single-file runs cannot see. A failure here is a real regression: fix it (and amend or commit the fix) before proceeding. Suite green → flip `status: done` (include it in the final commit). Then one question: run `/review-board` before shipping? Recommend yes for anything non-trivial — author overconfidence is exactly what the board exists to catch. After the user's call, stop. Pushing and `gh pr create` are the user's moves, when they choose.
+All slices DONE and every acceptance criterion checked: run the full test suite once — its first and only run, there to catch cross-slice regressions that single-file runs cannot see. A failure here is a real regression: fix it (and amend or commit the fix) before proceeding.
+
+Suite green → **human QA gate**. Hand the user a QA script — the exact commands to run, URLs to visit, and actions to take to see the change in action, with what they should observe mapped to the acceptance criteria — then stop and wait for their verdict. Instructions only: do not start servers or drive the app for them. A green suite proves the code does what the tests say; only the user can confirm it does what they meant, and this gate is where that feedback belongs — the task is not complete, and nothing downstream gets recommended, until they have seen it work. Issues they surface run back through the slice loop (fix, validate, commit), then hand back an updated QA script.
+
+QA confirmed → flip `status: done` and commit the flip. Then one question: run `/review-board` before shipping? Recommend yes for anything non-trivial — author overconfidence is exactly what the board exists to catch. After the user's call, stop. Pushing and `gh pr create` are the user's moves, when they choose.
 
 Never push, never open a PR, never create GitHub issues. The task file is the tracker; git history — one commit per slice — is the audit trail.

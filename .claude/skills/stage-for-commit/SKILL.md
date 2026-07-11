@@ -1,6 +1,6 @@
 ---
 name: stage-for-commit
-description: Stage the files changed during this session and hand back a ready-to-paste commit message, without committing, branching, or pushing. Use at the end of a quick chore/feature/bug — typically right after a grilling session and implementation — when the user wants to commit it themselves on main. Trigger on "stage my changes", "stage this and give me a commit message", "stage what you did", "I'll commit this myself", "ready to commit", "write me a commit message for this", "get this ready to commit".
+description: Stage the files changed during this session and hand back a ready-to-paste commit message, without committing, branching, or pushing. Use at the end of a quick chore/feature/bug — typically right after a grilling session and implementation — when the user wants to commit it themselves on main. Trigger on "stage my changes", "stage this and give me a commit message", "stage what you did", "I'll commit this myself", "ready to commit", "write me a commit message for this", "get this ready to commit". Never auto-chain into this straight from finishing an implementation — invoke only on the user's word, after they have confirmed the change works in action (human QA).
 argument-hint: '(no args needed)'
 ---
 
