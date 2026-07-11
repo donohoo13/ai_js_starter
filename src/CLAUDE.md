@@ -4,23 +4,26 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Overview
 
-Opinionated JS/TS starter template optimized for AI-assisted development with Claude Code.
+[project overview]
 
 ## Standards
 
 - Be concise but maintain clear grammar. Commit messages: 50-char subject in imperative mood, explain WHY in body.
 - AI context files (CLAUDE.md, BRAND_DESIGN.md, UI_UX.md) state what is true TODAY in strict present tense. No aspirational language ("we'd like to", "try to"). Document exceptions at point of use, not by softening rules.
 - Do not treat memory from previous conversations as gospel. Treat as ephemeral starting point and verify intelligently often.
-- Prefer LSP tools for code navigation, symbol searches, and diagnostics. Fall back to terminal commands only if LSP unavailable.
+- Use LSP tools for code navigation, symbol searches, and diagnostics. Fall back to terminal commands only if LSP unavailable.
 - Follow @UI_UX.md for all UI/UX design and implementation decisions.
 - Follow @BRAND_DESIGN.md for all brand design and implementation decisions.
 - Prefix unused variables with `_` to avoid lint warnings when maintaining backwards compatibility.
-- If a question can be answered by exploring the codebase, explore it instead.
 - Confirm with the user to address root causes, not symptoms.
 - For monorepo projects, create a `CLAUDE.md` file nested inside each app/package directory (e.g., `apps/next-app/CLAUDE.md`, `packages/shared/CLAUDE.md`) instead of relying on a single root-level file. This ensures context is specific to each app's dependencies and conventions.
 - Evidence before completion claims: do not state something passes, builds, or is fixed without running the command that proves it. "Should work" is not "works".
 - No em-dashes (U+2014) in customer-facing text (UI, emails, marketing, AI prompts). Use commas, periods, or rephrasing instead. Hyphens (U+002D) and en-dashes (U+2013) are fine. Internal dev artifacts (code comments, CLAUDE.md, PRs) exempt.
 - For any Clerk auth task (auth state, user/org/session lookup, instance config, env keys, webhook integration), invoke the `clerk` skill (`.claude/skills/clerk/`). The `mcp__clerk__*` tools remain the source of truth for in-code SDK snippets.
+
+### Project Standards
+
+[project standards]
 
 ### Development
 
@@ -31,14 +34,23 @@ Opinionated JS/TS starter template optimized for AI-assisted development with Cl
   - Reason: Prevents premature abstraction; with 3 examples, commonalities are clearer and you avoid wrong abstractions
   - Break the rule if: The abstraction is obvious and clearly named, or duplication will definitely grow. Prefer duplication over the _wrong_ abstraction, but don't fear _right_ abstractions.
 - Operational errors (invalid input, DB timeout) = handle gracefully. Programmer errors (bugs, missing state) = crash and restart.
+- At trust boundaries and function entry, validate aggressively: assert invariants, reject impossible inputs, and use exhaustive `switch`/discriminated unions so unhandled cases fail fast and loudly.
+- Reserve these fail-fast checks for programmer errors (missing state, impossible combinations); handle expected operational errors (user input, network failures, etc.) through normal, graceful error handling.
 - Don't propose a bug fix from reading code alone. If a bug can't be root-caused by inspection, reproduce it and prove the cause before changing code.
 - Structure tests using AAA: Arrange (setup), Act (execute), Assert (verify). Keep these sections visually separated
 - Use environment variables for configuration (ports, DB URLs, secrets). Never hardcode sensitive values.
 
+#### Python
+
+- Always run Python through `uv` (`uv run …`, `uv add …`) — never a bare `python3`, `pip`, or an activated venv — so the env syncs from `uv.lock` first.
+- Use `ruff` for lint/format.
+
 #### Javascript/Typescript/Node.js
 
+- Use `pnpm` as the package manager.
 - Use `async/await` with `try/catch` for error handling. Never use callbacks for async operations.
 - Always use `===` for equality checks. Never use `==`—it coerces types and causes unexpected results.
+- Never nest ternary expressions; a ternary's branches must not themselves be ternaries. Use early-return guards, an `if`/`else if` chain, or a lookup map/`switch` when there are more than two outcomes. A single-level ternary for one binary choice is fine.
 - Use `const` by default. Use `let` only when reassignment is needed (e.g., loops). Never use `var`.
 - Import/require modules at the top of the file, outside of functions. This avoids blocking requests and catches errors early.
 - Always throw `Error` objects (or classes extending `Error`), never strings. Add useful properties like `code` to custom errors.
@@ -48,7 +60,6 @@ Opinionated JS/TS starter template optimized for AI-assisted development with Cl
 - Validate function/API arguments upfront using a library like Zod. Fail fast instead of letting bad data propagate.
 - Enable TypeScript `strict: true` in `tsconfig.json`. Define explicit interfaces/types for all data structures. Avoid `any`.
 - Define explicit interfaces/types for all data structures, API payloads, and function parameters. Avoid `any`.
-- Use pnpm as the package manager.
 - In Monorepo projects, use `pnpm` (faster installs via pnpm-workspace.yaml, better workspace support than npm/yarn) and `Turborepo` for build orchestration (caching, task pipelines, parallel execution). Configure `package.json` scripts to use Turborepo's `turbo` CLI (e.g., `turbo build`, `turbo lint`).
 
 ### Git Control
@@ -84,6 +95,6 @@ Opinionated JS/TS starter template optimized for AI-assisted development with Cl
 
 ## Commands
 
-## Architecture
+## Architecture / Tech Stack
 
 ## Deployment

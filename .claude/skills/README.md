@@ -43,7 +43,7 @@ The research lens: runs `grilling` framed as a research analyst, facts sourced v
 
 ## implement-task
 
-The fresh-session resume door: reads a `scoped` task file from `docs/tasks/`, refuses to build on main or on under-specified files (those get routed back to a grilling first), then builds slice by slice — deep plan, `/tdd`, validate, commit per slice with the task file's checkboxes riding along — flipping status `scoped → in-progress → done`. DONE and DONE_WITH_CONCERNS continue automatically; only BLOCKED stops. Ends by offering `/review-board` (recommending yes for anything non-trivial) and stops before any push or PR.
+The fresh-session resume door: reads a `scoped` task file from `docs/tasks/`, refuses to build on main or on under-specified files (those get routed back to a grilling first), then builds slice by slice — deep plan, `/tdd`, validate (typecheck and single test files regularly; never the full suite mid-task), commit per slice with the task file's checkboxes riding along — flipping status `scoped → in-progress → done`. DONE and DONE_WITH_CONCERNS continue automatically; only BLOCKED stops. Runs the full test suite once at the very end, then offers `/review-board` (recommending yes for anything non-trivial) and stops before any push or PR.
 
 ## tdd
 
