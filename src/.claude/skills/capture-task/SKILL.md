@@ -6,11 +6,11 @@ argument-hint: "[optional: brief outline of the bug, feature, or chore]"
 
 # Capture Task
 
-Capture what the user just described as one markdown file in `docs/tasks/`, then get out of the way. The task file is the only artifact: create or edit nothing else, and do not commit. This is in-the-moment capture: the file must hold enough context for a fresh session, with none of this conversation available, to pick the task up cold and run a full `/discuss` or `/grill-me` session later. Write for that future session.
+Capture what the user just described as one markdown file in `docs/tasks/`, then get out of the way. This is in-the-moment capture: the file must hold enough context for a fresh session, with none of this conversation available, to pick the task up cold and run a full `/grilling` or `/grill-me` session later. Write for that future session.
 
 ## Rules of engagement
 
-- Do not interview. Ask at most one clarifying question, and only if you cannot tell what the task actually is. Everything else you are unsure about becomes an open question in the file instead.
+- Do not interview as the majority of needed context should have been surfaced from the current working session up to this point. Ask at most two clarifying questions, and only if you cannot tell what the task actually is. Everything else you are unsure about becomes an open question in the file instead.
 - Mine the current conversation first: error output, file paths, commands run, decisions already made, constraints mentioned in passing. This context evaporates when the session ends; the task file is where it survives.
 - Verification budget is seconds, not minutes: confirm a file path or symbol name with a quick search if it makes the capture more precise, but never launch an investigation. Capture speed beats completeness.
 - Do not design the fix. Noting a suspected cause or a rough shape the user voiced is fine; solutioning is the future session's job.
@@ -31,5 +31,9 @@ Where the usual facts land, by type:
 Risks / open questions is the payload for the future grilling session: the 2-5 questions you would have asked if this were an interview, as `- [ ]` checkboxes, prioritizing the ones whose answers most change the work. Acceptance criteria also use `- [ ]` checkboxes.
 
 The quality bar: someone new to the project should be able to read the file and answer what we are changing, why, what exactly should happen, what should not happen, and what is still uncertain. In a quick capture the last question carries most of the weight.
+
+## After writing
+
+Confirm in one line with the file path, and note the task can be picked up later by running `/grilling` against the file in a fresh session. Do not commit, do not create GitHub issues, and do not edit any other files.
 
 $ARGUMENTS

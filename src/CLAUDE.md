@@ -31,7 +31,7 @@ Opinionated JS/TS starter template optimized for AI-assisted development with Cl
   - Reason: Prevents premature abstraction; with 3 examples, commonalities are clearer and you avoid wrong abstractions
   - Break the rule if: The abstraction is obvious and clearly named, or duplication will definitely grow. Prefer duplication over the _wrong_ abstraction, but don't fear _right_ abstractions.
 - Operational errors (invalid input, DB timeout) = handle gracefully. Programmer errors (bugs, missing state) = crash and restart.
-- Don't propose a bug fix from reading code alone. If a bug can't be root-caused by inspection, invoke `/diagnose` to reproduce and prove the cause before changing code.
+- Don't propose a bug fix from reading code alone. If a bug can't be root-caused by inspection, reproduce it and prove the cause before changing code.
 - Structure tests using AAA: Arrange (setup), Act (execute), Assert (verify). Keep these sections visually separated
 - Use environment variables for configuration (ports, DB URLs, secrets). Never hardcode sensitive values.
 
@@ -75,11 +75,9 @@ Opinionated JS/TS starter template optimized for AI-assisted development with Cl
 
 ### Skills
 
-- Use project skills when applicable instead of improvising; the full chain map and per-skill roles live in [the skills README](.claude/skills/README.md). When unsure which skill fits, read it before reaching for one.
-- Skills divide along a hard product/engineering line. Product owns the PRD (`/write-a-prd`) at product altitude (problem, users, value, scope) and states no implementation; engineering reviews, specs, and ships it (`/prd-feedback` → `/write-a-trd` → `/implement-trd` → `/ship-pr`). Schema, modules, interfaces, and test strategy belong in the TRD, never the PRD.
-- Pick the entry point by intent: a customer-facing feature starts at `/write-a-prd` and flows through `/prd-feedback` to an accepted PRD before `/write-a-trd`; a bug or chore has no product dimension and enters `/write-a-trd` directly on its low-barrier engineering on-ramp (no PRD); a bug you cannot root-cause by reading code goes to `/diagnose` first. The pipeline is one PRD → one TRD → one pull request.
-- `/grill-me` is a role-parameterized interview primitive other skills invoke under their own frame (product partner, engineering skeptic, implementer), not a standalone front-of-chain step; run it directly only to stress-test a plan as an engineering peer.
-- Domain vocabulary and architectural decisions live OUTSIDE this file: glossaries in `CONTEXT.md` (or per-context `CONTEXT.md` indexed by a root `CONTEXT-MAP.md`) and decisions in `docs/adr/`. Read them for ubiquitous language; invoke the `domain-modeling` skill (or `/grill-with-docs`, which wraps it) to change the model.
+- Use project skills when applicable instead of improvising; per-skill roles and usage live in [the skills README](.claude/skills/README.md). When unsure which skill fits, read it before reaching for one.
+- `/grilling` is the interview primitive: a relentless, one-question-at-a-time session that resolves the decision tree of a plan, request, or captured task before implementation — facts get looked up in the codebase, decisions are put to the user. `/grill-me` (user-invoked only, never model-triggered) wraps it with the `domain-modeling` skill so glossary entries and ADRs are captured as decisions crystallise.
+- Domain vocabulary and architectural decisions live OUTSIDE this file: glossaries in `CONTEXT.md` (or per-context `CONTEXT.md` indexed by a root `CONTEXT-MAP.md`) and decisions in `docs/adr/`. Read them for ubiquitous language; invoke the `domain-modeling` skill (or `/grill-me`, which wraps it) to change the model.
 - Task capture is user's responsibility (tracking system, not memory). Suggest `/capture-task` once when user voices actionable asides or conversation drifts. Suggest, never auto-file. One nudge; if user doesn't bite, drop it. Do not use memory for work items.
 - Captured tasks land in `docs/tasks/YYYY-MM-DD-<type>-<slug>.md` (`type`: `bug` | `feature` | `chore`), structured per `.claude/skills/capture-task/assets/task-template.md`: frontmatter (`type`, `status: captured`, `created`) plus Context, Problem, Scope, Requirements, Acceptance criteria, Dependencies, Risks / open questions, with unknowns kept explicit as `TBD (needs grilling)`.
 

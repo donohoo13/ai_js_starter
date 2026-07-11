@@ -6,7 +6,7 @@ argument-hint: "[optional: brief outline of the bug, feature, or chore]"
 
 # Capture Task
 
-Capture what the user just described as one markdown file in `docs/tasks/`, then get out of the way. This is in-the-moment capture: the file must hold enough context for a fresh session, with none of this conversation available, to pick the task up cold and run a full `/discuss` or `/grill-me` session later. Write for that future session.
+Capture what the user just described as one markdown file in `docs/tasks/`, then get out of the way. This is in-the-moment capture: the file must hold enough context for a fresh session, with none of this conversation available, to pick the task up cold and run a full `/grilling` or `/grill-me` session later. Write for that future session.
 
 ## Rules of engagement
 
@@ -34,6 +34,6 @@ The quality bar: someone new to the project should be able to read the file and 
 
 ## After writing
 
-Confirm in one line with the file path, and note the task can be picked up later by running `/discuss` against the file in a fresh session. Do not commit, do not create GitHub issues, and do not edit any other files.
+Confirm in one line with the file path, and note the task can be picked up later by running `/grilling` against the file in a fresh session. Do not commit, do not create GitHub issues, and do not edit any other files.
 
 $ARGUMENTS
