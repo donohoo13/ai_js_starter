@@ -19,7 +19,6 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - For monorepo projects, create a `CLAUDE.md` file nested inside each app/package directory (e.g., `apps/next-app/CLAUDE.md`, `packages/shared/CLAUDE.md`) instead of relying on a single root-level file. This ensures context is specific to each app's dependencies and conventions.
 - Evidence before completion claims: do not state something passes, builds, or is fixed without running the command that proves it. "Should work" is not "works".
 - No em-dashes (U+2014) in customer-facing text (UI, emails, marketing, AI prompts). Use commas, periods, or rephrasing instead. Hyphens (U+002D) and en-dashes (U+2013) are fine. Internal dev artifacts (code comments, CLAUDE.md, PRs) exempt.
-- For any Clerk auth task (auth state, user/org/session lookup, instance config, env keys, webhook integration), invoke the `clerk` skill (`.claude/skills/clerk/`). The `mcp__clerk__*` tools remain the source of truth for in-code SDK snippets.
 
 ### Project Standards
 

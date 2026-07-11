@@ -17,38 +17,8 @@ Opinionated JS/TS starter template optimized for AI-assisted development with Cl
 - Prefix unused variables with `_` to avoid lint warnings when maintaining backwards compatibility.
 - If a question can be answered by exploring the codebase, explore it instead.
 - Confirm with the user to address root causes, not symptoms.
-- For monorepo projects, create a `CLAUDE.md` file nested inside each app/package directory (e.g., `apps/next-app/CLAUDE.md`, `packages/shared/CLAUDE.md`) instead of relying on a single root-level file. This ensures context is specific to each app's dependencies and conventions.
 - Evidence before completion claims: do not state something passes, builds, or is fixed without running the command that proves it. "Should work" is not "works".
 - No em-dashes (U+2014) in customer-facing text (UI, emails, marketing, AI prompts). Use commas, periods, or rephrasing instead. Hyphens (U+002D) and en-dashes (U+2013) are fine. Internal dev artifacts (code comments, CLAUDE.md, PRs) exempt.
-- For any Clerk auth task (auth state, user/org/session lookup, instance config, env keys, webhook integration), invoke the `clerk` skill (`.claude/skills/clerk/`). The `mcp__clerk__*` tools remain the source of truth for in-code SDK snippets.
-
-### Development
-
-- Follow the **Rule of Three** ("Three strikes and you refactor"):
-  - First time: Write it naturally
-  - Second time: Duplicate is fine (don't abstract yet)
-  - Third time: Refactor into an abstraction
-  - Reason: Prevents premature abstraction; with 3 examples, commonalities are clearer and you avoid wrong abstractions
-  - Break the rule if: The abstraction is obvious and clearly named, or duplication will definitely grow. Prefer duplication over the _wrong_ abstraction, but don't fear _right_ abstractions.
-- Operational errors (invalid input, DB timeout) = handle gracefully. Programmer errors (bugs, missing state) = crash and restart.
-- Structure tests using AAA: Arrange (setup), Act (execute), Assert (verify). Keep these sections visually separated
-- Use environment variables for configuration (ports, DB URLs, secrets). Never hardcode sensitive values.
-
-#### Javascript/Typescript/Node.js
-
-- Use `async/await` with `try/catch` for error handling. Never use callbacks for async operations.
-- Always use `===` for equality checks. Never use `==`—it coerces types and causes unexpected results.
-- Use `const` by default. Use `let` only when reassignment is needed (e.g., loops). Never use `var`.
-- Import/require modules at the top of the file, outside of functions. This avoids blocking requests and catches errors early.
-- Always throw `Error` objects (or classes extending `Error`), never strings. Add useful properties like `code` to custom errors.
-- Use ESLint for code quality and bug detection, Prettier for formatting. Configure them to work together without conflicts.
-- Register process.on('unhandledRejection') to catch unhandled promise rejections—errors that would otherwise be swallowed.
-- Name all functions, including callbacks and closures. Anonymous functions make debugging and profiling harder.
-- Validate function/API arguments upfront using a library like Zod. Fail fast instead of letting bad data propagate.
-- Enable TypeScript `strict: true` in `tsconfig.json`. Define explicit interfaces/types for all data structures. Avoid `any`.
-- Define explicit interfaces/types for all data structures, API payloads, and function parameters. Avoid `any`.
-- Use pnpm as the package manager.
-- In Monorepo projects, use `pnpm` (faster installs via pnpm-workspace.yaml, better workspace support than npm/yarn) and `Turborepo` for build orchestration (caching, task pipelines, parallel execution). Configure `package.json` scripts to use Turborepo's `turbo` CLI (e.g., `turbo build`, `turbo lint`).
 
 ### Git Control
 
