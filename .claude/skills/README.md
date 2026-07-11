@@ -15,6 +15,7 @@ One front door for interview sessions, three lenses behind it, and a task file t
    └─> grill-research ─> summary writeup / capture / nothing
 
 /capture-task — park anything, any time; the captured file seeds a later grill-engineer session
+/codify — end-of-session knowledge capture; durable conventions to the narrowest CLAUDE.md or design file, vocabulary and ADRs hand off to domain-modeling
 primitives under the hood: grilling, domain-modeling, tdd
 ```
 
@@ -70,15 +71,22 @@ Invoke at the end of a quick chore/feature/bug when the user wants to commit the
 
 Builds and sharpens the project's domain model as design happens: challenges terms against the `CONTEXT.md` glossary, sharpens fuzzy language, stress-tests relationships with concrete scenarios, cross-references claims with code, and updates `CONTEXT.md` inline the moment a term resolves. Offers ADRs sparingly — only for decisions that are hard to reverse, surprising without context, and real trade-offs. Active inside grill-engineer and grill-product sessions.
 
+## codify
+
+Retrospective knowledge capture, the learn step the chain otherwise lacks: distills a finished conversation down to the few durable lessons a future session genuinely could not infer, attributes every friction point to prompt-steering (A), an undocumented convention (B), or a plain model error (C), and codifies only the (B)s — verified against the actual code, then routed to the narrowest correct file (nearest enclosing `CLAUDE.md` for operational and code conventions, `BRAND_DESIGN.md` / `UI_UX.md` for brand and UI foundations, layout discovered at runtime since template and spawned projects differ). Domain vocabulary and hard-to-reverse decisions hand off to `domain-modeling` (`CONTEXT.md` / `docs/adr/`); anything domain-modeling already captured inline counts as documented. Presents the full deliberation — codify, reject, hand off — and writes nothing until the user approves each candidate. "Nothing worth codifying" is a valid and common outcome.
+
+Strictly HITL and never a session-end ritual: user-invoked ("codify", "add this to CLAUDE.md", "capture this convention") or suggested at most once when a session surfaces a genuine candidate — if the user doesn't bite, drop it.
+
 ## stage map
 
-| Stage                 | Skill                                                              | You type it?                         |
-| --------------------- | ------------------------------------------------------------------ | ------------------------------------ |
-| Interview (any lens)  | `grill-me` → `grill-engineer` / `grill-product` / `grill-research` | Yes — the front door                 |
-| Park for later        | `capture-task`                                                     | Yes, or suggested once mid-flow      |
-| Build scoped work     | `implement-task`                                                   | Yes — the resume door                |
-| Test-first discipline | `tdd`                                                              | Rarely — invoked under the hood      |
-| Interview mechanics   | `grilling`                                                         | Rarely — lens skills run it          |
-| Glossary + ADRs       | `domain-modeling`                                                  | Rarely — active inside lens sessions |
-| Pre-merge review      | `review-board`                                                     | Yes, or offered by implement-task    |
-| Hand back a commit    | `stage-for-commit`                                                 | Yes, or the build-now landing        |
+| Stage                 | Skill                                                              | You type it?                                          |
+| --------------------- | ------------------------------------------------------------------ | ----------------------------------------------------- |
+| Interview (any lens)  | `grill-me` → `grill-engineer` / `grill-product` / `grill-research` | Yes — the front door                                  |
+| Park for later        | `capture-task`                                                     | Yes, or suggested once mid-flow                       |
+| Build scoped work     | `implement-task`                                                   | Yes — the resume door                                 |
+| Test-first discipline | `tdd`                                                              | Rarely — invoked under the hood                       |
+| Interview mechanics   | `grilling`                                                         | Rarely — lens skills run it                           |
+| Glossary + ADRs       | `domain-modeling`                                                  | Rarely — active inside lens sessions                  |
+| Pre-merge review      | `review-board`                                                     | Yes, or offered by implement-task                     |
+| Hand back a commit    | `stage-for-commit`                                                 | Yes, or the build-now landing                         |
+| Codify lessons        | `codify`                                                           | Yes, or suggested once when a durable lesson surfaces |
