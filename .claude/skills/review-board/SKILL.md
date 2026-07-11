@@ -1,7 +1,7 @@
 ---
 name: review-board
-description: Multi-agent code review board. Spawns five parallel reviewer agents (correctness, security, reliability, maintainability, performance/operations), consolidates their findings, renders the session AI's own confirmed/plausible/rejected verdict on each, and waits for the human to pick what gets addressed before touching any code. Use whenever the user asks to review code changes, a branch, a diff, or a PR; asks for a security review, standards check, or pre-merge/pre-PR review; says "review my changes", "run the review board", or "is this safe to merge"; or wants a thorough second opinion on work in progress, even if they only name one concern like security.
-argument-hint: '[optional: PR number, commit range, or paths to scope the review]'
+description: Multi-agent code review board. Spawns five parallel reviewer agents (correctness, security, reliability, maintainability, performance/operations), consolidates their findings, renders the session AI's own confirmed/plausible/rejected verdict on each, and waits for the human to pick what gets addressed before touching any code. Use whenever the user asks to review code changes, a branch, a diff, or a PR; asks for a security review, standards check, or pre-merge/pre-PR review; says "review my changes", "run the review board", or "is this safe to merge"; or wants a thorough second opinion on work in progress, even if they only name one concern like security. Accepts an optional leading mode argument that scales the board — `quality` (top models, full-file reads) for exhaustive pre-merge scrutiny, `speed` (fast models, diff-only reads) for a quick pass, default `balanced` — so also use it when the user asks for a "quick review" or a "deep review" of their changes.
+argument-hint: '[quality|balanced|speed] [PR number, commit range, or paths to scope the review]'
 ---
 
 # Review Board
@@ -17,6 +17,7 @@ Two principles run through every step:
 
 Parse the arguments:
 
+- A leading mode keyword (`quality`, `balanced`, or `speed`): sets the board mode used in Step 2; everything after it is scope. No keyword means `balanced`.
 - A PR number (`142` or `#142`): use `gh pr diff <n>` and `gh pr view <n>`.
 - A commit range (`abc123..def456`): use it directly.
 - Paths: restrict the default scope to those paths.
@@ -32,25 +33,35 @@ Gather three pieces of context — from session knowledge first when you authore
 
 ## Step 2: Compose the board, set read depth, confirm, spawn
 
-The five members, each a registered agent in `.claude/agents/` with a checklist in this skill's `references/` directory. The model per seat is deliberate: raw detection is checklist-driven and largely saturated, so the pattern-shaped seats run on Sonnet for speed and cost, while the two seats whose misses cost the most and whose findings need intent-modeling or threat-modeling rather than pattern-matching stay on Opus. The chair (you) runs on the session model, because triage — verification, dedup, verdicts — is the judgment the board's value actually rests on.
+The mode from Step 1 presets the board's two cost dials — seat model tier and read depth — because they trade the same currency: recall against tokens and turnaround. Everything else works the same in every mode: which seats run, the chair on the session model, the single confirmation, the human gate.
 
-| Agent                    | Prefix | Model  | Checklist                       | Subagent type            |
-| ------------------------ | ------ | ------ | ------------------------------- | ------------------------ |
-| Correctness              | `COR`  | Opus   | `references/correctness.md`     | `review-correctness`     |
-| Security                 | `SEC`  | Opus   | `references/security.md`        | `review-security`        |
-| Reliability              | `REL`  | Sonnet | `references/reliability.md`     | `review-reliability`     |
-| Maintainability          | `MNT`  | Sonnet | `references/maintainability.md` | `review-maintainability` |
-| Performance & operations | `PRF`  | Sonnet | `references/performance.md`     | `review-performance`     |
+| Mode                 | Seat models           | Read depth                           | Reach for it when                                                                                  |
+| -------------------- | --------------------- | ------------------------------------ | -------------------------------------------------------------------------------------------------- |
+| `quality`            | Per-seat matrix below | Full changed files, every seat       | The miss costs more than the tokens: pre-merge on large, unfamiliar, or security-sensitive changes |
+| `balanced` (default) | Per-seat matrix below | Decided per seat at the confirmation | The everyday review                                                                                |
+| `speed`              | Per-seat matrix below | Diff-first, every seat               | A mid-work sanity pass where turnaround matters more than recall                                   |
 
-Spawn each seat by its `review-*` subagent type; the model pin and read-only toolset come from the agent definition. If those definitions are not installed in this repo, fall back to `general-purpose` agents and set `model` explicitly per the table.
+A speed board is a screen, not a proof: diff-first reads catch pattern-shaped defects and miss the interaction bugs that full files and deeper seats surface. When the user asks for speed on a change where that tradeoff looks wrong — large, tangled, or security-sensitive — say so in the confirmation and recommend a higher mode; the choice stays theirs.
+
+The five members, each a registered agent in `.claude/agents/` with a checklist in this skill's `references/` directory. Modes shift each seat's tier rather than flattening the board to one model, because the seats differ in ways no mode changes. Correctness and security misses are what a review exists to catch, and their findings come from intent-modeling and threat-modeling rather than pattern-matching, so they never drop below Sonnet — chair triage filters a cheap seat's extra noise, but nothing recovers a miss. Maintainability is the opposite pole: checklist-saturated, diff-local, and lowest miss cost (tech debt, not an incident), so Opus buys it nothing even in `quality` and Haiku covers it from `balanced` down. Reliability and performance sit between — pattern-shaped enough for Haiku on a speed screen, reasoning-shaped enough (races, resource lifecycles, cross-function complexity) to earn Opus when the miss is what you are paying to avoid. The chair (you) runs on the session model in every mode, because triage — verification, dedup, verdicts — is the judgment the board's value actually rests on.
+
+| Agent                    | Prefix | `quality` | `balanced` | `speed` | Checklist                       | Subagent type            |
+| ------------------------ | ------ | --------- | ---------- | ------- | ------------------------------- | ------------------------ |
+| Correctness              | `COR`  | Opus      | Opus       | Sonnet  | `references/correctness.md`     | `review-correctness`     |
+| Security                 | `SEC`  | Opus      | Opus       | Sonnet  | `references/security.md`        | `review-security`        |
+| Reliability              | `REL`  | Opus      | Sonnet     | Haiku   | `references/reliability.md`     | `review-reliability`     |
+| Maintainability          | `MNT`  | Sonnet    | Haiku      | Haiku   | `references/maintainability.md` | `review-maintainability` |
+| Performance & operations | `PRF`  | Opus      | Sonnet     | Haiku   | `references/performance.md`     | `review-performance`     |
+
+Spawn each seat by its `review-*` subagent type; the read-only toolset comes from the agent definition. The frontmatter model pins encode the `balanced` column, so in `balanced` spawning by type is enough; in `quality` and `speed`, pass each seat's `model` from the matrix explicitly on the spawn — the per-invocation override takes precedence over the pin. If those definitions are not installed in this repo, fall back to `general-purpose` agents and set `model` explicitly in every mode, straight from the matrix.
 
 Form the board shape and put it to the user as one confirmation before spawning:
 
-- **Full board or lite.** The five-seat board is the default. For a small, self-contained diff (a few files, localized logic, no signature changes or cross-module effects) offer a **lite board** instead: three consolidated seats — Security (Opus, solo), Correctness + Reliability (Opus, one agent reading both checklists), Maintainability + Performance (Sonnet, one agent reading both) — all diff-first. Lite trades some recall for a much shorter, cheaper run; recommend it only when the change is genuinely small and localized, and never on a large or security-sensitive diff where the focused five earn their cost.
-- **Which reviewers run (full board).** Skip a seat only when its category has no surface in the change: a docs-only diff has no concurrency to review, a copy change may need only correctness and maintainability, a test-only change has no performance story. The bar is "nothing to look at", never "I'm confident this part is fine" (second principle). When in doubt, run them all: a reviewer returning "no findings, here's what I checked" is cheap; a category silently unreviewed is how the one real bug ships.
-- **Read depth per running reviewer.** Full changed files catch interaction bugs but cost tokens and time; for a small, self-contained change **diff-first** — work from the diff, opening surrounding code only to confirm a suspected finding — is enough. If you authored the change, you already know whether it is self-contained. Decide per seat, not globally: correctness, security, and reliability profit most from full files because their failure modes live in interactions (invariants around changed lines, untrusted data crossing functions, resource lifecycles), while maintainability and performance usually judge fine from the diff plus hunk context.
+- **Full board or lite (`balanced` only).** The five-seat board is the default. For a small, self-contained diff (a few files, localized logic, no signature changes or cross-module effects) offer a **lite board** instead: three consolidated seats — Security (Opus, solo), Correctness + Reliability (Opus, one agent reading both checklists), Maintainability + Performance (Sonnet, one agent reading both) — all diff-first. Lite trades some recall for a much shorter, cheaper run; recommend it only when the change is genuinely small and localized, and never on a large or security-sensitive diff where the focused five earn their cost. `quality` never consolidates seats — merged lenses give up exactly the recall it exists to buy — and `speed` already gets its savings from tier and depth while five parallel seats cost no extra wall-clock.
+- **Which reviewers run (every mode).** Skip a seat only when its category has no surface in the change: a docs-only diff has no concurrency to review, a copy change may need only correctness and maintainability, a test-only change has no performance story. The bar is "nothing to look at", never "I'm confident this part is fine" (second principle). When in doubt, run them all: a reviewer returning "no findings, here's what I checked" is cheap; a category silently unreviewed is how the one real bug ships.
+- **Read depth per running reviewer (`balanced` only — the other modes preset it).** Full changed files catch interaction bugs but cost tokens and time; for a small, self-contained change **diff-first** — work from the diff, opening surrounding code only to confirm a suspected finding — is enough. If you authored the change, you already know whether it is self-contained. Decide per seat, not globally: correctness, security, and reliability profit most from full files because their failure modes live in interactions (invariants around changed lines, untrusted data crossing functions, resource lifecycles), while maintainability and performance usually judge fine from the diff plus hunk context.
 
-Present the shape with a one-line reason each, your recommendation as the accept-as-is first option (a single `AskUserQuestion`; one question, not several). This is a cost/thoroughness tradeoff the user owns, and asking once is cheap next to a board's worth of tokens.
+Present the shape with a one-line reason each, your recommendation as the accept-as-is first option (a single `AskUserQuestion`; one question, not several). In `quality` and `speed`, restate the preset tier and depth as facts rather than asking about them; the question is only which seats run. This is a cost/thoroughness tradeoff the user owns, and asking once is cheap next to a board's worth of tokens.
 
 Then spawn the selected seats in a single message so they run in parallel. Each agent is read-only — it must not modify, create, or delete any file — and its prompt must contain, concretely (agents cannot see this conversation). For a lite-board merged seat, pass both checklist paths and tell it to apply both, keeping each finding's prefix tied to its category:
 
@@ -58,7 +69,7 @@ Then spawn the selected seats in a single message so they run in parallel. Each 
 2. The intent context, stated in a sentence or two.
 3. The stack snapshot, with an instruction that the agent's first step is a seconds-long confirmation of it (`package.json` plus any runtime config touching the changed files); a finding judged against the wrong runtime is noise.
 4. Its checklist file and `references/output-format.md`, by absolute path, to read before reviewing.
-5. The confirmed read depth, stated explicitly — full changed files or diff-first — not left for the agent to choose.
+5. The read depth, stated explicitly — full changed files or diff-first — from the mode preset or, in `balanced`, the per-seat confirmation; never left for the agent to choose.
 6. The evidence bar: every finding needs a `file:line` location, a code excerpt, and a concrete failure scenario (specific input or state producing the wrong outcome). "This could be a problem" without a scenario is not a finding, and an empty findings list is a perfectly good result; agents must not invent findings to look busy.
 7. What not to flag: anything a linter or formatter auto-fixes, subjective style preferences, and pre-existing issues in untouched code (unless the change makes them worse — then say so explicitly).
 8. Return format: findings per `references/output-format.md`, IDs prefixed with the agent's category prefix, returned as the agent's final message.
