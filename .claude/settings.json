@@ -26,7 +26,8 @@
       "mcp__playwright-local__*",
       "mcp__plugin_chrome-devtools-mcp_chrome-devtools__*",
       "mcp__plugin_linear_linear__*",
-      "WebFetch(domain:code.claude.com)"
+      "WebFetch(domain:code.claude.com)",
+      "WebFetch(domain:raw.githubusercontent.com)"
     ],
     "ask": ["Bash(git*--force)", "Bash(git reset --hard*)", "Bash(docker *)", "WebFetch"],
     "deny": [

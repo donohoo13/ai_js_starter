@@ -16,7 +16,7 @@ One front door for interview sessions, three lenses behind it, and a task file t
 
 /capture-task — park anything, any time; the captured file seeds a later grill-engineer session
 /codify — end-of-session knowledge capture; durable conventions to the narrowest CLAUDE.md or design file, vocabulary and ADRs hand off to domain-modeling
-primitives under the hood: grilling, domain-modeling, tdd
+primitives under the hood: grilling, domain-modeling, tdd, frontend-design
 ```
 
 The task file lifecycle lives in its frontmatter: `captured` (filed, unknowns explicit as `TBD (needs grilling)`) → `scoped` (grilled; design decisions, test strategy, and slices written) → `in-progress` → `done`. The shared format is defined once in `capture-task/assets/task-template.md` and referenced by capture-task, grill-engineer, and implement-task. No GitHub issues anywhere in the chain — the file is the tracker; push and PR are always the user's move.
@@ -48,6 +48,10 @@ The fresh-session resume door: reads a `scoped` task file from `docs/tasks/`, re
 ## tdd
 
 Test-driven development discipline: red before green, one seam at a time, tests only at pre-agreed public seams, with the anti-pattern catalog (implementation-coupled, tautological, horizontal slicing) in sibling reference files. Invoked under the hood by grill-engineer's build-now exit and implement-task's slice loop; also directly invocable for any ad-hoc test-first work.
+
+## frontend-design
+
+Design-quality primitive for anything user-facing: reads the project's `BRAND_DESIGN.md` / `UI_UX.md` (plus app-level overrides and the theme CSS, the source of truth for token values) before proposing anything, spends creativity only on the axes those docs leave free, and holds every build to an objective quality floor — interaction states, 150–300ms motion with `prefers-reduced-motion`, real form labels, layout stability, SVG-not-emoji icons, both-theme contrast, keyboard access. On greenfield projects with skeletal docs it derives the first token system and offers once to codify it back into the design docs. Invoked by implement-task's deep-plan step for UI-surface slices; also triggers directly on any build-or-restyle-UI request.
 
 ## review-board
 
@@ -85,6 +89,7 @@ Strictly HITL and never a session-end ritual: user-invoked ("codify", "add this 
 | Park for later        | `capture-task`                                                     | Yes, or suggested once mid-flow                       |
 | Build scoped work     | `implement-task`                                                   | Yes — the resume door                                 |
 | Test-first discipline | `tdd`                                                              | Rarely — invoked under the hood                       |
+| UI/visual design      | `frontend-design`                                                  | Rarely — triggers on UI work or via implement-task    |
 | Interview mechanics   | `grilling`                                                         | Rarely — lens skills run it                           |
 | Glossary + ADRs       | `domain-modeling`                                                  | Rarely — active inside lens sessions                  |
 | Pre-merge review      | `review-board`                                                     | Yes, or offered by implement-task                     |
