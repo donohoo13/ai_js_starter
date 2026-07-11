@@ -12,8 +12,7 @@ Opinionated JS/TS starter template optimized for AI-assisted development with Cl
 - AI context files (CLAUDE.md, BRAND_DESIGN.md, UI_UX.md) state what is true TODAY in strict present tense. No aspirational language ("we'd like to", "try to"). Document exceptions at point of use, not by softening rules.
 - Do not treat memory from previous conversations as gospel. Treat as ephemeral starting point and verify intelligently often.
 - Prefer LSP tools for code navigation, symbol searches, and diagnostics. Fall back to terminal commands only if LSP unavailable.
-- Follow @UI_UX.md for all UI/UX design and implementation decisions.
-- Follow @BRAND_DESIGN.md for all brand design and implementation decisions.
+- `UI_UX.md` and `BRAND_DESIGN.md` exist only under `src/` as template artifacts; this repo has no UI. Edit them as shipped content, holding them to the AI context file rules above.
 - Prefix unused variables with `_` to avoid lint warnings when maintaining backwards compatibility.
 - If a question can be answered by exploring the codebase, explore it instead.
 - Confirm with the user to address root causes, not symptoms.
@@ -60,8 +59,18 @@ Opinionated JS/TS starter template optimized for AI-assisted development with Cl
 
 ## Commands
 
+- `pnpm format` / `pnpm format:check` — Prettier write/check across the repo.
+- `pnpm install` — installs dev tooling and registers the husky pre-commit hook via the `prepare` script.
+- The pre-commit hook (`.husky/pre-commit`) auto-formats staged files with Prettier and re-stages them. There is no build, test, or lint step; the repo contains no application code.
+
 ## Architecture
 
-## Styling
+Two-layer meta-repo: `src/` is the product (the payload copied into new projects), everything at the root is tooling for maintaining it. Most AI-context files exist twice, once per layer; do not conflate them.
 
-## Deployment
+- **Root layer**: `CLAUDE.md`, `.claude/settings.json`, `.claude/skills/`, `.claude/agents/` govern AI sessions working on the template repo itself.
+- **Template layer**: `src/CLAUDE.md`, `src/.claude/`, `src/UI_UX.md`, `src/BRAND_DESIGN.md`, `src/CONTEXT.md`, `src/.mcp.json`, `src/docs/adr/`, `src/scripts/` ship into new projects. Editing these is editing the product. Claude Code discovers `src/.claude/skills/` as scoped skills (`src:` prefix); prefer the unscoped project skill unless explicitly working on the template copy (see Project VS Template above).
+- `.claude/skills/README.md` is the human-readable map of the skill chain (`/grill-me` router → engineer/product/research lenses → capture/implement/review/codify, with `grilling`, `domain-modeling`, and `tdd` as primitives). Read it before editing any skill; skills invoke each other by name, so check callers and callees.
+- The five `review-*` agents in `.claude/agents/` are the review-board seats; each points at a checklist in `.claude/skills/review-board/references/`. Same set mirrored in `src/.claude/agents/`.
+- `skills-lock.json` (root and `src/`) tracks third-party skills vendored via the `skills` CLI (`domain-modeling` from `mattpocock/skills`, `skill-creator` from `anthropics/skills`) by content hash; local edits to those skills diverge from upstream.
+- `old-skills/` is the retired GitHub-issue-based PRD/TRD chain, kept for reference only. It is not discovered by Claude Code and its README describes the old workflow, not the current one.
+- `src/scripts/gwt-add.sh` / `gwt-remove.sh` are git worktree helpers shipped with the template (worktree at `~/Code/.worktrees/<project>/<branch>`, env copy, `pnpm install`, opens in Zed).
