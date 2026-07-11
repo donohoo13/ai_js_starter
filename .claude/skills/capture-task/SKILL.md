@@ -20,7 +20,7 @@ Capture what the user just described as one markdown file in `docs/tasks/`, then
 
 Path: `docs/tasks/YYYY-MM-DD-<type>-<slug>.md` where `<type>` is `bug`, `feature`, or `chore` and the slug is 2-5 kebab-case words. Create `docs/tasks/` if it does not exist. Use today's actual date.
 
-Start from `assets/task-template.md` (sibling of this SKILL.md). It defines the required frontmatter and seven sections: Context, Problem, Scope, Requirements, Acceptance criteria, Dependencies, Risks / open questions. Replace every guidance comment with real content or `TBD (needs grilling)`; no `<!-- -->` comments survive in the captured file. Keep every bullet one continuous line.
+Start from `assets/task-template.md` (sibling of this SKILL.md). It defines the required frontmatter and seven sections: Context, Problem, Scope, Requirements, Acceptance criteria, Dependencies, Risks / open questions. Replace every guidance comment with real content or `TBD (needs grilling)`; no `<!-- -->` comments survive in the captured file. Keep every bullet one continuous line. The template also defines the status lifecycle and scoped-work sections (Design decisions, Test strategy, Slices); those belong to later stages — `grill-engineer` flips `captured → scoped`, `implement-task` takes it to `done` — so at capture, omit the scoped sections entirely and leave `status: captured`.
 
 Where the usual facts land, by type:
 
@@ -34,6 +34,6 @@ The quality bar: someone new to the project should be able to read the file and 
 
 ## After writing
 
-Confirm in one line with the file path, and note the task can be picked up later by running `/grilling` against the file in a fresh session. Do not commit, do not create GitHub issues, and do not edit any other files.
+Confirm in one line with the file path, and note the task can be picked up later by running `/grill-me engineer: <file>` (or `/grill-engineer` directly) against the file in a fresh session. Do not commit, do not create GitHub issues, and do not edit any other files.
 
 $ARGUMENTS

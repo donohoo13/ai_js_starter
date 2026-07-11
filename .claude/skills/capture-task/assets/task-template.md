@@ -4,6 +4,8 @@ status: captured
 created: YYYY-MM-DD
 ---
 
+<!-- Status lifecycle: captured (filed, unknowns explicit) → scoped (grilled: TBDs resolved, design and slices written by grill-engineer's spec-it exit) → in-progress (implement-task is building) → done (every acceptance criterion checked). Capture always starts at `captured`; grill-engineer flips to `scoped`; implement-task owns the last two transitions. -->
+
 # Imperative title under 70 chars
 
 ## Context
@@ -35,3 +37,19 @@ created: YYYY-MM-DD
 ## Risks / open questions
 
 - [ ] <!-- Open questions, technical risks, and items needing discovery before implementation. These seed the future grilling session. -->
+
+<!-- The sections below exist only from `scoped` onward — grill-engineer's spec-it exit adds them after a grilling session resolves the unknowns. Omit them entirely at capture. -->
+
+## Design decisions
+
+<!-- Engineering decisions from the grilling: modules and their interfaces/contracts, schema changes, API shapes, chosen trade-offs and why. Describe interfaces and contracts, not file paths or code snippets — those go stale. "Follows <reference implementation>" plus the deltas is a perfectly good answer for small work. -->
+
+## Test strategy
+
+<!-- Which seams get tested (external behavior only, never internals) and the prior-art tests in the codebase being mirrored. -->
+
+## Slices
+
+<!-- Ordered vertical tracer-bullet slices; list order is build order. Each slice is a thin, complete, demoable cut through every layer it touches — never a horizontal layer pass. Omit this section when the task is a single unit of work. -->
+
+- [ ] <!-- Slice: the end-to-end behavior it delivers -->
