@@ -9,17 +9,18 @@ One front door for interview sessions, three lenses behind it, and a task file t
    ├─> grill-engineer (≈8/10) ──┬─ build now ─> /tdd ─> human QA gate ─> /stage-for-commit (user commits)
    │                            ├─ spec it ──> docs/tasks file (status: scoped)
    │                            │                 └─> /implement-task ─> slice loop (/tdd, commit per slice)
-   │                            │                        └─> human QA gate ─> /review-board offer ─> stop (user pushes/PRs)
+   │                            │                        └─> human QA gate ─> /review-board offer ─> /ship-pr offer ─> stop
    │                            └─ park it ──> /capture-task
    ├─> grill-product ──> design docs / product brief (docs/briefs/) / ADRs / capture / nothing
    └─> grill-research ─> summary writeup / capture / nothing
 
 /capture-task — park anything, any time; the captured file seeds a later grill-engineer session
 /codify — end-of-session knowledge capture; durable conventions to the narrowest CLAUDE.md or design file, vocabulary and ADRs hand off to domain-modeling
+/ship-pr — the one door to the remote: push the branch and open a PR documenting QA and the review-board outcome; offered by implement-task and review-board, run only on the user's word
 primitives under the hood: grilling, domain-modeling, tdd, frontend-design
 ```
 
-The task file lifecycle lives in its frontmatter: `captured` (filed, unknowns explicit as `TBD (needs grilling)`) → `scoped` (grilled; design decisions, test strategy, and slices written) → `in-progress` → `done`. The shared format is defined once in `capture-task/assets/task-template.md` and referenced by capture-task, grill-engineer, and implement-task. No GitHub issues anywhere in the chain — the file is the tracker; push and PR are always the user's move.
+The task file lifecycle lives in its frontmatter: `captured` (filed, unknowns explicit as `TBD (needs grilling)`) → `scoped` (grilled; design decisions, test strategy, and slices written) → `in-progress` → `done`. The shared format is defined once in `capture-task/assets/task-template.md` and referenced by capture-task, grill-engineer, and implement-task. No GitHub issues anywhere in the chain — the file is the tracker; push and PR happen only through `/ship-pr`, only on the user's word.
 
 ## grill-me
 
@@ -55,7 +56,7 @@ Design-quality primitive for anything user-facing: reads the project's `BRAND_DE
 
 ## review-board
 
-Multi-agent code review: spawns parallel specialist reviewers (correctness, security, reliability, maintainability, performance/operations), each a registered agent in `.claude/agents/review-*.md` with its own checklist in `review-board/references/`, over the branch diff vs `main` plus uncommitted changes (args can scope to a PR number, commit range, or paths). An optional leading mode argument scales the board by shifting each seat's model tier rather than flattening to one model: `quality` runs full-file reads with Opus everywhere except maintainability on Sonnet (top tier buys nothing on checklist-shaped review), the default `balanced` tiers seats Opus (correctness/security — misses cost most, findings need intent/threat modeling), Sonnet (reliability/performance), Haiku (maintainability) with read depth decided per seat, and `speed` runs diff-first with Sonnet on correctness/security (their misses are the point of even a quick pass) and Haiku on the rest. The chair always runs on the session model, and seat-skipping (only when a category has no surface in the change) applies in every mode. Small self-contained diffs can use a lite three-seat board in `balanced`. The session AI then acts as chair: dedupes findings, verifies each against the actual code, renders a confirmed/plausible/rejected verdict with reasoning, and presents a consolidated report per `review-board/references/output-format.md`.
+Multi-agent code review: spawns parallel specialist reviewers (correctness, security, reliability, maintainability, performance/operations), each a registered agent in `.claude/agents/review-*.md` with its own checklist in `review-board/references/`, over the branch diff vs `main` plus uncommitted changes (args can scope to a PR number, commit range, or paths). An optional leading mode argument scales the board by shifting each seat's model tier rather than flattening to one model: `quality` runs full-file reads with Opus everywhere except maintainability on Sonnet (top tier buys nothing on checklist-shaped review), the default `balanced` tiers seats Opus (correctness/security — misses cost most, findings need intent/threat modeling), Sonnet (reliability/performance), Haiku (maintainability) with read depth decided per seat, and `speed` runs diff-first with Sonnet on correctness/security (their misses are the point of even a quick pass) and Haiku on the rest. The chair always runs on the session model, and seat-skipping (only when a category has no surface in the change) applies in every mode. Small self-contained diffs can use a lite three-seat board in `balanced`. The session AI then acts as chair: dedupes findings, verifies each against the actual code, renders a confirmed/plausible/rejected verdict with reasoning, and presents a consolidated report per `review-board/references/output-format.md`. After the human gate resolves on a non-main branch, the chair leaves an always-empty `review:` record commit — mode, verdicts, addressed and dismissed findings with the user's one-line reasons — pinning the board's outcome to the exact tree it reviewed, which is what `/ship-pr` later reads; it closes with a one-line `/ship-pr` offer when a remote exists.
 
 Strictly human-in-the-loop: the report ends with "which findings should I address?" and nothing is fixed until the user picks. Invoke for pre-PR/pre-merge reviews, security passes, or any "review my changes" request.
 
@@ -70,6 +71,12 @@ Suggest it once when the user voices an actionable aside, reports something brok
 Stages exactly the files changed during the current session by explicit path (never `git add -A`) and hands back a ready-to-paste commit message, then stops: no commit, no branch, no push, no AI attribution — the user is the committer. Proves the staged set with `git diff --cached --stat` before writing the message, and is concurrent-session aware: files another session already staged stay in the index and get flagged in the handoff (a `git commit` takes the whole index), and same-file collisions with unrecognized hunks are surfaced for the user to decide instead of silently staged.
 
 Invoke at the end of a quick chore/feature/bug when the user wants to commit the work themselves — "stage my changes", "ready to commit", "write me a commit message for this". Also the landing step for grill-engineer's build-now exit, but only after the user's human-QA confirmation — never auto-chained straight from an implementation.
+
+## ship-pr
+
+The PR landing for branch-based work, and the chain's only door to the remote: pushes the current non-main branch and opens a GitHub PR whose body documents how the work was produced — Summary, QA evidence, and a Review board section reporting findings by verdict, what was addressed (with fix commits), and what was dismissed with the user's recorded reasons; "Not run." is a valid, self-indicting entry. Structure comes from `.github/PULL_REQUEST_TEMPLATE.md` (scaffolded on first use if missing, shipped in the template payload); review data comes from the `review:` record commit on the branch, falling back to session context, then to "Not run." Hard stops are mechanical only — on the default branch, no remote, dirty tree; process gaps (no review, unverified QA) get one nudge and then the truth in the PR body, because a skill that blocks on process gets routed around and the paper trail is lost exactly when it mattered. No AI attribution on the PR — the user is the author of record.
+
+Strictly user-invoked and conditional by invocation, not configuration: solo projects committing to main simply never touch it, and no skill ever runs it automatically — implement-task and review-board close with a one-line offer at most. One confirm (exact title and body shown) before anything touches the remote; `draft` as an argument opens a draft PR.
 
 ## domain-modeling
 
@@ -94,4 +101,5 @@ Strictly HITL and never a session-end ritual: user-invoked ("codify", "add this 
 | Glossary + ADRs       | `domain-modeling`                                                  | Rarely — active inside lens sessions                  |
 | Pre-merge review      | `review-board`                                                     | Yes, or offered by implement-task                     |
 | Hand back a commit    | `stage-for-commit`                                                 | Yes, or the build-now landing (after human QA)        |
+| Ship a PR             | `ship-pr`                                                          | Yes, or offered once by implement-task / review-board |
 | Codify lessons        | `codify`                                                           | Yes, or suggested once when a durable lesson surfaces |

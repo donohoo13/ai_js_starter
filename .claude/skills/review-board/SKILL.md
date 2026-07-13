@@ -93,3 +93,17 @@ Present the consolidated report using the exact structure in `references/output-
 ## Step 5: Verify, then address selected findings
 
 This is where the deep verification deferred from triage happens — now, on the few findings the user chose, not all of them upfront. For each selected finding, confirm it against the actual code before writing a fix: reproduce the failure scenario, trace it to root cause, and fix the source rather than the reviewer's paraphrase of the symptom. If a finding does not hold up to that closer look, say so and skip it instead of inventing a fix — a triage verdict is a judgment, not a guarantee, and this is the point where the two can diverge. Apply fixes for exactly the selected findings and nothing else. After fixing, run the project's relevant checks (tests, typecheck, lint) for the touched areas and report the results honestly; a fix without a passing check is reported as unverified, not done.
+
+## Step 6: Leave the record commit
+
+The board's outcome must outlive this conversation — `/ship-pr` documents it in the PR body, and a record nobody can find is a review that never happened. On a non-main branch, once the user's selection is resolved (including `none`): commit any Step 5 fixes first (explicit paths, message naming the finding), then leave an always-empty record commit as the last commit on the branch:
+
+```bash
+git commit --allow-empty -m "review: board (<mode>) — <N> findings, <X> addressed, <Y> dismissed, <Z> rejected" -m "<record body>"
+```
+
+The record body carries one line per finding — ID, severity, verdict, title, outcome (addressed + fix commit SHA, dismissed + the user's one-line reason verbatim, or rejected) — and closes with trailers (`Review-Mode:`, `Review-Scope: <base>..<head>`) for grep-ability; `/ship-pr` finds records with `git log <default>..HEAD --grep='^review:'`.
+
+Capture dismissal reasons at selection time: when the user declines a confirmed or plausible finding, take the one-line why from their reply or ask for it — it is the one datum nobody can reconstruct later, and it is what makes a dismissal defensible instead of silent. Always empty, always last: fix commits describe fixes, the record commit records the board — two jobs, two commits, one shape to parse. Pinning the record to the branch also pins it to the exact tree that was reviewed; a dated file could drift from that, a commit cannot.
+
+On `main` (the solo flow) skip the commit — the report stays conversational, and nothing ships from main anyway. An interactive rebase can silently drop an empty commit; if the user rewrites the branch before shipping, warn them the record goes with it. Finally, when the branch has a remote to ship to, close with a one-line `/ship-pr` offer — offer only, never invoke it yourself.
