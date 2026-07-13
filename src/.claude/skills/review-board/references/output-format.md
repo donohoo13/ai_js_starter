@@ -37,6 +37,10 @@ Severity calibration, so five agents rate on one scale:
 
 Confidence is about the finding's validity, not its severity: `high` means the failure scenario is verifiable from the code alone; `medium` means it depends on runtime or config assumptions; `low` means it depends on intent or domain knowledge the agent does not have.
 
+## Reviewer toolcraft
+
+Applies to every seat, whatever the category. When the `LSP` tool is active (it needs a code-intelligence plugin, so it may be absent), prefer it to text search for symbol work: find-references on a changed function or type reaches every real consumer, and go-to-definition verifies the contract you think you are reviewing against — grep only finds matching strings. Fall back to Grep when LSP is inactive.
+
 ## Part B: Consolidated report format (chair)
 
 The chair presents exactly this structure to the human. Findings appear grouped by verdict, and within each group ordered by severity. The verdict is the chair's context-based judgment, not the result of deep-verifying every finding: **Confirmed** means it matches the chair's understanding of the change, **Plausible** means credible but unsettled from context, **Rejected** means it contradicts what the chair knows or is off-task. The "Chair's read" line carries that judgment; deep confirmation of a finding happens later, in Step 5, only for the findings the user chooses to address.

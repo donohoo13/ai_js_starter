@@ -11,7 +11,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Be concise but maintain clear grammar. Commit messages: 50-char subject in imperative mood, explain WHY in body.
 - AI context files (CLAUDE.md, BRAND_DESIGN.md, UI_UX.md) state what is true TODAY in strict present tense. No aspirational language ("we'd like to", "try to"). Document exceptions at point of use, not by softening rules.
 - Do not treat memory from previous conversations as gospel. Treat as ephemeral starting point and verify intelligently often.
-- Use LSP tools for code navigation, symbol searches, and diagnostics. Fall back to terminal commands only if LSP unavailable.
+- Use LSP tools for code navigation, symbol searches, and diagnostics. Fall back to terminal commands only if LSP unavailable. LSP is active only when the per-machine server binary is installed (`typescript-language-server` for TS/JS, `pyright` for Python); `scripts/doctor.sh` checks this and prints the fix.
 - Follow @UI_UX.md for all UI/UX design and implementation decisions.
 - Follow @BRAND_DESIGN.md for all brand design and implementation decisions.
 - Prefix unused variables with `_` to avoid lint warnings when maintaining backwards compatibility.
@@ -93,6 +93,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Convention capture is HITL. Suggest `/codify` once when a session surfaces a durable, undocumented convention or debugging gotcha worth writing into a context file (`CLAUDE.md`, `BRAND_DESIGN.md`, `UI_UX.md`). Suggest, never auto-run; one nudge; if user doesn't bite, drop it. Nothing is written without user approval of each candidate.
 
 ## Commands
+
+- `scripts/doctor.sh` — warn-only check that the machine has the LSP server binaries Claude Code's plugins need (`typescript-language-server` for TS/JS, `pyright` for Python); wire it into `package.json` `prepare` so every `pnpm install` self-reports gaps. It informs, never blocks.
 
 ## Architecture / Tech Stack
 

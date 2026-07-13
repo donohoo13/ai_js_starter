@@ -1,6 +1,6 @@
 ---
 name: stage-for-commit
-description: Stage the files changed during this session and hand back a ready-to-paste commit message, without committing, branching, or pushing. Use at the end of a quick chore/feature/bug — typically right after a grilling session and implementation — when the user wants to commit it themselves on main. Trigger on "stage my changes", "stage this and give me a commit message", "stage what you did", "I'll commit this myself", "ready to commit", "write me a commit message for this", "get this ready to commit". Never auto-chain into this straight from finishing an implementation — invoke only on the user's word, after they have confirmed the change works in action (human QA).
+description: Stage the files changed during this session and hand back a ready-to-paste commit message, without committing, branching, or pushing. Use at the end of a quick chore/feature/bug — typically right after a grilling session and implementation — when the user wants to commit it themselves on main. Trigger on "stage my changes", "stage what you did", "I'll commit this myself", "ready to commit", "write me a commit message". Never auto-chain into this straight from finishing an implementation — invoke only on the user's word, after they have confirmed the change works in action (human QA).
 argument-hint: '(no args needed)'
 ---
 
@@ -19,19 +19,31 @@ These are the whole point of the skill. Crossing any of them defeats it:
 - **Never push** or touch the remote.
 - **Never stage work that isn't from this session.** A quick-task tree often has unrelated dirty files; sweeping them in with `git add -A` is the classic way this goes wrong. Stage by explicit path only.
 
+## Tree at invocation
+
+Working tree (`git status --short`):
+
+```!
+git status --short | head -50
+```
+
+Staged index (`git diff --cached --name-only`):
+
+```!
+git diff --cached --name-only | head -50
+```
+
+These snapshots are from invocation time; if you change files after this point, re-run the commands instead of trusting them.
+
 ## Process
 
 ### 1. Build the explicit file list
 
-From the conversation, list every file you created, edited, or deleted while doing this session's work. This is your source of truth — you know what you touched. Reconcile it against the tree to catch renames and deletions:
-
-```bash
-git status --short
-```
+From the conversation, list every file you created, edited, or deleted while doing this session's work. This is your source of truth — you know what you touched. Reconcile it against the working-tree snapshot above to catch renames and deletions (re-run `git status --short` if you have changed files since invocation).
 
 Any dirty or untracked file that you did **not** touch this session stays out of the staging set. Do not guess that an unfamiliar change is yours; if it predates your work, leave it alone.
 
-Also check the index itself: `git diff --cached --name-only`. Anything already staged that you didn't touch is another session's work in flight, not contamination — leave it staged and flag it in the handoff (step 5), because `git commit` takes the whole index and the user should commit that work before yours. Likewise, if a file you _did_ touch contains hunks you don't recognize, a concurrent session edited the same file; `git add` stages the whole file, so flag the collision and let the user decide rather than silently sweeping in their half.
+Also check the index itself via the staged-index snapshot above. Anything already staged that you didn't touch is another session's work in flight, not contamination — leave it staged and flag it in the handoff (step 5), because `git commit` takes the whole index and the user should commit that work before yours. Likewise, if a file you _did_ touch contains hunks you don't recognize, a concurrent session edited the same file; `git add` stages the whole file, so flag the collision and let the user decide rather than silently sweeping in their half.
 
 ### 2. Stage exactly those paths
 

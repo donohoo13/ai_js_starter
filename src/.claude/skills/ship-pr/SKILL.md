@@ -1,6 +1,6 @@
 ---
 name: ship-pr
-description: Push the current non-main branch and open a GitHub PR whose body documents how the work was produced — a summary, human QA evidence, and a review-board section reporting findings by verdict, what was addressed, and what was dismissed with reasons. Use when the user says "ship this", "open a PR", "create the PR", "PR this branch", "ship it", or accepts the one-line ship-pr offer at the close of implement-task or review-board. Strictly user-invoked: never auto-chain into this from another skill, and never run it on main.
+description: Push the current non-main branch and open a GitHub PR whose body documents how the work was produced: summary, human QA evidence, and review-board outcomes. Use when the user says "ship this", "open a PR", "create the PR", "PR this branch", "ship it", or accepts the one-line ship-pr offer at the close of implement-task or review-board. Strictly user-invoked: never auto-chain into this from another skill, and never run it on main.
 argument-hint: '[draft] (optional — opens the PR as a draft)'
 ---
 
@@ -9,6 +9,18 @@ argument-hint: '[draft] (optional — opens the PR as a draft)'
 Take a completed, QA'd, reviewed implementation on its branch and land it on the remote: push the branch, open the PR. The PR body is the durable audit artifact — GitHub retains it after branches are deleted and record commits are squashed away — so its job is to answer, in one screen, how thoughtfully this change was produced: what it does, whether a human saw it work, whether a review board ran, and what happened to every finding, including the dismissed ones.
 
 Invocation is the consent. The chain's invariant — push and PR only on the user's word — lives here as a named door: typing `/ship-pr`, or accepting another skill's one-line offer, is that word. Nothing extends the consent: one branch pushed, one PR opened, nothing else touches the remote.
+
+## Branch state at invocation
+
+- Current branch: !`git branch --show-current`
+- Default branch ref: !`git symbolic-ref --short refs/remotes/origin/HEAD 2>/dev/null || echo "(no remote HEAD; fall back to main)"`
+- Remote: !`[ -n "$(git remote)" ] && git remote | head -1 || echo "(none)"`
+
+Working tree at invocation (empty = clean):
+
+```!
+git status --short | head -50
+```
 
 ## Hard stops — mechanics only
 

@@ -1,7 +1,7 @@
 ---
 name: review-performance
 description: Performance and operations reviewer for the review-board skill. Spawned by the board chair to review a code change for algorithmic complexity, I/O and network patterns, observability, and configuration/deployability. Not a general-purpose agent; expects a review-board task prompt supplying scope, intent, stack, read depth, and checklist paths.
-tools: Bash, Read, Grep, Glob
+tools: Bash, Read, Grep, Glob, LSP
 model: sonnet
 ---
 

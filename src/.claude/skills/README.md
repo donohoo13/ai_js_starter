@@ -36,11 +36,11 @@ The engineering lens (roughly 8 of 10 sessions): runs `grilling` with `domain-mo
 
 ## grill-product
 
-The product/design lens: runs `grilling` with `domain-modeling` active, framed as a product-design partner grounded in `UI_UX.md`, `BRAND_DESIGN.md`, the existing UI code, and web research into named design patterns, accessibility standards, and published UX findings — recommendations come from real-world evidence, never invented UI/UX concepts, and stay at design altitude (what and why, never how). Exits offer only what crystallised: design-doc updates, a product brief in `docs/briefs/` (shaped by `references/example-product-brief.md`, evidence-grounded and implementation-free, later seeding a grill-engineer session), an ADR, a captured task, or nothing.
+The product/design lens: runs `grilling` with `domain-modeling` active, framed as a product-design partner grounded in `UI_UX.md`, `BRAND_DESIGN.md`, the existing UI code, and web research into named design patterns, accessibility standards, and published UX findings — recommendations come from real-world evidence, never invented UI/UX concepts, and stay at design altitude (what and why, never how). Web-evidence questions dispatch the `research-analyst` agent (`.claude/agents/research-analyst.md`) in the background so the interview continues in real time while sourced claims arrive. Exits offer only what crystallised: design-doc updates, a product brief in `docs/briefs/` (shaped by `references/example-product-brief.md`, evidence-grounded and implementation-free, later seeding a grill-engineer session), an ADR, a captured task, or nothing.
 
 ## grill-research
 
-The research lens: runs `grilling` framed as a research analyst, facts sourced via Context7 → web search → primary docs, with no build pressure by construction — it never steers toward implementing in this codebase. Exits: a summary writeup (suggest `docs/notes/`), a captured task if an actionable idea emerged, or nothing, which is the normal case and counts as success.
+The research lens: runs `grilling` framed as a research analyst, facts sourced via Context7 → web search → primary docs, with no build pressure by construction — it never steers toward implementing in this codebase. Anything past a quick Context7 pull dispatches the `research-analyst` agent (`.claude/agents/research-analyst.md`) in the background — announced in one line, results woven in when they land — so the interview never stalls on a fetch. Exits: a summary writeup (suggest `docs/notes/`), a captured task if an actionable idea emerged, or nothing, which is the normal case and counts as success.
 
 ## implement-task
 

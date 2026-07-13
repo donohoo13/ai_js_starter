@@ -1,6 +1,6 @@
 ---
 name: implement-task
-description: Build a scoped task file from docs/tasks/ slice by slice — guard a non-main branch, deep-plan each slice, implement it with /tdd, validate, commit per slice, and keep the task file's checkboxes and status current (scoped → in-progress → done), stopping for a human QA check before anything is marked done, then ending with review-board and ship-pr offers — never pushing or opening a PR itself. Use when the user points at a task file to build, says "implement this task", "pick up the task we scoped", "build the scoped task", or resumes scoped work in a fresh session.
+description: Build a scoped task file from docs/tasks/ slice by slice on a non-main branch — plan, TDD, validate, and commit each slice, keep the task file's status current, and gate done on human QA — never pushing or opening a PR itself. Use when the user points at a task file to build, says "implement this task", "pick up the task we scoped", "build the scoped task", or resumes scoped work in a fresh session.
 argument-hint: '[path to a docs/tasks/*.md file, or blank to pick from scoped tasks]'
 ---
 
@@ -8,9 +8,17 @@ argument-hint: '[path to a docs/tasks/*.md file, or blank to pick from scoped ta
 
 Build what a scoped task file specifies — the design is settled; this skill builds it, it does not re-decide architecture. **Ceremony scales with size; engineering discipline never does:** a single-unit task runs the same plan → tdd → validate → commit loop as a ten-slice feature, exactly once.
 
+## State at invocation
+
+- Current branch: !`git branch --show-current`
+- Scoped tasks: !`grep -l 'status: scoped' docs/tasks/*.md 2>/dev/null || echo "(none)"`
+- In-progress tasks (resumable): !`grep -l 'status: in-progress' docs/tasks/*.md 2>/dev/null || echo "(none)"`
+
+Snapshots are from invocation time; re-check live state after any pause or user action.
+
 ## 1. Locate and gate the task
 
-- Path in `$ARGUMENTS` → read it. No path → list `docs/tasks/` files with `status: scoped` (plus any `in-progress` — those are resumable) and confirm which one.
+- Path in `$ARGUMENTS` → read it. No path → confirm which of the scoped tasks in the snapshot above to build (in-progress ones are resumable).
 - Gate on readiness, not ceremony: `status: scoped` with concrete acceptance criteria means go. A file still `captured`, or with `TBD (needs grilling)` in load-bearing sections (Requirements, Acceptance criteria, Design decisions), is not buildable — recommend a `/grill-me engineer:` session on the file first and stop. Building on an under-specified file is how requirements get invented silently.
 
 ## 2. Guard the branch

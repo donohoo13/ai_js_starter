@@ -1,6 +1,6 @@
 ---
 name: review-board
-description: Multi-agent code review board. Spawns five parallel reviewer agents (correctness, security, reliability, maintainability, performance/operations), consolidates their findings, renders the session AI's own confirmed/plausible/rejected verdict on each, and waits for the human to pick what gets addressed before touching any code. Use whenever the user asks to review code changes, a branch, a diff, or a PR; asks for a security review, standards check, or pre-merge/pre-PR review; says "review my changes", "run the review board", or "is this safe to merge"; or wants a thorough second opinion on work in progress, even if they only name one concern like security. Accepts an optional leading mode argument that scales the board — `quality` (top models, full-file reads) for exhaustive pre-merge scrutiny, `speed` (fast models, diff-only reads) for a quick pass, default `balanced` — so also use it when the user asks for a "quick review" or a "deep review" of their changes.
+description: Multi-agent code review board. Spawns five parallel reviewer agents (correctness, security, reliability, maintainability, performance/operations), consolidates their findings, renders the session AI's own confirmed/plausible/rejected verdict on each, and waits for the human to pick what gets addressed before touching any code. Use whenever the user asks to review code changes, a branch, a diff, or a PR; asks for a security review, standards check, or pre-merge/pre-PR review; says "review my changes", "run the review board", or "is this safe to merge"; or wants a thorough second opinion on work in progress, even if they only name one concern like security. Also use when the user asks for a "quick review" or a "deep review" — an optional leading mode argument (`quality`|`balanced`|`speed`, default `balanced`) scales the board.
 argument-hint: '[quality|balanced|speed] [PR number, commit range, or paths to scope the review]'
 ---
 
@@ -12,6 +12,17 @@ Two principles run through every step:
 
 - **Parallel specialists beat one general pass.** A single reviewer skimming five concerns misses what a focused reviewer catches; each board member gets one category, its own checklist, and a full context budget. The chair's triage matters just as much: sub-agents overproduce plausible-sounding findings, and your judgment is what separates signal from noise before the human ever sees it.
 - **Your session context cuts both ways.** In the common flow you implemented the change earlier this session and are now reviewing it. That context is an asset for facts — intent, stack, which code you actually read — so reuse it instead of re-deriving it. It is a liability for judgment — deciding a category needs no review, or that a finding "can't be right" — because the author's confidence is exactly what a blind spot feels like. Reuse your knowledge; distrust your comfort.
+
+## State at invocation
+
+- Branch: !`git branch --show-current`
+- Committed delta vs merge-base with main: !`base=$(git merge-base main HEAD 2>/dev/null); [ -n "$base" ] && [ "$base" != "$(git rev-parse HEAD)" ] && git diff --stat "$base" HEAD | tail -1 || echo "(none: on main, or no main merge-base)"`
+
+Uncommitted changes at invocation (empty = clean):
+
+```!
+git status --short | head -50
+```
 
 ## Step 1: Resolve scope and context
 

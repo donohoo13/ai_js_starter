@@ -1,7 +1,7 @@
 ---
 name: review-maintainability
 description: Maintainability reviewer for the review-board skill. Spawned by the board chair to review a code change for naming, function size/complexity, duplicated rules, comments/docs, and test coverage. Not a general-purpose agent; expects a review-board task prompt supplying scope, intent, stack, read depth, and checklist paths.
-tools: Bash, Read, Grep, Glob
+tools: Bash, Read, Grep, Glob, LSP
 model: haiku
 ---
 

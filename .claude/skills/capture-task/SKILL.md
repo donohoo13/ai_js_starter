@@ -1,6 +1,6 @@
 ---
 name: capture-task
-description: Quick-capture any unit of work (a bug, a feature idea, or a chore) as a structured task file in `docs/tasks/`. A "task" is the umbrella: anything worth tracking for later without running a full grilling session right now. Use whenever the user says "capture this", "log this", "track this for later", "file a follow-up", "create a task", "outline a feature", "we should do X later", "add this to the roadmap", "tech debt note", "park this", OR reports something broken: "capture this bug", "log this bug", "file an issue for this", "demo bug", "saw a bug in prod", "this just broke". Optimized for low-friction in-the-moment capture.
+description: Quick-capture any unit of work (a bug, a feature idea, or a chore) as a structured task file in `docs/tasks/`. A "task" is the umbrella: anything worth tracking for later without running a full grilling session right now. Use whenever the user says "capture this", "log this", "track this for later", "file a follow-up", "create a task", "outline a feature", "we should do X later", "add this to the roadmap", "tech debt note", "park this", OR reports something broken: "file an issue for this", "demo bug", "saw a bug in prod", "this just broke". Optimized for low-friction in-the-moment capture.
 argument-hint: "[optional: brief outline of the bug, feature, or chore]"
 ---
 
