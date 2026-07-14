@@ -84,6 +84,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Use `playwright-local` MCP server for UI/UX verification (more reliable than plugin) (`mcp__playwright_local__*`).
 - Use Chrome DevTools plugin for performance traces and heap analysis (`mcp__chrome_devtools__*`).
 - Use Context7 for context gathering when applicable (`mcp__context7__*`).
+- Use the `linear` MCP for Linear issue, project, and cycle operations (`mcp__linear__*`). Configured at project scope in `.mcp.json`; requires per-user approval and OAuth via `/mcp`.
+- The `stripe` MCP (`mcp__plugin_stripe_stripe__*`) is for docs search and read-only lookups only.
 
 ### Skills
 
