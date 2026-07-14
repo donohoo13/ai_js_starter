@@ -10,13 +10,15 @@ Opinionated JS/TS starter template optimized for AI-assisted development with Cl
 
 - Be concise but maintain clear grammar. Commit messages: 50-char subject in imperative mood, explain WHY in body.
 - AI context files (CLAUDE.md, BRAND_DESIGN.md, UI_UX.md) state what is true TODAY in strict present tense. No aspirational language ("we'd like to", "try to"). Document exceptions at point of use, not by softening rules.
-- Do not treat memory from previous conversations as gospel. Treat as ephemeral starting point and verify intelligently often.
+- Do not treat memory from previous conversations as gospel. Treat as an ephemeral starting point and verify intelligently often.
 - Prefer LSP tools for code navigation, symbol searches, and diagnostics. Fall back to terminal commands only if LSP unavailable.
 - `UI_UX.md` and `BRAND_DESIGN.md` exist only under `src/` as template artifacts; this repo has no UI. Edit them as shipped content, holding them to the AI context file rules above.
 - Prefix unused variables with `_` to avoid lint warnings when maintaining backwards compatibility.
 - If a question can be answered by exploring the codebase, explore it instead.
 - Confirm with the user to address root causes, not symptoms.
 - Evidence before completion claims: do not state something passes, builds, or is fixed without running the command that proves it. "Should work" is not "works".
+- Treat captured debugging artifacts (HAR files, log dumps, real request/response payloads, screen recordings) as secret-bearing: they routinely contain auth headers, session cookies, and PII. Keep them in a gitignored scratch path, never commit them, and delete them when the investigation ends.
+- Shipped shell scripts (`src/scripts/`, skill `scripts/`) stay bash-3.2 compatible: macOS pins `/bin/bash` there permanently, so no associative arrays, `mapfile`/`readarray`, or `${var,,}`. Anything needing bash 4+ isn't portable to stock developer Macs.
 - No em-dashes (U+2014) in customer-facing text (UI, emails, marketing, AI prompts). Use commas, periods, or rephrasing instead. Hyphens (U+002D) and en-dashes (U+2013) are fine. Internal dev artifacts (code comments, CLAUDE.md, PRs) exempt.
 
 ### Git Control
@@ -69,9 +71,7 @@ Two-layer meta-repo: `src/` is the product (the payload copied into new projects
 
 - **Root layer**: `CLAUDE.md`, `.claude/settings.json`, `.claude/skills/`, `.claude/agents/` govern AI sessions working on the template repo itself.
 - **Template layer**: `src/CLAUDE.md`, `src/.claude/`, `src/UI_UX.md`, `src/BRAND_DESIGN.md`, `src/CONTEXT.md`, `src/.mcp.json`, `src/docs/adr/`, `src/scripts/` ship into new projects. Editing these is editing the product. Claude Code discovers `src/.claude/skills/` as scoped skills (`src:` prefix); prefer the unscoped project skill unless explicitly working on the template copy (see Project VS Template above).
-- `.claude/skills/README.md` is the human-readable map of the skill chain (`/grill-me` router → engineer/product/research lenses → capture/implement/review/codify, with `grilling`, `domain-modeling`, and `tdd` as primitives). Read it before editing any skill; skills invoke each other by name, so check callers and callees.
+- `.claude/skills/README.md` is the human-readable map of the skill chain (`/grill-me` router → engineer/product/research lenses → capture/diagnose/implement/review/codify, with `grilling`, `domain-modeling`, and `tdd` as primitives). Read it before editing any skill; skills invoke each other by name, so check callers and callees.
 - `.claude/agents/` holds the five `review-*` agents (the review-board seats, each pointing at a checklist in `.claude/skills/review-board/references/`) plus `research-analyst`, the background evidence fetcher dispatched mid-interview by `grill-research` and `grill-product`. Same set mirrored in `src/.claude/agents/`.
 - `src/.claude/skills/project-init/` exists only in the template layer (deliberately no root counterpart — the template repo itself never gets inited): a one-shot, self-removing onboarding auditor that tailors the shipped suite to its destination project. Its `references/fork-points.md` is the maintained map of every tool and platform coupling in the payload; any edit that changes a shipped skill's coupling (platform CLI, tracker path, branch model, LSP or plugin dependency) updates that manifest in the same change.
-- `skills-lock.json` (root and `src/`) tracks third-party skills vendored via the `skills` CLI (`domain-modeling` from `mattpocock/skills`, `skill-creator` from `anthropics/skills`) by content hash; local edits to those skills diverge from upstream.
-- `old-skills/` is the retired GitHub-issue-based PRD/TRD chain, kept for reference only. It is not discovered by Claude Code and its README describes the old workflow, not the current one.
 - `src/scripts/gwt-add.sh` / `gwt-remove.sh` are git worktree helpers shipped with the template (worktree at `~/Code/.worktrees/<project>/<branch>`, env copy, `pnpm install`, opens in Zed). `src/scripts/doctor.sh` is the warn-only machine-prerequisite check (LSP server binaries) that new projects wire into `package.json` `prepare`.

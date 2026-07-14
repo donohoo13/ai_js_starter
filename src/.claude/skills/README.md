@@ -15,6 +15,7 @@ One front door for interview sessions, three lenses behind it, and a task file t
    └─> grill-research ─> summary writeup / capture / nothing
 
 /capture-task — park anything, any time; the captured file seeds a later grill-engineer session
+/diagnose — the bug front door: feedback loop → repro+minimize → ranked hypotheses → fix via /tdd + human QA gate; no-seam and prevention findings → /capture-task
 /codify — end-of-session knowledge capture; durable conventions to the narrowest CLAUDE.md or design file, vocabulary and ADRs hand off to domain-modeling
 /ship-pr — the one door to the remote: push the branch and open a PR documenting QA and the review-board outcome; offered by implement-task and review-board, run only on the user's word
 primitives under the hood: grilling, domain-modeling, tdd, frontend-design
@@ -70,6 +71,12 @@ Quick-captures a unit of work (bug, feature idea, or chore) as a structured task
 
 Suggest it once when the user voices an actionable aside, reports something broken mid-flow, or drifts into "we should do X later" territory. Never auto-file; if the user doesn't bite, drop it.
 
+## diagnose
+
+The bug front door for anything broken the user wants understood or fixed now: a phased diagnosis discipline for hard or complicated bugs — build a red-capable feedback loop before any theorizing (the phase that _is_ the skill; no red-capable command, no hypotheses), reproduce and minimize until every element of the repro is load-bearing, test 3–5 ranked falsifiable hypotheses with one-variable probes, then land the fix through the chain: regression test via `/tdd` at a correct seam, human QA gate, and the usual commit exits. Two findings are first-class rather than failures: "no correct seam exists" (the architecture prevents locking the bug down — documented and handed to `/capture-task`) and "cannot build a loop" (stop and ask for an artifact or environment rather than guessing). Post-fix, architectural prevention gaps go to `/capture-task` and a durable debugging gotcha earns one `/codify` nudge. Skip phases only when explicitly justified; a symptom is not a root cause.
+
+Invoke on "diagnose", "debug this", "root-cause this", or any broken/failing/slow report the user wants investigated now — parking it for later stays `/capture-task`.
+
 ## stage-for-commit
 
 Stages exactly the files changed during the current session by explicit path (never `git add -A`) and hands back a ready-to-paste commit message, then stops: no commit, no branch, no push, no AI attribution — the user is the committer. Proves the staged set with `git diff --cached --stat` before writing the message, and is concurrent-session aware: files another session already staged stay in the index and get flagged in the handoff (a `git commit` takes the whole index), and same-file collisions with unrecognized hunks are surfaced for the user to decide instead of silently staged.
@@ -99,6 +106,7 @@ Strictly HITL and never a session-end ritual: user-invoked ("codify", "add this 
 | First-run tailoring   | `project-init`                                                     | Yes — once, right after copying the template          |
 | Interview (any lens)  | `grill-me` → `grill-engineer` / `grill-product` / `grill-research` | Yes — the front door                                  |
 | Park for later        | `capture-task`                                                     | Yes, or suggested once mid-flow                       |
+| Diagnose a bug        | `diagnose`                                                         | Yes — "diagnose"/"debug this", fix-it-now bug reports |
 | Build scoped work     | `implement-task`                                                   | Yes — the resume door                                 |
 | Test-first discipline | `tdd`                                                              | Rarely — invoked under the hood                       |
 | UI/visual design      | `frontend-design`                                                  | Rarely — triggers on UI work or via implement-task    |
