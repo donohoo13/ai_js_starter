@@ -9,9 +9,9 @@ Opinionated JS/TS starter template optimized for AI-assisted development with Cl
 ## Standards
 
 - Be concise but maintain clear grammar. Commit messages: 50-char subject in imperative mood, explain WHY in body.
-- AI context files (CLAUDE.md, BRAND_DESIGN.md, UI_UX.md) state what is true TODAY in strict present tense. No aspirational language ("we'd like to", "try to"). Document exceptions at point of use, not by softening rules.
+- AI context files (CLAUDE.md, BRAND_DESIGN.md, UI_UX.md) state what is true TODAY in strict present tense. No aspirational language ("we'd like to", "try to") and no preferential language ("prefer", "prioritize", "when possible"): a soft verb leaves the exception to the model's discretion. Write rules as absolutes and document exceptions at point of use.
 - Do not treat memory from previous conversations as gospel. Treat as an ephemeral starting point and verify intelligently often.
-- Prefer LSP tools for code navigation, symbol searches, and diagnostics. Fall back to terminal commands only if LSP unavailable.
+- Use LSP tools for code navigation, symbol searches, and diagnostics. Fall back to terminal commands only if LSP unavailable.
 - `UI_UX.md` and `BRAND_DESIGN.md` exist only under `src/` as template artifacts; this repo has no UI. Edit them as shipped content, holding them to the AI context file rules above.
 - Prefix unused variables with `_` to avoid lint warnings when maintaining backwards compatibility.
 - If a question can be answered by exploring the codebase, explore it instead.
@@ -23,7 +23,7 @@ Opinionated JS/TS starter template optimized for AI-assisted development with Cl
 
 ### Git Control
 
-- Prioritize using CLI tools (like `gh` for GitHub) for PR, issue, and remote repository management over raw git commands when available.
+- Use CLI tools (like `gh` for GitHub) for PR, issue, and remote repository management; fall back to raw git only when no CLI covers the operation.
 - Always verify you are on a valid branch before committing.
 - Never commit to main.
 
@@ -70,7 +70,7 @@ Opinionated JS/TS starter template optimized for AI-assisted development with Cl
 Two-layer meta-repo: `src/` is the product (the payload copied into new projects), everything at the root is tooling for maintaining it. Most AI-context files exist twice, once per layer; do not conflate them.
 
 - **Root layer**: `CLAUDE.md`, `.claude/settings.json`, `.claude/skills/`, `.claude/agents/` govern AI sessions working on the template repo itself.
-- **Template layer**: `src/CLAUDE.md`, `src/.claude/`, `src/UI_UX.md`, `src/BRAND_DESIGN.md`, `src/CONTEXT.md`, `src/.mcp.json`, `src/docs/adr/`, `src/scripts/` ship into new projects. Editing these is editing the product. Claude Code discovers `src/.claude/skills/` as scoped skills (`src:` prefix); prefer the unscoped project skill unless explicitly working on the template copy (see Project VS Template above).
+- **Template layer**: `src/CLAUDE.md`, `src/.claude/`, `src/UI_UX.md`, `src/BRAND_DESIGN.md`, `src/CONTEXT.md`, `src/.mcp.json`, `src/docs/adr/`, `src/scripts/` ship into new projects. Editing these is editing the product. Claude Code discovers `src/.claude/skills/` as scoped skills (`src:` prefix); use the unscoped project skill unless explicitly working on the template copy (see Project VS Template above).
 - `.claude/skills/README.md` is the human-readable map of the skill chain (`/grill-me` router → engineer/product/research lenses → capture/diagnose/implement/review/codify, with `grilling`, `domain-modeling`, and `tdd` as primitives). Read it before editing any skill; skills invoke each other by name, so check callers and callees.
 - `.claude/agents/` holds the five `review-*` agents (the review-board seats, each pointing at a checklist in `.claude/skills/review-board/references/`) plus `research-analyst`, the background evidence fetcher dispatched mid-interview by `grill-research` and `grill-product`. Same set mirrored in `src/.claude/agents/`.
 - `src/.claude/skills/project-init/` exists only in the template layer (deliberately no root counterpart — the template repo itself never gets inited): a one-shot, self-removing onboarding auditor that tailors the shipped suite to its destination project. Its `references/fork-points.md` is the maintained map of every tool and platform coupling in the payload; any edit that changes a shipped skill's coupling (platform CLI, tracker path, branch model, LSP or plugin dependency) updates that manifest in the same change.

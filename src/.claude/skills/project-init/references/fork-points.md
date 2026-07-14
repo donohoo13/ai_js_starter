@@ -55,7 +55,7 @@ Each entry: what the artifact assumes today → the tailoring lever when the pro
 
 ## Design and domain files (init reads, never interviews on)
 
-- `BRAND_DESIGN.md`, `UI_UX.md` — skeletal on arrival; `frontend-design` and `grill-product` read them at runtime, so they self-heal as the project fleshes them out. → report pointer to `/grill-me product`; no init-time edits.
+- `BRAND_DESIGN.md` — skeletal on arrival; `UI_UX.md` — brand-agnostic usability standards, complete on arrival. `frontend-design` and `grill-product` read both at runtime, so the brand skeleton self-heals as the project fleshes it out. → report pointer to `/grill-me product`; no init-time edits.
 - `CONTEXT.md`, `docs/adr/` — `domain-modeling` territory; monorepos may warrant the `CONTEXT-MAP.md` layout it documents. → report pointer; no invented glossary entries.
 - `codify/SKILL.md` — routes conventions to the nearest enclosing `CLAUDE.md`; the shipped monorepo convention (nested per-app `CLAUDE.md`) affects where that lands. → confirm the layout matches the repo shape.
 
