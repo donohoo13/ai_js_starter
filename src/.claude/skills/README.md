@@ -16,7 +16,7 @@ One front door for interview sessions, three lenses behind it, and a task file t
 
 /capture-task — park anything, any time; the captured file seeds a later grill-engineer session
 /diagnose — the bug front door: feedback loop → repro+minimize → ranked hypotheses → fix via /tdd + human QA gate; no-seam and prevention findings → /capture-task
-/codify — end-of-session knowledge capture; durable conventions to the narrowest CLAUDE.md or design file, vocabulary and ADRs hand off to domain-modeling
+/codify — end-of-session knowledge capture; durable conventions to the narrowest CLAUDE.md or design file, vocabulary, shape facts, and ADRs hand off to domain-modeling
 /ship-pr — the one door to the remote: push the branch and open a PR documenting QA and the review-board outcome; offered by implement-task and review-board, run only on the user's word
 primitives under the hood: grilling, domain-modeling, tdd, frontend-design
 ```
@@ -29,7 +29,7 @@ One-shot onboarding auditor, run once right after the template payload (`.claude
 
 ## grill-me
 
-User-invoked router (never model-triggered) and the one front door for grilling sessions: parses an explicit lens argument (`/grill-me engineer: <ask>`), a bare lens, or a freeform ask whose lens it infers, then hands off to `grill-engineer`, `grill-product`, or `grill-research`. The lens skill declares itself in its opening line, so a wrong inference costs one corrective sentence. Routes once and gets out of the way.
+User-invoked router (never model-triggered) and the one front door for grilling sessions: parses an explicit lens argument (`/grill-me engineer: <ask>`), a bare lens, or a freeform ask whose lens it infers, then hands off to `grill-engineer`, `grill-product`, or `grill-research`. The lens skill declares itself in its opening line, so a wrong inference costs one corrective sentence. When an ask names a user-facing outcome without deciding what it should be, it leads with `grill-product` so the _what_ is settled before `grill-engineer` builds the _how_ — still one routing decision, the lens chain carries the rest. Routes once and gets out of the way.
 
 ## grilling
 
@@ -91,28 +91,28 @@ Strictly user-invoked and conditional by invocation, not configuration: solo pro
 
 ## domain-modeling
 
-Builds and sharpens the project's domain model as design happens: challenges terms against the `CONTEXT.md` glossary, sharpens fuzzy language, stress-tests relationships with concrete scenarios, cross-references claims with code, and updates `CONTEXT.md` inline the moment a term resolves. Offers ADRs sparingly — only for decisions that are hard to reverse, surprising without context, and real trade-offs. Active inside grill-engineer and grill-product sessions.
+Builds and sharpens the project's domain model as design happens: challenges terms against the `CONTEXT.md` glossary, sharpens fuzzy language, stress-tests relationships with concrete scenarios, cross-references claims with code, and updates `CONTEXT.md` inline the moment a term resolves. Owns all three context-doc kinds — `CONTEXT.md` (language), `docs/adr/` (decisions), and `ARCHITECTURE.md` (engineering shape: a root topology doc plus per-context shape docs, survey-bootstrapped whole, never stubbed; format, drift rules, and the maintenance contract in `domain-modeling/ARCHITECTURE-FORMAT.md`). Offers ADRs sparingly — only for decisions that are hard to reverse, surprising without context, and real trade-offs. Active inside grill-engineer and grill-product sessions and directly on "document the architecture" asks; shape updates otherwise land with the code that changes the shape (implement-task's end-of-task shape check; review-board's correctness seat treats a contradicting diff as a finding).
 
 ## codify
 
-Retrospective knowledge capture, the learn step the chain otherwise lacks: distills a finished conversation down to the few durable lessons a future session genuinely could not infer, attributes every friction point to prompt-steering (A), an undocumented convention (B), or a plain model error (C), and codifies only the (B)s — verified against the actual code, then routed to the narrowest correct file (nearest enclosing `CLAUDE.md` for operational and code conventions, `BRAND_DESIGN.md` / `UI_UX.md` for brand and UI foundations, layout discovered at runtime since template and spawned projects differ). Domain vocabulary and hard-to-reverse decisions hand off to `domain-modeling` (`CONTEXT.md` / `docs/adr/`); anything domain-modeling already captured inline counts as documented. Presents the full deliberation — codify, reject, hand off — and writes nothing until the user approves each candidate. "Nothing worth codifying" is a valid and common outcome.
+Retrospective knowledge capture, the learn step the chain otherwise lacks: distills a finished conversation down to the few durable lessons a future session genuinely could not infer, attributes every friction point to prompt-steering (A), an undocumented convention (B), or a plain model error (C), and codifies only the (B)s — verified against the actual code, then routed to the narrowest correct file (nearest enclosing `CLAUDE.md` for operational and code conventions, `BRAND_DESIGN.md` / `UI_UX.md` for brand and UI foundations, layout discovered at runtime since template and spawned projects differ). Domain vocabulary and hard-to-reverse decisions hand off to `domain-modeling` (`CONTEXT.md` / `ARCHITECTURE.md` / `docs/adr/`); anything domain-modeling already captured inline counts as documented. Presents the full deliberation — codify, reject, hand off — and writes nothing until the user approves each candidate. "Nothing worth codifying" is a valid and common outcome.
 
 Strictly HITL and never a session-end ritual: user-invoked ("codify", "add this to CLAUDE.md", "capture this convention") or suggested at most once when a session surfaces a genuine candidate — if the user doesn't bite, drop it.
 
 ## stage map
 
-| Stage                 | Skill                                                              | You type it?                                          |
-| --------------------- | ------------------------------------------------------------------ | ----------------------------------------------------- |
-| First-run tailoring   | `project-init`                                                     | Yes — once, right after copying the template          |
-| Interview (any lens)  | `grill-me` → `grill-engineer` / `grill-product` / `grill-research` | Yes — the front door                                  |
-| Park for later        | `capture-task`                                                     | Yes, or suggested once mid-flow                       |
-| Diagnose a bug        | `diagnose`                                                         | Yes — "diagnose"/"debug this", fix-it-now bug reports |
-| Build scoped work     | `implement-task`                                                   | Yes — the resume door                                 |
-| Test-first discipline | `tdd`                                                              | Rarely — invoked under the hood                       |
-| UI/visual design      | `frontend-design`                                                  | Rarely — triggers on UI work or via implement-task    |
-| Interview mechanics   | `grilling`                                                         | Rarely — lens skills run it                           |
-| Glossary + ADRs       | `domain-modeling`                                                  | Rarely — active inside lens sessions                  |
-| Pre-merge review      | `review-board`                                                     | Yes, or offered by implement-task                     |
-| Hand back a commit    | `stage-for-commit`                                                 | Yes, or the build-now landing (after human QA)        |
-| Ship a PR             | `ship-pr`                                                          | Yes, or offered once by implement-task / review-board |
-| Codify lessons        | `codify`                                                           | Yes, or suggested once when a durable lesson surfaces |
+| Stage                                | Skill                                                              | You type it?                                           |
+| ------------------------------------ | ------------------------------------------------------------------ | ------------------------------------------------------ |
+| First-run tailoring                  | `project-init`                                                     | Yes — once, right after copying the template           |
+| Interview (any lens)                 | `grill-me` → `grill-engineer` / `grill-product` / `grill-research` | Yes — the front door                                   |
+| Park for later                       | `capture-task`                                                     | Yes, or suggested once mid-flow                        |
+| Diagnose a bug                       | `diagnose`                                                         | Yes — "diagnose"/"debug this", fix-it-now bug reports  |
+| Build scoped work                    | `implement-task`                                                   | Yes — the resume door                                  |
+| Test-first discipline                | `tdd`                                                              | Rarely — invoked under the hood                        |
+| UI/visual design                     | `frontend-design`                                                  | Rarely — triggers on UI work or via implement-task     |
+| Interview mechanics                  | `grilling`                                                         | Rarely — lens skills run it                            |
+| Context docs (glossary, shape, ADRs) | `domain-modeling`                                                  | Rarely — lens sessions, or "document the architecture" |
+| Pre-merge review                     | `review-board`                                                     | Yes, or offered by implement-task                      |
+| Hand back a commit                   | `stage-for-commit`                                                 | Yes, or the build-now landing (after human QA)         |
+| Ship a PR                            | `ship-pr`                                                          | Yes, or offered once by implement-task / review-board  |
+| Codify lessons                       | `codify`                                                           | Yes, or suggested once when a durable lesson surfaces  |

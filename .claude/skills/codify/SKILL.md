@@ -1,6 +1,6 @@
 ---
 name: codify
-description: Distill the current conversation down to the few durable lessons a future AI session genuinely could not infer, then route each to the narrowest correct file — the nearest enclosing CLAUDE.md for operational and code conventions, or BRAND_DESIGN.md / UI_UX.md for brand and UI foundations. Hands off to the domain-modeling skill when a lesson is really domain vocabulary (CONTEXT.md) or a hard-to-reverse architectural decision (docs/adr/). Ruthlessly selective: only verified conventions get codified. Use at the end of an implementation, bugfix, or design discussion, and whenever the user says "codify", "capture this convention", "add this to CLAUDE.md", "remember this convention", or "we should document this". Never runs automatically; suggest it at most once when a session surfaces a genuine candidate.
+description: Distill the current conversation down to the few durable lessons a future AI session genuinely could not infer, then route each to the narrowest correct file — the nearest enclosing CLAUDE.md for operational and code conventions, or BRAND_DESIGN.md / UI_UX.md for brand and UI foundations. Hands off to the domain-modeling skill when a lesson is really domain vocabulary (CONTEXT.md), a hard-to-reverse architectural decision (docs/adr/), or a fact about a context's engineering shape (ARCHITECTURE.md). Ruthlessly selective: only verified conventions get codified. Use at the end of an implementation, bugfix, or design discussion, and whenever the user says "codify", "capture this convention", "add this to CLAUDE.md", "remember this convention", or "we should document this". Never runs automatically; suggest it at most once when a session surfaces a genuine candidate.
 argument-hint: '[optional: the specific lesson or convention to consider]'
 ---
 
@@ -39,16 +39,17 @@ If a candidate clears the bar, **verify it against the current code before writi
 
 ## Step 3: Route to the narrowest correct destination
 
-Wrong placement is its own failure: an app-specific rule in a root file pollutes every other session, and a rule in the wrong _kind_ of file never gets read. Before routing anything, **discover the actual layout** — glob for every `CLAUDE.md`, plus `CONTEXT.md` / `CONTEXT-MAP.md`, `BRAND_DESIGN.md` / `UI_UX.md`, and `docs/adr/` — rather than assuming where these files live. This skill ships with the starter template, so the layout differs by repo: in the template itself the design files sit under `src/`, while spawned projects typically hoist them to the root. Then decide the destination on two questions.
+Wrong placement is its own failure: an app-specific rule in a root file pollutes every other session, and a rule in the wrong _kind_ of file never gets read. Before routing anything, **discover the actual layout** — glob for every `CLAUDE.md`, plus `CONTEXT.md` / `CONTEXT-MAP.md`, `ARCHITECTURE.md`, `BRAND_DESIGN.md` / `UI_UX.md`, and `docs/adr/` — rather than assuming where these files live. This skill ships with the starter template, so the layout differs by repo: in the template itself the design files sit under `src/`, while spawned projects typically hoist them to the root. Then decide the destination on two questions.
 
 **What kind of lesson is it?**
 
 - **Domain vocabulary or ubiquitous language** (what a term means, which word wins when several compete) → this is not codify's job. Hand off to the `domain-modeling` skill; it lives in `CONTEXT.md`, which is a glossary and nothing else. Do not write terminology into a `CLAUDE.md`.
 - **A hard-to-reverse architectural decision with genuine alternatives and a real trade-off** → also `domain-modeling`'s job; it belongs in an ADR under `docs/adr/`, not as a terse `CLAUDE.md` bullet. `CLAUDE.md` records _how we do things_; an ADR records _why we chose this over that_. If the lesson has alternatives-considered and consequences, route it to an ADR.
+- **A fact about a context's engineering shape** (what talks to what, who owns which data or secrets, where a flow runs, a load-bearing ordering) → also `domain-modeling`'s job; it belongs in the owning context's `ARCHITECTURE.md`, where the shape statement is canonical. `CLAUDE.md` keeps an imperative rule only when one is genuinely needed, pointing at the shape fact rather than restating it.
 - **Brand, visual, or UX foundation** (color, type, aesthetic, CSS, a11y, units) → a design file: `BRAND_DESIGN.md` for brand identity, `UI_UX.md` for CSS/accessibility/layout standards.
 - **Everything else** (tooling, workflow, code organization, testing, API, DB, infra, framework-specific gotchas) → a `CLAUDE.md`.
 
-If `domain-modeling` was active this session (the grill lenses run it), whatever it already wrote to `CONTEXT.md` or `docs/adr/` counts as documented — do not re-hand those off; only route residue it did not catch.
+If `domain-modeling` was active this session (the grill lenses run it), whatever it already wrote to `CONTEXT.md`, `ARCHITECTURE.md`, or `docs/adr/` counts as documented — do not re-hand those off; only route residue it did not catch.
 
 **At what scope?**
 

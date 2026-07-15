@@ -9,16 +9,17 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Standards
 
 - Be concise but maintain clear grammar. Commit messages: 50-char subject in imperative mood, explain WHY in body.
-- AI context files (CLAUDE.md, BRAND_DESIGN.md, UI_UX.md) state what is true TODAY in strict present tense. No aspirational language ("we'd like to", "try to") and no preferential language ("prefer", "prioritize", "when possible"): a soft verb leaves the exception to the model's discretion. Write rules as absolutes and document exceptions at point of use.
+- AI context files (`CLAUDE.md`, `BRAND_DESIGN.md`, `UI_UX.md`) state what is true TODAY in strict present tense. No aspirational language ("we'd like to", "try to") and no preferential language ("prefer", "prioritize", "when possible"): a soft verb leaves the exception to the model's discretion. Write rules as absolutes and document exceptions at point of use.
 - Do not treat memory from previous conversations as gospel. Treat as an ephemeral starting point and verify intelligently often.
 - Use LSP tools for code navigation, symbol searches, and diagnostics. Fall back to terminal commands only if LSP unavailable. LSP is active only when the per-machine server binary is installed (`typescript-language-server` for TS/JS, `pyright` for Python); `scripts/doctor.sh` checks this and prints the fix.
-- Follow @UI_UX.md for all UI/UX design and implementation decisions.
-- Follow @BRAND_DESIGN.md for all brand design and implementation decisions.
+- Follow [@UI_UX.md](UI_UX.md) for all UI/UX design and implementation decisions.
+- Follow [@BRAND_DESIGN.md](BRAND_DESIGN.md) for all brand design and implementation decisions.
 - Prefix unused variables with `_` to avoid lint warnings when maintaining backwards compatibility.
 - Confirm with the user to address root causes, not symptoms.
 - For monorepo projects, create a `CLAUDE.md` file nested inside each app/package directory (e.g., `apps/next-app/CLAUDE.md`, `packages/shared/CLAUDE.md`) instead of relying on a single root-level file. This ensures context is specific to each app's dependencies and conventions.
 - Evidence before completion claims: do not state something passes, builds, or is fixed without running the command that proves it. "Should work" is not "works".
 - No em-dashes (U+2014) in customer-facing text (UI, emails, marketing, AI prompts). Use commas, periods, or rephrasing instead. Hyphens (U+002D) and en-dashes (U+2013) are fine. Internal dev artifacts (code comments, CLAUDE.md, PRs) exempt.
+- Create a todo list when working on large complex tasks to track progress and remain on track.
 
 ### Project Standards
 
@@ -32,6 +33,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
   - Third time: Refactor into an abstraction
   - Reason: Prevents premature abstraction; with 3 examples, commonalities are clearer and you avoid wrong abstractions
   - Break the rule if: The abstraction is obvious and clearly named, or duplication will definitely grow. Choose duplication over the _wrong_ abstraction, but don't fear _right_ abstractions.
+- Build deep modules: a lot of behavior reachable through a small, stable interface, not shallow ones whose interface is nearly as complex as what they hide. Depth is leverage (behavior a caller gets per unit of interface it must learn), not implementation size, so hide more behind fewer entry points rather than padding the body. Judge a suspected-shallow module (a thin wrapper, a one-caller helper, a pass-through layer) with the deletion test: delete it and inline its body at the call site; if that duplicates real complexity across callers it earned its interface and stays, and if the complexity just relocates intact to one caller the interface pays for nothing, so inline it. Example: a one-call-site `formatName(u)` returning `` `${u.first} ${u.last}` `` is shallow, so inline it; a `pricing` module centralizing rounding, tax, and discount order across checkout, invoices, and refunds is deep, since deleting it duplicates that logic three ways.
+- Test at the interface, not past it: callers and tests cross the same seam. Extracting internals into pure functions is fine, but making them the test surface is not, because the bug usually lives in how they are called and a test that bypasses the call site verifies the fragment, not the behavior. When code is hard to test, reshape its public interface instead of reaching around it. Example: when an order total comes out wrong, test `checkout(cart)` and assert the resulting charge, not a `computeTotal(items)` pulled out of it, since the miscalculation is normally in how `checkout` assembles the `items` it passes.
+- Introduce a seam only when something actually varies across it: one adapter is a hypothetical seam, two are a real one. A port or interface with a single implementation and no second caller in sight is speculative indirection, not decoupling. Example: extracting a `Notifier` interface for a lone `EmailNotifier` earns nothing; add the seam when a second implementation (an SMS notifier, or a test double you genuinely need) exists, not in anticipation of one.
 - Operational errors (invalid input, DB timeout) = handle gracefully. Programmer errors (bugs, missing state) = crash and restart.
 - At trust boundaries and function entry, validate aggressively: assert invariants, reject impossible inputs, and use exhaustive `switch`/discriminated unions so unhandled cases fail fast and loudly.
 - Reserve these fail-fast checks for programmer errors (missing state, impossible combinations); handle expected operational errors (user input, network failures, etc.) through normal, graceful error handling.
@@ -86,12 +90,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Use Context7 for context gathering when applicable (`mcp__context7__*`).
 - Use the `linear` MCP for Linear issue, project, and cycle operations (`mcp__linear__*`). Configured at project scope in `.mcp.json`; requires per-user approval and OAuth via `/mcp`.
 - The `stripe` MCP (`mcp__plugin_stripe_stripe__*`) is for docs search and read-only lookups only.
+- For any Clerk auth task (auth state, user/org/session lookup, instance config, env keys, webhook integration), use the `clerk` MCP server (checked into `.mcp.json`, enabled for everyone); the `mcp__clerk__*` tools are the source of truth for in-code SDK snippets. (There is no `clerk` skill.)
+- Use PostHog (`mcp__plugin_posthog_posthog__*`) for product analytics: event/insight queries, error tracking, session recordings, feature flags, and SQL over product data (project "[]", id ``). Reach for it when a question is about user behavior, adoption, funnels, or production errors rather than code.
 
 ### Skills
 
 - Use project skills when applicable instead of improvising; per-skill roles and usage live in [the skills README](.claude/skills/README.md). When unsure which skill fits, read it before reaching for one.
 - `/grilling` is the interview primitive: a relentless, one-question-at-a-time session that resolves the decision tree of a plan, request, or captured task before implementation — facts get looked up in the codebase, decisions are put to the user. `/grill-me` (user-invoked only, never model-triggered) wraps it with the `domain-modeling` skill so glossary entries and ADRs are captured as decisions crystallise.
-- Domain vocabulary and architectural decisions live OUTSIDE this file: glossaries in `CONTEXT.md` (or per-context `CONTEXT.md` indexed by a root `CONTEXT-MAP.md`) and decisions in `docs/adr/`. Read them for ubiquitous language; invoke the `domain-modeling` skill (or `/grill-me`, which wraps it) to change the model.
+- Domain vocabulary, architectural decisions, and engineering shape live OUTSIDE this file: glossaries in `CONTEXT.md` (or per-context `CONTEXT.md` indexed by a root `CONTEXT-MAP.md`), decisions in `docs/adr/`, and shape in `ARCHITECTURE.md` (root doc = system topology; per-context docs beside each app or package). Read them for ubiquitous language and orientation, treating `ARCHITECTURE.md` claims as verify-before-act; invoke the `domain-modeling` skill (or `/grill-me`, which wraps it) to change the model or the shape docs.
 - Task capture is user's responsibility (tracking system, not memory). Suggest `/capture-task` once when user voices actionable asides or conversation drifts. Suggest, never auto-file. One nudge; if user doesn't bite, drop it. Do not use memory for work items.
 - Captured tasks land in `docs/tasks/YYYY-MM-DD-<type>-<slug>.md` (`type`: `bug` | `feature` | `chore`), structured per `.claude/skills/capture-task/assets/task-template.md`: frontmatter (`type`, `status: captured`, `created`) plus Context, Problem, Scope, Requirements, Acceptance criteria, Dependencies, Risks / open questions, with unknowns kept explicit as `TBD (needs grilling)`.
 - Convention capture is HITL. Suggest `/codify` once when a session surfaces a durable, undocumented convention or debugging gotcha worth writing into a context file (`CLAUDE.md`, `BRAND_DESIGN.md`, `UI_UX.md`). Suggest, never auto-run; one nudge; if user doesn't bite, drop it. Nothing is written without user approval of each candidate.
@@ -101,5 +107,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `scripts/doctor.sh` — warn-only check that the machine has the LSP server binaries Claude Code's plugins need (`typescript-language-server` for TS/JS, `pyright` for Python); wire it into `package.json` `prepare` so every `pnpm install` self-reports gaps. It informs, never blocks.
 
 ## Architecture / Tech Stack
+
+- The descriptive shape lives in `ARCHITECTURE.md` (root doc = system topology; per-context docs beside each app or package), maintained by the `domain-modeling` skill per its `ARCHITECTURE-FORMAT.md`. This section holds the imperative rules and gotchas for changing the code, pointing at shape facts rather than restating them.
 
 ## Deployment

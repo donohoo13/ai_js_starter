@@ -26,4 +26,6 @@ The one front door for interview sessions of any size and subject. Every session
 
 Accept obvious lens synonyms rather than being pedantic: eng, engineering, code → engineer; design, ux, ui, brand → product; learn, explore, investigate → research.
 
+**Lead with product when the _what_ is unsettled.** Some asks name a user-facing outcome without pinning down what it should become — "clean up how we display X", "build feature Y, what's a good design for it". The _how_ cannot be settled before the _what_, so route these to `grill-product` first; its existing hand-off carries the session into `grill-engineer` once the design position is sharp. When the _what_ is already specified — "change the list to a table with these columns", "add pagination to the users table" — go straight to `grill-engineer`; a known pattern needs no product pass, and `frontend-design`'s quality floor covers the polish during the build. This stays one routing decision: you pick the entry lens, the lens chain does the rest, the router never orchestrates or re-enters. A wrong call costs one corrective sentence, like any lens inference.
+
 Route once and get out of the way. If the subject drifts mid-session (a research chat crystallises into a build), the lens skill handles the pivot; the router never re-enters.

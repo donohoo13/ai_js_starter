@@ -23,6 +23,15 @@ A **seam** is the public boundary you test at: the interface where you observe b
 
 Ask: "What's the public interface, and which seams should we test?"
 
+### Choosing the seam by dependency
+
+What the code under test depends on decides where the seam goes and whether a test double is warranted. Classify each dependency:
+
+- **In-process** (pure computation, in-memory state, no I/O) — test through the module's interface directly. No adapter, no mock.
+- **Local-substitutable** (a real dependency with a faithful local stand-in: Postgres via PGLite, an in-memory filesystem) — run the stand-in in the suite and test through the interface. The seam is internal; keep it out of the module's public interface.
+- **Remote but owned** (your own services across a network) — define a port at the seam, inject a real transport adapter (HTTP/gRPC/queue) in production and an in-memory adapter in tests. Two adapters, so the seam is real.
+- **True external** (a third party you don't control: Stripe, Twilio) — inject a port, provide a mock adapter in tests. Mock only here, at the outermost edge; never mock internal collaborators.
+
 ## Anti-patterns
 
 - **Implementation-coupled** — mocks internal collaborators, tests private methods, or verifies through a side channel (querying the database instead of using the interface). The tell: the test breaks when you refactor but behavior hasn't changed.

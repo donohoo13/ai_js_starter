@@ -9,7 +9,7 @@ Opinionated JS/TS starter template optimized for AI-assisted development with Cl
 ## Standards
 
 - Be concise but maintain clear grammar. Commit messages: 50-char subject in imperative mood, explain WHY in body.
-- AI context files (CLAUDE.md, BRAND_DESIGN.md, UI_UX.md) state what is true TODAY in strict present tense. No aspirational language ("we'd like to", "try to") and no preferential language ("prefer", "prioritize", "when possible"): a soft verb leaves the exception to the model's discretion. Write rules as absolutes and document exceptions at point of use.
+- AI context files (CLAUDE.md, BRAND_DESIGN.md, UI_UX.md, ARCHITECTURE.md) state what is true TODAY in strict present tense. No aspirational language ("we'd like to", "try to") and no preferential language ("prefer", "prioritize", "when possible"): a soft verb leaves the exception to the model's discretion. Write rules as absolutes and document exceptions at point of use.
 - Do not treat memory from previous conversations as gospel. Treat as an ephemeral starting point and verify intelligently often.
 - Use LSP tools for code navigation, symbol searches, and diagnostics. Fall back to terminal commands only if LSP unavailable.
 - `UI_UX.md` and `BRAND_DESIGN.md` exist only under `src/` as template artifacts; this repo has no UI. Edit them as shipped content, holding them to the AI context file rules above.
