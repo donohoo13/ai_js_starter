@@ -40,7 +40,13 @@ Session context is capital — reuse what this conversation already knows — bu
 
 ## Fill the template
 
-`.github/PULL_REQUEST_TEMPLATE.md` owns the structure; this skill owns the semantics of each section. Template missing → offer once to scaffold it with the canonical structure below (it is a repo-visible file, so confirm before writing), and use the same structure for this PR either way.
+`.github/PULL_REQUEST_TEMPLATE.md` owns the structure; this skill owns the semantics of each section. It is loaded at invocation here (empty = missing) so you fill the project's actual sections, not an assumed set — a project may have customized them:
+
+```!
+cat .github/PULL_REQUEST_TEMPLATE.md 2>/dev/null
+```
+
+Empty output → the template is missing; offer once to scaffold it from the canonical structure below (a repo-visible file, so confirm before writing), and use that structure for this PR either way.
 
 ```markdown
 ## Summary

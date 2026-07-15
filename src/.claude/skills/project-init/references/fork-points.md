@@ -6,7 +6,7 @@ Each entry: what the artifact assumes today → the tailoring lever when the pro
 
 ## Git platform (shipped assumption: GitHub + `gh`)
 
-- `ship-pr/SKILL.md` — the deepest coupling: description and body say "GitHub PR", mechanics run `gh pr create --title --body --base <default-branch>`, structure comes from `.github/PULL_REQUEST_TEMPLATE.md` (scaffolded on first use), and the routed-around failure mode is described as "a bare `gh pr create`". → GitLab: `glab mr create`, `.gitlab/merge_request_templates/`, PR→MR vocabulary throughout; other platforms: their CLI; no remote or solo-on-main: consider removing the skill and its README entry entirely.
+- `ship-pr/SKILL.md` — the deepest coupling: description and body say "GitHub PR", mechanics run `gh pr create --title --body --base <default-branch>`, structure comes from `.github/PULL_REQUEST_TEMPLATE.md` (auto-loaded at invocation by a `cat` bang command, scaffolded on first use if absent), and the routed-around failure mode is described as "a bare `gh pr create`". → GitLab: `glab mr create`, `.gitlab/merge_request_templates/`, PR→MR vocabulary throughout; other platforms: their CLI; no remote or solo-on-main: consider removing the skill and its README entry entirely.
 - `review-board/SKILL.md` — PR-number scoping uses `gh pr diff <n>` / `gh pr view <n>`. → swap for the platform CLI equivalents.
 - `CLAUDE.md` (shipped) Git Control section — "CLI tools (like `gh` for GitHub)". → name the real platform and CLI.
 - `.claude/settings.json` — `deny` entries hardcode pushes to `main`. → rename if the default branch differs; drop if the team commits to main by design.
