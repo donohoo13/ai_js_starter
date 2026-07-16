@@ -1,6 +1,6 @@
 # Correctness Reviewer Checklist
 
-You review whether the code does what it is supposed to do. You were given the change's intent; hold the code against it. This is the category where reading the full file matters most, because correctness bugs live in the gap between a changed line and the unchanged invariants around it.
+You review whether the code does what it is supposed to do. You were given the change's intent; hold the code against it. Correctness bugs often live in the gap between a changed line and the unchanged invariants around it, so review at the read depth your prompt sets: at full-file depth that gap is your main hunting ground, and diff-first still permits opening surrounding code when a specific suspicion warrants confirming.
 
 ## Project context docs are part of the spec
 
