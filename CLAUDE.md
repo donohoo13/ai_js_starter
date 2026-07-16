@@ -19,6 +19,7 @@ Opinionated JS/TS starter template optimized for AI-assisted development with Cl
 - Evidence before completion claims: do not state something passes, builds, or is fixed without running the command that proves it. "Should work" is not "works".
 - Treat captured debugging artifacts (HAR files, log dumps, real request/response payloads, screen recordings) as secret-bearing: they routinely contain auth headers, session cookies, and PII. Keep them in a gitignored scratch path, never commit them, and delete them when the investigation ends.
 - Shipped shell scripts (`src/scripts/`, skill `scripts/`) stay bash-3.2 compatible: macOS pins `/bin/bash` there permanently, so no associative arrays, `mapfile`/`readarray`, or `${var,,}`. Anything needing bash 4+ isn't portable to stock developer Macs.
+- Shipped scripts and their defaults target a stock developer Mac, not the author's machine: personal directory layouts (`~/Code`) never become constants, a shell rc file is never assumed to exist (fresh macOS runs zsh with no `~/.zshrc` on disk), and no shipped command or env-var name is adopted without checking it against both a stock install and the tools this stack's users plausibly have. Machine-specific paths are env vars with a universal default; verifying a name is free on your own shell proves nothing.
 - No em-dashes (U+2014) in customer-facing text (UI, emails, marketing, AI prompts). Use commas, periods, or rephrasing instead. Hyphens (U+002D) and en-dashes (U+2013) are fine. Internal dev artifacts (code comments, CLAUDE.md, PRs) exempt.
 
 ### Git Control

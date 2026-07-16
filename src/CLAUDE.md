@@ -42,6 +42,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Don't propose a bug fix from reading code alone. If a bug can't be root-caused by inspection, reproduce it and prove the cause before changing code.
 - Treat captured debugging artifacts (HAR files, log dumps, real request/response payloads, screen recordings) as secret-bearing: they routinely contain auth headers, session cookies, and PII. Keep them in a gitignored scratch path, never commit them, and delete them when the investigation ends.
 - Shipped shell scripts (`scripts/`, skill `scripts/`) stay bash-3.2 compatible: macOS pins `/bin/bash` there permanently, so no associative arrays, `mapfile`/`readarray`, or `${var,,}`. Anything needing bash 4+ isn't portable to stock developer Macs.
+- Shipped scripts and their defaults target a stock developer Mac, not the machine they were written on: personal directory layouts (`~/Code`) never become constants, a shell rc file is never assumed to exist (fresh macOS runs zsh with no `~/.zshrc` on disk), and no shipped command or env-var name is adopted without checking it against both a stock install and the tools this stack's users plausibly have. Machine-specific paths are env vars with a universal default; verifying a name is free on your own shell proves nothing.
 - Structure tests using AAA: Arrange (setup), Act (execute), Assert (verify). Keep these sections visually separated
 - Use environment variables for configuration (ports, DB URLs, secrets). Never hardcode sensitive values.
 
