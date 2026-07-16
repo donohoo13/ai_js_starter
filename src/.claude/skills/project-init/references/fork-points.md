@@ -29,6 +29,13 @@ Each entry: what the artifact assumes today → the tailoring lever when the pro
 - `stage-for-commit/SKILL.md` — already main-friendly (user commits themselves); usually untouched. → where PRs are mandatory, reframe from commit-on-main to stage-on-branch feeding `/ship-pr`.
 - `ship-pr/SKILL.md` — refuses to run on the default branch; existence only makes sense with branch-based flow.
 
+## Worktree isolation (shipped assumption: worktrees at `~/Code/.worktrees`, Zed, pnpm)
+
+- `scripts/gwt-add.sh` / `scripts/gwt-remove.sh` — worktree base is `$HOME/Code/.worktrees/<project>/<branch>` (a machine-layout assumption), env copy covers `.env.local` only, install is `pnpm install`, editor launch is `zed` (`--no-open` skips it). → retarget the install command to the detected stack (`uv sync`, `npm install`, ...), extend the env-copy list to the project's real env files, swap `zed` for the team's editor CLI or drop the launch, and relocate the base path if the machine layout differs.
+- `implement-task/SKILL.md` — step 2 defaults to a worktree via `scripts/gwt-add.sh --no-open` plus the native `EnterWorktree` tool, deriving the branch as `<type>/<slug>` from the task filename. → projects that drop the scripts or the worktree flow revert step 2 to the ask-for-a-branch escape hatch (already its decline path); solo-on-main teams removing branch ceremony remove this with it.
+- `CLAUDE.md` (shipped) Git Control — the worktree rule is what authorizes the `EnterWorktree` tool under its usage gate. → keep in lockstep with whether the worktree flow ships.
+- `ship-pr/SKILL.md` — the close names `scripts/gwt-remove.sh <branch>` as post-merge cleanup. → same lockstep.
+
 ## Stack and toolchain (shipped assumption: TS/JS with pnpm, Python with uv)
 
 - `CLAUDE.md` (shipped) — Python and Javascript/Typescript sections, pnpm/Turborepo guidance, `[project overview]`/`[project standards]`/Architecture/Deployment placeholders. → prune sections for absent stacks, add the real stack's conventions, resolve every placeholder; `implement-task` discovers validate commands from this file, so its accuracy is load-bearing.
@@ -71,4 +78,4 @@ Run over `.claude/skills`, `.claude/agents`, `.claude/settings.json`, `.claude/h
 - Tracker: `grep -rniE 'linear|jira|docs/tasks|docs/briefs'`
 - Branch model: `grep -rniE '\bmain\b|default branch|guard-main'`
 - Toolchain: `grep -rniE 'pnpm|\buv\b|prettier|eslint|ruff|turbo'`
-- Infra: `grep -rniE 'lsp|context7|playwright|chrome-devtools|doctor|husky|prepare'`
+- Infra: `grep -rniE 'lsp|context7|playwright|chrome-devtools|doctor|husky|prepare|worktree|gwt|zed'`
