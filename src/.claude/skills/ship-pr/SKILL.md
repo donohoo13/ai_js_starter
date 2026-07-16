@@ -82,4 +82,4 @@ git push -u origin <branch>
 gh pr create --title "<title>" --body "<body>" --base <default-branch>
 ```
 
-`draft` in the arguments adds `--draft`. Report the PR URL, then stop: no reviewers, no labels, no auto-merge, no follow-up pushes unless asked. The PR is open; the rest is team process.
+`draft` in the arguments adds `--draft`. Report the PR URL — and when the session is working in a git worktree, add one line naming the post-merge cleanup (`scripts/gwt-remove.sh <branch>`, run from the main checkout; never run it yourself) — then stop: no reviewers, no labels, no auto-merge, no follow-up pushes unless asked. The PR is open; the rest is team process.

@@ -39,7 +39,7 @@ Parallel Claude Code sessions in one checkout clobber each other: branch switche
 - [x] `implement-task` (both layers) at step 2 proposes branch `<type>/<slug>` and the worktree target, asks one confirm, then runs the script and relocates via `EnterWorktree path:`; the session's working directory afterward is the worktree.
 - [x] Declining the confirm falls back to the old flow: user names a plain branch in the checkout, build proceeds there.
 - [x] Re-invoking `implement-task` for a task whose worktree already exists re-enters it instead of failing or duplicating.
-- [ ] `ship-pr` (both layers), when the session is in a worktree, closes its URL report with the one-line post-merge pointer to `scripts/gwt-remove.sh <branch>` run from the main checkout.
+- [x] `ship-pr` (both layers), when the session is in a worktree, closes its URL report with the one-line post-merge pointer to `scripts/gwt-remove.sh <branch>` run from the main checkout.
 - [x] CLAUDE.md Git Control (both layers) states the worktree rule in strict present tense.
 - [ ] `fork-points.md` gains a worktree-isolation section (path convention, Zed, pnpm, env-file list, implement-task dependency, revert lever) and the infra drift grep matches `worktree|gwt|zed`.
 - [ ] `pnpm format:check` passes.
@@ -71,5 +71,5 @@ This repo ships no test suite (no application code), so validation is behavioral
 
 - [x] Scripts: `--no-open` flag in `src/scripts/gwt-add.sh`, byte-identical copies of both scripts at root `scripts/`, smoke-tested against a throwaway repo — criteria 1, 2, and the slash-branch nice-to-have if trivial.
 - [x] Checkpoint: `implement-task` step 2 rewrite + CLAUDE.md Git Control rule + skills README rows, both layers — criteria 3, 4, 5, 7.
-- [ ] Cleanup pointer: `ship-pr` close gains the conditional `gwt-remove.sh` line, both layers — criterion 6.
+- [x] Cleanup pointer: `ship-pr` close gains the conditional `gwt-remove.sh` line, both layers — criterion 6.
 - [ ] Manifest: `fork-points.md` worktree section, drift grep extension, `project-init` Phase 4 scripts-bullet line — criterion 8.
