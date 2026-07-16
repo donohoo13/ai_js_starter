@@ -42,7 +42,7 @@ Parallel Claude Code sessions in one checkout clobber each other: branch switche
 - [x] `ship-pr` (both layers), when the session is in a worktree, closes its URL report with the one-line post-merge pointer to `scripts/gwt-remove.sh <branch>` run from the main checkout.
 - [x] CLAUDE.md Git Control (both layers) states the worktree rule in strict present tense.
 - [x] `fork-points.md` gains a worktree-isolation section (path convention, Zed, pnpm, env-file list, implement-task dependency, revert lever) and the infra drift grep matches `worktree|gwt|zed`.
-- [ ] `pnpm format:check` passes.
+- [x] `pnpm format:check` passes.
 
 ## Dependencies
 
