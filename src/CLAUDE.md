@@ -72,6 +72,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Use CLI tools (like `gh` for GitHub) for PR, issue, and remote repository management; fall back to raw git only when no CLI covers the operation.
 - Always verify you are on a valid branch before committing.
 - Never commit to main.
+- `implement-task` builds run in a dedicated git worktree — `scripts/gwt-add.sh --no-open <branch>` creates it, the native `EnterWorktree` tool relocates the session into it — so the main checkout stays on `main`; declining the skill's one confirm falls back to a plain feature branch. Post-merge cleanup is `scripts/gwt-remove.sh <branch>` from the main checkout.
 
 ### Markdown
 

@@ -1,6 +1,6 @@
 ---
 name: implement-task
-description: Build a scoped task file from docs/tasks/ slice by slice on a non-main branch — plan, TDD, validate, and commit each slice, keep the task file's status current, and gate done on human QA — never pushing or opening a PR itself. Use when the user points at a task file to build, says "implement this task", "pick up the task we scoped", "build the scoped task", or resumes scoped work in a fresh session.
+description: Build a scoped task file from docs/tasks/ slice by slice in a dedicated git worktree (or a non-main branch) — plan, TDD, validate, and commit each slice, keep the task file's status current, and gate done on human QA — never pushing or opening a PR itself. Use when the user points at a task file to build, says "implement this task", "pick up the task we scoped", "build the scoped task", or resumes scoped work in a fresh session.
 argument-hint: '[path to a docs/tasks/*.md file, or blank to pick from scoped tasks]'
 ---
 
@@ -21,9 +21,16 @@ Snapshots are from invocation time; re-check live state after any pause or user 
 - Path in `$ARGUMENTS` → read it. No path → confirm which of the scoped tasks in the snapshot above to build (in-progress ones are resumable).
 - Gate on readiness, not ceremony: `status: scoped` with concrete acceptance criteria means go. A file still `captured`, or with `TBD (needs grilling)` in load-bearing sections (Requirements, Acceptance criteria, Design decisions), is not buildable — recommend a `/grill-me engineer:` session on the file first and stop. Building on an under-specified file is how requirements get invented silently.
 
-## 2. Guard the branch
+## 2. Guard the workspace
 
-`git branch --show-current` — never build on `main`; ask the user to create or pick a feature branch and wait. Trust whatever non-main branch they choose.
+Never build on `main`, and never switch branches in a shared checkout — branch state is checkout-global, so a switch here yanks the tree out from under every other session working in it. The default workspace is a dedicated worktree:
+
+1. Derive the branch from the task filename: `docs/tasks/YYYY-MM-DD-<type>-<slug>.md` → `<type>/<slug>`.
+2. Resume case: `git worktree list` already shows that branch's worktree → enter it with `EnterWorktree` (`path:` pointing at it) and continue; never recreate.
+3. Otherwise, one confirm naming the branch and the worktree target (`$HOME/Code/.worktrees/<project>/<branch>`). On yes: verify the checkout is on `main` (a checkout parked on another branch seeds the worktree from the wrong tree — surface it and wait), run `scripts/gwt-add.sh --no-open <branch>`, then enter via `EnterWorktree` (`path:` the created worktree). This step is the project instruction that authorizes the `EnterWorktree` tool.
+4. Carry the tracker in: the task file (and often its whole `docs/tasks/` directory) is untracked in the main checkout, so it does not exist on the fresh branch — `mkdir -p docs/tasks` in the worktree and move the file over before the slice loop.
+
+Declining the confirm is the escape hatch: the user creates or picks a feature branch in the checkout and the build proceeds there — trust whatever non-main branch they choose. The same fallback applies where `scripts/gwt-add.sh` or the `EnterWorktree` tool is unavailable. Teardown is never this skill's job: post-merge cleanup is `scripts/gwt-remove.sh <branch>`, run by the user from the main checkout.
 
 ## 3. The slice loop
 
