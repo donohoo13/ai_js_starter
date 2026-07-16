@@ -1,6 +1,6 @@
 ---
 type: feature
-status: in-progress
+status: done
 created: 2026-07-16
 ---
 
