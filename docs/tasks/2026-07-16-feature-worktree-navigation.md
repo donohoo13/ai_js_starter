@@ -48,10 +48,10 @@ Secondary defect surfaced while grilling: `$HOME/Code/.worktrees` is the author'
 - [x] `cd "$(scripts/worktree.sh path feature/x)"` lands in the worktree from a shell with no shim installed, in both bash 3.2 and zsh.
 - [x] `scripts/worktree.sh path` with no argument renders the picker on stderr and emits only the chosen path on stdout, such that the `cd "$( … )"` form above works interactively.
 - [x] Bare `wtree` in a fresh terminal lists the current repo's worktrees (including `main`), accepts a number, and leaves the shell in that directory; it works from a subdirectory and from inside another worktree.
-- [ ] `scripts/doctor.sh` with no flags still exits 0 on a machine with missing binaries and prints only warnings.
-- [ ] `scripts/doctor.sh --fix` on a scratch `HOME` with no `.zshrc` creates the file, writes the marker block, and backs up nothing (no prior file); run twice, it does not duplicate the block.
-- [ ] `scripts/doctor.sh --fix` with a `wtree` function or binary already resolving exits non-zero without writing.
-- [ ] `scripts/doctor.sh --fix --dry-run` prints the intended diff and writes nothing.
+- [x] `scripts/doctor.sh` with no flags still exits 0 on a machine with missing binaries and prints only warnings.
+- [x] `scripts/doctor.sh --fix` on a scratch `HOME` with no `.zshrc` creates the file, writes the marker block, and backs up nothing (no prior file); run twice, it does not duplicate the block.
+- [x] `scripts/doctor.sh --fix` with a `wtree` function or binary already resolving exits non-zero without writing.
+- [x] `scripts/doctor.sh --fix --dry-run` prints the intended diff and writes nothing.
 - [ ] No file in either layer references `gwt-add.sh`, `gwt-remove.sh`, or a hardcoded `~/Code/.worktrees` (verified by grep across the repo).
 - [ ] `pnpm format:check` passes.
 
@@ -62,7 +62,7 @@ None external. Two actions on the author's machine, outside the repo, gated on h
 ## Risks / open questions
 
 - [x] RESOLVED before slice 1: `select` inside command substitution proven under `/bin/bash` 3.2.57 — the menu and `PS3` go to stderr natively, stdout carries only the chosen path, and no explicit `>&2` redirect is needed. Verified in bash and zsh.
-- [ ] Root layer currently has no `doctor.sh` (src-only) and root `package.json` `prepare` is `husky` alone. Adding the twin plus `husky && scripts/doctor.sh` is a small deliberate expansion of the root layer, taken so the author can install the shim from the repo he works in most. Revisit if it makes root/src drift harder to police.
+- [x] RESOLVED: root gained the `doctor.sh` twin and `prepare` is now `husky && scripts/doctor.sh`, verified running on this repo. Both script pairs are byte-identical across layers, so drift is a one-line `cmp` to police.
 - [ ] `worktree.sh path` parses `git worktree list --porcelain`; branch names containing spaces or unusual refs are untested. Slash-named branches are known-good (already handled by the existing prune loop).
 - [ ] The `wtree` name is clear today by search and on this machine, but the namespace is contested generally. The refuse-rather-than-shadow check is the durable guard, not the name choice.
 - [ ] `.git-worktrees` as default silently changes nothing for existing template users because none exist yet; the moment one does, this becomes a breaking default and needs a migration note.
@@ -85,5 +85,5 @@ This repo ships no test suite (no application code), so validation is behavioral
 
 - [x] `scripts/worktree.sh` in both layers: `add`/`remove`/`list`/`path` subcommands, `WORKTREE_ROOT` with the `$HOME/.git-worktrees` default, old `gwt-*.sh` deleted, smoke-tested against a throwaway repo — criteria 1 through 5.
 - [x] `worktree.sh shim [zsh|bash]` emitting the `wtree` function, both layers — the shim text exists in one place and prints installable output. (The zsh and bash bodies turned out identical, so the shell argument guards — refusing fish — rather than varying the output. The shim resolves `worktree.sh` from the main checkout, not `rev-parse --show-toplevel`, so it survives being run from a worktree whose branch predates the script.)
-- [ ] `doctor.sh --fix` (LSP install, shim install with marker/backup/create/idempotency/refusal, `--dry-run`), root-layer `doctor.sh` twin, root `prepare` wiring — criteria 7 through 10.
+- [x] `doctor.sh --fix` (LSP install, shim install with marker/backup/create/idempotency/refusal, `--dry-run`), root-layer `doctor.sh` twin, root `prepare` wiring — criteria 7 through 10.
 - [ ] Rewire the chain in both layers: `implement-task` step 2, skills README, `ship-pr` close, `CLAUDE.md` Git Control and Commands and Architecture, `project-init` Phase 4 scripts bullet, `fork-points.md` worktree section (the base-path fork point becomes "set `WORKTREE_ROOT`" rather than "edit the script") — criterion 11.
