@@ -232,8 +232,9 @@ cmd_shim() {
 # because several git-worktree CLIs ship a `wt` binary and a shell function
 # shadows a binary silently.
 #
-# Uncomment to override the default worktree root ($HOME/.git-worktrees):
-# export WORKTREE_ROOT="$HOME/Code/.worktrees"
+# Worktrees default to $HOME/.git-worktrees. Uncomment and set this to put them
+# wherever your machine keeps code; it is read by worktree.sh at runtime.
+# export WORKTREE_ROOT="$HOME/dev/.worktrees"
 wtree() {
   local main script
   # Resolve from the MAIN checkout (always the first `git worktree list` entry),

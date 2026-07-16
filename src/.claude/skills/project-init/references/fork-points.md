@@ -29,12 +29,14 @@ Each entry: what the artifact assumes today → the tailoring lever when the pro
 - `stage-for-commit/SKILL.md` — already main-friendly (user commits themselves); usually untouched. → where PRs are mandatory, reframe from commit-on-main to stage-on-branch feeding `/ship-pr`.
 - `ship-pr/SKILL.md` — refuses to run on the default branch; existence only makes sense with branch-based flow.
 
-## Worktree isolation (shipped assumption: worktrees at `~/Code/.worktrees`, Zed, pnpm)
+## Worktree isolation (shipped assumption: worktrees at `$HOME/.git-worktrees`, Zed, pnpm, zsh/bash)
 
-- `scripts/gwt-add.sh` / `scripts/gwt-remove.sh` — worktree base is `$HOME/Code/.worktrees/<project>/<branch>` (a machine-layout assumption), env copy covers `.env.local` only, install is `pnpm install`, editor launch is `zed` (`--no-open` skips it). → retarget the install command to the detected stack (`uv sync`, `npm install`, ...), extend the env-copy list to the project's real env files, swap `zed` for the team's editor CLI or drop the launch, and relocate the base path if the machine layout differs.
-- `implement-task/SKILL.md` — step 2 defaults to a worktree via `scripts/gwt-add.sh --no-open` plus the native `EnterWorktree` tool, deriving the branch as `<type>/<slug>` from the task filename. → projects that drop the scripts or the worktree flow revert step 2 to the ask-for-a-branch escape hatch (already its decline path); solo-on-main teams removing branch ceremony remove this with it.
+- `scripts/worktree.sh` — env copy covers `.env.local` only, install is `pnpm install`, editor launch is `zed` (`--no-open` skips it). → retarget the install command to the detected stack (`uv sync`, `npm install`, ...), extend the env-copy list to the project's real env files, and swap `zed` for the team's editor CLI or drop the launch.
+- `scripts/worktree.sh` worktree base — **no longer a fork point**: the base is `${WORKTREE_ROOT:-$HOME/.git-worktrees}/<project>/<branch>`, a universal default any user overrides by exporting `WORKTREE_ROOT` from their own rc file. → nothing to retarget; do not reintroduce a hardcoded path here.
+- `scripts/worktree.sh shim` / `scripts/doctor.sh --fix` — the `wtree` shell function is emitted for zsh and bash only, and `--fix` writes to `~/.zshrc` or `~/.bash_profile` (macOS login-shell convention). → fish and other shells get no shim and fall back to `cd "$(scripts/worktree.sh path)"`, which needs nothing; teams standardized on another shell add a branch to `worktree.sh`'s `cmd_shim` and to `doctor.sh`'s `rc_for_shell`. The `wtree` name is checked against the user's resolved commands at install time and refused on collision, so it needs no per-project retarget.
+- `implement-task/SKILL.md` — step 2 defaults to a worktree via `scripts/worktree.sh add --no-open` plus the native `EnterWorktree` tool, deriving the branch as `<type>/<slug>` from the task filename. → projects that drop the scripts or the worktree flow revert step 2 to the ask-for-a-branch escape hatch (already its decline path); solo-on-main teams removing branch ceremony remove this with it.
 - `CLAUDE.md` (shipped) Git Control — the worktree rule is what authorizes the `EnterWorktree` tool under its usage gate. → keep in lockstep with whether the worktree flow ships.
-- `ship-pr/SKILL.md` — the close names `scripts/gwt-remove.sh <branch>` as post-merge cleanup. → same lockstep.
+- `ship-pr/SKILL.md` — the close names `scripts/worktree.sh remove <branch>` as post-merge cleanup. → same lockstep.
 
 ## Stack and toolchain (shipped assumption: TS/JS with pnpm, Python with uv)
 

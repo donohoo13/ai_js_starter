@@ -73,7 +73,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Use CLI tools (like `gh` for GitHub) for PR, issue, and remote repository management; fall back to raw git only when no CLI covers the operation.
 - Always verify you are on a valid branch before committing.
 - Never commit to main.
-- `implement-task` builds run in a dedicated git worktree — `scripts/gwt-add.sh --no-open <branch>` creates it, the native `EnterWorktree` tool relocates the session into it — so the main checkout stays on `main`; declining the skill's one confirm falls back to a plain feature branch. Post-merge cleanup is `scripts/gwt-remove.sh <branch>` from the main checkout.
+- `implement-task` builds run in a dedicated git worktree — `scripts/worktree.sh add --no-open <branch>` creates it, the native `EnterWorktree` tool relocates the session into it — so the main checkout stays on `main`; declining the skill's one confirm falls back to a plain feature branch. Post-merge cleanup is `scripts/worktree.sh remove <branch>` from the main checkout.
 
 ### Markdown
 
@@ -106,8 +106,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Commands
 
-- `scripts/doctor.sh` — warn-only check that the machine has the LSP server binaries Claude Code's plugins need (`typescript-language-server` for TS/JS, `pyright` for Python); wire it into `package.json` `prepare` so every `pnpm install` self-reports gaps. It informs, never blocks.
-- `scripts/gwt-add.sh [--no-open] <branch>` / `scripts/gwt-remove.sh <branch>` — worktree create (env copy, `pnpm install`, Zed unless `--no-open`) and remove (worktree + branch + empty-parent prune); both resolve the main checkout themselves, so they run correctly from inside a worktree.
+- `scripts/doctor.sh [--fix [--dry-run]]` — bare: warn-only check that the machine has the LSP server binaries Claude Code's plugins need (`typescript-language-server` for TS/JS, `pyright` for Python); wire it into `package.json` `prepare` so every `pnpm install` self-reports gaps. It informs, never blocks. `--fix`: user-invoked only, installs the missing binaries and appends the `wtree` shell function to your rc file; `--dry-run` shows every change without writing.
+- `scripts/worktree.sh <add|remove|path|list|shim>` — worktree create (`add [--no-open] <branch>`: env copy, `pnpm install`, Zed unless `--no-open`), remove (worktree + branch + empty-parent prune), and navigation (`path [branch]` prints one path on stdout with the picker on stderr; `list` shows them). Worktrees live at `${WORKTREE_ROOT:-$HOME/.git-worktrees}/<project>/<branch>`, overridable per user by exporting `WORKTREE_ROOT`. It resolves the main checkout itself, so it runs correctly from inside a worktree or any subdirectory.
+- `wtree` — the shell function `scripts/worktree.sh shim` emits and `doctor.sh --fix` installs. Bare `wtree` lists this repo's worktrees and cd's you into the one you pick; other verbs delegate to the script. Only a shell function can cd its parent shell, which is why this exists at all. Without it: `cd "$(scripts/worktree.sh path)"`.
 
 ## Architecture / Tech Stack
 

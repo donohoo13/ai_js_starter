@@ -52,8 +52,8 @@ Secondary defect surfaced while grilling: `$HOME/Code/.worktrees` is the author'
 - [x] `scripts/doctor.sh --fix` on a scratch `HOME` with no `.zshrc` creates the file, writes the marker block, and backs up nothing (no prior file); run twice, it does not duplicate the block.
 - [x] `scripts/doctor.sh --fix` with a `wtree` function or binary already resolving exits non-zero without writing.
 - [x] `scripts/doctor.sh --fix --dry-run` prints the intended diff and writes nothing.
-- [ ] No file in either layer references `gwt-add.sh`, `gwt-remove.sh`, or a hardcoded `~/Code/.worktrees` (verified by grep across the repo).
-- [ ] `pnpm format:check` passes.
+- [x] No file in either layer references `gwt-add.sh`, `gwt-remove.sh`, or a hardcoded `~/Code/.worktrees` (verified by grep across the repo; `docs/tasks/` is excluded as historical record).
+- [x] `pnpm format:check` passes.
 
 ## Dependencies
 
@@ -86,4 +86,4 @@ This repo ships no test suite (no application code), so validation is behavioral
 - [x] `scripts/worktree.sh` in both layers: `add`/`remove`/`list`/`path` subcommands, `WORKTREE_ROOT` with the `$HOME/.git-worktrees` default, old `gwt-*.sh` deleted, smoke-tested against a throwaway repo — criteria 1 through 5.
 - [x] `worktree.sh shim [zsh|bash]` emitting the `wtree` function, both layers — the shim text exists in one place and prints installable output. (The zsh and bash bodies turned out identical, so the shell argument guards — refusing fish — rather than varying the output. The shim resolves `worktree.sh` from the main checkout, not `rev-parse --show-toplevel`, so it survives being run from a worktree whose branch predates the script.)
 - [x] `doctor.sh --fix` (LSP install, shim install with marker/backup/create/idempotency/refusal, `--dry-run`), root-layer `doctor.sh` twin, root `prepare` wiring — criteria 7 through 10.
-- [ ] Rewire the chain in both layers: `implement-task` step 2, skills README, `ship-pr` close, `CLAUDE.md` Git Control and Commands and Architecture, `project-init` Phase 4 scripts bullet, `fork-points.md` worktree section (the base-path fork point becomes "set `WORKTREE_ROOT`" rather than "edit the script") — criterion 11.
+- [x] Rewire the chain in both layers: `implement-task` step 2, skills README, `ship-pr` close, `CLAUDE.md` Git Control and Commands and Architecture, `project-init` Phase 4 scripts bullet, `fork-points.md` worktree section (the base-path fork point becomes "set `WORKTREE_ROOT`" rather than "edit the script") — criterion 11.
