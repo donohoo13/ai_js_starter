@@ -47,7 +47,7 @@ Secondary defect surfaced while grilling: `$HOME/Code/.worktrees` is the author'
 - [ ] `scripts/worktree.sh add --no-open feature/x` copies `.env.local`, runs `pnpm install`, and launches no editor; without the flag, Zed launches when on PATH. Current `gwt-add.sh` behavior is otherwise unchanged. (Env copy, install, `--no-open` suppression, and the zed-absent warning branch are all proven; the live `zed "$target"` launch is deferred to the human QA gate rather than claimed.)
 - [x] `cd "$(scripts/worktree.sh path feature/x)"` lands in the worktree from a shell with no shim installed, in both bash 3.2 and zsh.
 - [x] `scripts/worktree.sh path` with no argument renders the picker on stderr and emits only the chosen path on stdout, such that the `cd "$( … )"` form above works interactively.
-- [ ] Bare `wtree` in a fresh terminal lists the current repo's worktrees (including `main`), accepts a number, and leaves the shell in that directory; it works from a subdirectory and from inside another worktree.
+- [x] Bare `wtree` in a fresh terminal lists the current repo's worktrees (including `main`), accepts a number, and leaves the shell in that directory; it works from a subdirectory and from inside another worktree.
 - [ ] `scripts/doctor.sh` with no flags still exits 0 on a machine with missing binaries and prints only warnings.
 - [ ] `scripts/doctor.sh --fix` on a scratch `HOME` with no `.zshrc` creates the file, writes the marker block, and backs up nothing (no prior file); run twice, it does not duplicate the block.
 - [ ] `scripts/doctor.sh --fix` with a `wtree` function or binary already resolving exits non-zero without writing.
@@ -84,6 +84,6 @@ This repo ships no test suite (no application code), so validation is behavioral
 ## Slices
 
 - [x] `scripts/worktree.sh` in both layers: `add`/`remove`/`list`/`path` subcommands, `WORKTREE_ROOT` with the `$HOME/.git-worktrees` default, old `gwt-*.sh` deleted, smoke-tested against a throwaway repo — criteria 1 through 5.
-- [ ] `worktree.sh shim [zsh|bash]` emitting the `wtree` function, both layers — the shim text exists in one place and prints installable output.
+- [x] `worktree.sh shim [zsh|bash]` emitting the `wtree` function, both layers — the shim text exists in one place and prints installable output. (The zsh and bash bodies turned out identical, so the shell argument guards — refusing fish — rather than varying the output. The shim resolves `worktree.sh` from the main checkout, not `rev-parse --show-toplevel`, so it survives being run from a worktree whose branch predates the script.)
 - [ ] `doctor.sh --fix` (LSP install, shim install with marker/backup/create/idempotency/refusal, `--dry-run`), root-layer `doctor.sh` twin, root `prepare` wiring — criteria 7 through 10.
 - [ ] Rewire the chain in both layers: `implement-task` step 2, skills README, `ship-pr` close, `CLAUDE.md` Git Control and Commands and Architecture, `project-init` Phase 4 scripts bullet, `fork-points.md` worktree section (the base-path fork point becomes "set `WORKTREE_ROOT`" rather than "edit the script") — criterion 11.

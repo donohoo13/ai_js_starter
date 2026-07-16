@@ -7,6 +7,7 @@ set -euo pipefail
 #   remove <branch> [git worktree remove flags]
 #   path [branch]      print one absolute path to stdout (picker renders on stderr)
 #   list               print this repo's worktrees
+#   shim [zsh|bash]    print the `wtree` shell function for a shell rc file
 #
 # Worktrees live at ${WORKTREE_ROOT:-$HOME/.git-worktrees}/<project>/<branch>.
 # WORKTREE_ROOT is a per-user machine preference, exported from a shell rc file;
@@ -27,10 +28,12 @@ Usage: worktree.sh <command> [args]
   remove <branch> [git flags]            remove worktree, delete branch, prune empty parents
   path [branch]                          print one worktree path (no branch: interactive picker)
   list                                   list this repo's worktrees
+  shim [zsh|bash]                        print the `wtree` shell function for your rc file
 
 Worktrees live at ${WORKTREE_ROOT:-$HOME/.git-worktrees}/<project>/<branch>.
 
   cd "$(scripts/worktree.sh path)"       jump to a worktree without the shim
+  scripts/doctor.sh --fix                install the shim (and LSP binaries) for you
 USAGE
 }
 
@@ -207,6 +210,55 @@ cmd_remove() {
   done
 }
 
+# Print the `wtree` shell function, markers included, for appending to a shell
+# rc file. This is the one place the shim text exists; doctor.sh --fix appends
+# whatever this emits rather than carrying its own copy, so the two cannot drift.
+#
+# The zsh and bash bodies are identical (`local`, `[ ]`, `$#`, `return $?` are
+# common to both), so the shell argument guards rather than varies the output:
+# it exists to refuse fish, which shares no syntax and has no `select`.
+cmd_shim() {
+  local shell="${1:-$(basename "${SHELL:-unknown}")}"
+  case "$shell" in
+    zsh | bash) ;;
+    fish) die "fish needs its own shim (different function syntax, no \`select\` builtin). Until one exists: cd \"\$(scripts/worktree.sh path)\"" ;;
+    *) die "unsupported shell '$shell' — pass zsh or bash, or use: cd \"\$(scripts/worktree.sh path)\"" ;;
+  esac
+
+  cat <<'SHIM'
+# >>> wtree shim >>>
+# Jump into any worktree of the repo you are standing in, from any depth.
+# Rename this function to taste — it is yours. It is `wtree` and not `wt`
+# because several git-worktree CLIs ship a `wt` binary and a shell function
+# shadows a binary silently.
+#
+# Uncomment to override the default worktree root ($HOME/.git-worktrees):
+# export WORKTREE_ROOT="$HOME/Code/.worktrees"
+wtree() {
+  local main script
+  # Resolve from the MAIN checkout (always the first `git worktree list` entry),
+  # never from `rev-parse --show-toplevel`: inside a worktree the latter returns
+  # that worktree's root, so the shim would depend on whatever the branch you
+  # happen to be standing on contains, and would die on any branch older than
+  # this script.
+  main="$(git worktree list --porcelain 2>/dev/null | head -1 | sed 's/^worktree //')"
+  script="$main/scripts/worktree.sh"
+  if [ -z "$main" ] || [ ! -x "$script" ]; then
+    echo "wtree: no scripts/worktree.sh in this repo" >&2
+    return 1
+  fi
+  if [ "$#" -eq 0 ] || [ "$1" = "cd" ]; then
+    local dest
+    dest=$("$script" path "${2-}") || return $?
+    cd "$dest"
+  else
+    "$script" "$@"
+  fi
+}
+# <<< wtree shim <<<
+SHIM
+}
+
 command_name="${1:-}"
 [ -n "$command_name" ] || {
   usage >&2
@@ -219,6 +271,7 @@ case "$command_name" in
   remove) cmd_remove "$@" ;;
   path) cmd_path "$@" ;;
   list) cmd_list "$@" ;;
+  shim) cmd_shim "$@" ;;
   -h | --help | help) usage ;;
   *) die "unknown command '$command_name' (try: worktree.sh --help)" ;;
 esac
