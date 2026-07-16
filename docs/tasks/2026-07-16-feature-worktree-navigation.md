@@ -36,7 +36,7 @@ Secondary defect surfaced while grilling: `$HOME/Code/.worktrees` is the author'
 - `--fix` resolves the target rc from `$SHELL` (the login shell), not `$0`, since the script runs under `#!/usr/bin/env bash` and `$0` always reports bash. macOS bash login shells read `~/.bash_profile`, not `~/.bashrc`.
 - `--fix` refuses to install rather than shadow: if `command -v wtree` or `alias wtree` resolves, it errors out and says so. A shell function silently shadows a PATH binary, and `wt` was rejected as the command name precisely because several git-worktree CLIs (`raisedadead/wt`, `bwishan/wt`, `bkildow/wt-cli`, Worktrunk) ship a `wt` binary to exactly our user population.
 - `--fix` is its own consent: it does not prompt per item, but prints every path it touched and tells the user the shim is absent from the current shell until `source` or a new tab.
-- The installed shim block carries a comment inviting a rename, and is where a user sets `export WORKTREE_ROOT=...`.
+- The installed shim block is a MANAGED block: `--fix` regenerates everything between the markers, so it carries a comment directing user edits (worktree root, any rename/alias) ABOVE it, outside the markers, where regeneration cannot reach them. (Corrected during the build: the original requirement told users to edit inside the block, which `--fix` would have silently reverted.)
 - Scripts stay bash-3.2 compatible per CLAUDE.md: no associative arrays, no `mapfile`, no `${var,,}`.
 - Root and `src/` copies of `worktree.sh` and `doctor.sh` stay byte-identical twins, matching the convention `CLAUDE.md:79` states for the current gwt pair.
 
