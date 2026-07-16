@@ -20,7 +20,10 @@ fi
 branch="$1"
 shift
 
-main_root=$(git rev-parse --show-toplevel 2>/dev/null || true)
+# The main checkout is always the first entry in `git worktree list`;
+# rev-parse --show-toplevel would return the linked worktree's own path when
+# invoked from inside one, mis-deriving <project> below.
+main_root=$(git worktree list --porcelain 2>/dev/null | head -1 | sed 's/^worktree //')
 if [[ -z "$main_root" ]]; then
   echo "Error: not inside a git repository" >&2
   exit 1
@@ -30,7 +33,12 @@ project=$(basename "$main_root")
 target="$HOME/Code/.worktrees/$project/$branch"
 
 echo "Creating worktree at $target for branch $branch"
-git worktree add "$target" -b "$branch" "$@"
+if git rev-parse --verify --quiet "refs/heads/$branch" >/dev/null; then
+  echo "Branch $branch already exists — attaching worktree to it."
+  git worktree add "$target" "$branch" "$@"
+else
+  git worktree add "$target" -b "$branch" "$@"
+fi
 
 echo "Copying env files..."
 if [[ -f "$main_root/.env.local" ]]; then
@@ -49,7 +57,10 @@ else
 fi
 
 echo "Installing dependencies..."
-(cd "$target" && pnpm install)
+if ! (cd "$target" && pnpm install); then
+  echo "Warning: pnpm install failed — worktree is ready but dependencies are missing." >&2
+  echo "  Retry with: (cd $target && pnpm install)" >&2
+fi
 
 echo ""
 echo "── Worktree ready ────────────────────────────"

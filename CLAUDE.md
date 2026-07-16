@@ -64,6 +64,7 @@ Opinionated JS/TS starter template optimized for AI-assisted development with Cl
 
 - `pnpm format` / `pnpm format:check` — Prettier write/check across the repo.
 - `pnpm install` — installs dev tooling and registers the husky pre-commit hook via the `prepare` script.
+- `scripts/gwt-add.sh [--no-open] <branch>` / `scripts/gwt-remove.sh <branch>` — worktree create (env copy, `pnpm install`, Zed unless `--no-open`) and remove (worktree + branch + empty-parent prune); both resolve the main checkout themselves, so they run correctly from inside a worktree.
 - The pre-commit hook (`.husky/pre-commit`) auto-formats staged files with Prettier and re-stages them. There is no build, test, or lint step; the repo contains no application code.
 
 ## Architecture

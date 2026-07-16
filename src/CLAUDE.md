@@ -106,6 +106,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Commands
 
 - `scripts/doctor.sh` — warn-only check that the machine has the LSP server binaries Claude Code's plugins need (`typescript-language-server` for TS/JS, `pyright` for Python); wire it into `package.json` `prepare` so every `pnpm install` self-reports gaps. It informs, never blocks.
+- `scripts/gwt-add.sh [--no-open] <branch>` / `scripts/gwt-remove.sh <branch>` — worktree create (env copy, `pnpm install`, Zed unless `--no-open`) and remove (worktree + branch + empty-parent prune); both resolve the main checkout themselves, so they run correctly from inside a worktree.
 
 ## Architecture / Tech Stack
 

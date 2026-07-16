@@ -13,7 +13,10 @@ fi
 branch="$1"
 shift
 
-main_root=$(git rev-parse --show-toplevel 2>/dev/null || true)
+# The main checkout is always the first entry in `git worktree list`;
+# rev-parse --show-toplevel would return the linked worktree's own path when
+# invoked from inside one, mis-deriving <project> below.
+main_root=$(git worktree list --porcelain 2>/dev/null | head -1 | sed 's/^worktree //')
 if [[ -z "$main_root" ]]; then
   echo "Error: not inside a git repository" >&2
   exit 1
