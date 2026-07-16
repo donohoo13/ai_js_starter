@@ -26,6 +26,7 @@ Opinionated JS/TS starter template optimized for AI-assisted development with Cl
 - Use CLI tools (like `gh` for GitHub) for PR, issue, and remote repository management; fall back to raw git only when no CLI covers the operation.
 - Always verify you are on a valid branch before committing.
 - Never commit to main.
+- `implement-task` builds run in a dedicated git worktree — `scripts/gwt-add.sh --no-open <branch>` creates it, the native `EnterWorktree` tool relocates the session into it — so the main checkout stays on `main`; declining the skill's one confirm falls back to a plain feature branch. Post-merge cleanup is `scripts/gwt-remove.sh <branch>` from the main checkout.
 
 ### Markdown
 
@@ -63,6 +64,7 @@ Opinionated JS/TS starter template optimized for AI-assisted development with Cl
 
 - `pnpm format` / `pnpm format:check` — Prettier write/check across the repo.
 - `pnpm install` — installs dev tooling and registers the husky pre-commit hook via the `prepare` script.
+- `scripts/gwt-add.sh [--no-open] <branch>` / `scripts/gwt-remove.sh <branch>` — worktree create (env copy, `pnpm install`, Zed unless `--no-open`) and remove (worktree + branch + empty-parent prune); both resolve the main checkout themselves, so they run correctly from inside a worktree.
 - The pre-commit hook (`.husky/pre-commit`) auto-formats staged files with Prettier and re-stages them. There is no build, test, or lint step; the repo contains no application code.
 
 ## Architecture
@@ -74,4 +76,4 @@ Two-layer meta-repo: `src/` is the product (the payload copied into new projects
 - `.claude/skills/README.md` is the human-readable map of the skill chain (`/grill-me` router → engineer/product/research lenses → capture/diagnose/implement/review/codify, with `grilling`, `domain-modeling`, and `tdd` as primitives). Read it before editing any skill; skills invoke each other by name, so check callers and callees.
 - `.claude/agents/` holds the five `review-*` agents (the review-board seats, each pointing at a checklist in `.claude/skills/review-board/references/`) plus `research-analyst`, the background evidence fetcher dispatched mid-interview by `grill-research` and `grill-product`. Same set mirrored in `src/.claude/agents/`.
 - `src/.claude/skills/project-init/` exists only in the template layer (deliberately no root counterpart — the template repo itself never gets inited): a one-shot, self-removing onboarding auditor that tailors the shipped suite to its destination project. Its `references/fork-points.md` is the maintained map of every tool and platform coupling in the payload; any edit that changes a shipped skill's coupling (platform CLI, tracker path, branch model, LSP or plugin dependency) updates that manifest in the same change.
-- `src/scripts/gwt-add.sh` / `gwt-remove.sh` are git worktree helpers shipped with the template (worktree at `~/Code/.worktrees/<project>/<branch>`, env copy, `pnpm install`, opens in Zed). `src/scripts/doctor.sh` is the warn-only machine-prerequisite check (LSP server binaries) that new projects wire into `package.json` `prepare`.
+- `scripts/gwt-add.sh` / `gwt-remove.sh` (byte-identical twins shipped in `src/scripts/`) are the git worktree helpers behind implement-task's step-2 checkpoint (worktree at `~/Code/.worktrees/<project>/<branch>`, env copy, `pnpm install`, opens in Zed unless `--no-open`). `src/scripts/doctor.sh` is the warn-only machine-prerequisite check (LSP server binaries) that new projects wire into `package.json` `prepare`.
