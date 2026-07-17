@@ -69,19 +69,23 @@ Every section after the header and "What it is" is optional — include what the
 - **Descriptive, present tense, true today.** The doc states what is, in the indicative mood. Imperative rules live in `CLAUDE.md`; when a fact has both forms, the shape statement here is canonical and `CLAUDE.md` points at it.
 - **Length is a feature.** A per-context doc past ~150 lines has stopped being a quick glance. Over the cap, cut inventory first; flows and invariants never.
 
+## Growth
+
+The doc starts lazily and grows incrementally, the same way `CONTEXT.md` grows: the first real shape-fact — one invariant with its why, one flow, one boundary — creates the file, and each session that surfaces another fact adds it. A one-fact doc orients better than no doc, and every fact in it is true, which is the only bar. What is banned is the **stub**: placeholder headings, `TODO` sections, empty scaffolding inviting fill-in. Sections from the structure above appear only when they have real content; a doc that is one header line and two invariants is healthy, not incomplete. A greenfield context gets its doc when its first real shape exists (an entrypoint and one flow), not at scaffold time.
+
 ## Survey bootstrap
 
-Never create an `ARCHITECTURE.md` lazily or as a stub — a shape doc orients in one pass or not at all. To author one for a context with existing code:
+The on-demand authoring path: when the user asks to document the architecture and wants the whole map in one pass rather than waiting for incremental growth. To survey a context with existing code:
 
 1. **Read the spine**: the entrypoint, the manifests, and the runtime/deploy config (`wrangler.jsonc`, `Dockerfile`, `vite.config.*`, CI deploy steps) — deploy config is where identity gotchas and binding topology live.
 2. **Trace the key flows** end to end: the 2–5 paths that explain most of the behavior.
 3. **Read the boundaries**: service contracts, bindings, schema ownership, who holds which secrets, what is shared with siblings.
 4. **Mine the existing record**: `CLAUDE.md` rules and ADRs whose underlying shape-facts belong here, dev-vs-prod differences, name mismatches.
 
-For a multi-context repo, fan out one research agent per context plus one for the root topology, then synthesize the set together — writing the per-context docs and the root doc in one pass is what lets every shared fact get its one canonical home from the start. A greenfield context gets its doc when its first real shape exists (an entrypoint and one flow), not at scaffold time.
+For a multi-context repo, fan out one research agent per context plus one for the root topology, then synthesize the set together — writing the per-context docs and the root doc in one pass is what lets every shared fact get its one canonical home from the start.
 
 ## Maintenance
 
 The doc is updated by the session that changes the shape, in the same change: a new module, a moved boundary, a changed data flow, a new or removed dependency between contexts. Two nets enforce this — `implement-task` runs a shape check before its QA gate, and the review board's correctness seat treats a diff that contradicts the doc as a finding (either the code is wrong or the doc must be updated in that change). Renames and refactors that move no boundary touch nothing here — that is what the responsibility-not-inventory rule buys.
 
-A shape change in a context with no `ARCHITECTURE.md` triggers neither a stub nor silence: the session offers the survey bootstrap in the same pass — one nudge, in the repo's suggest-once idiom; decline drops it for the session. The offer names the delta that has nowhere to land and cites prior declines (grep `docs/tasks/` for `ARCHITECTURE.md bootstrap declined`) so a re-offer is informed rather than fresh nagging. On decline with a task file in play, the session records that exact phrase plus the un-landed delta as one line in the task file — provenance for the eventual survey, never an incremental seed; born-whole stands.
+A shape change in a context with no `ARCHITECTURE.md` creates the doc with that one fact — the growth rule above, applied at the moment the fact lands. No offer, no deferral: a one-fact doc is a valid doc, and the session that knows the fact is the cheapest author it will ever have.
