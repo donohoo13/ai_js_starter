@@ -6,6 +6,7 @@
   "scripts": {
     "format": "prettier --write .",
     "format:check": "prettier --check .",
+    "test": "scripts/test.sh",
     "prepare": "husky && scripts/doctor.sh"
   },
   "keywords": [],
