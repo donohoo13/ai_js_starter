@@ -42,7 +42,7 @@ Read `references/example-scoped-task.md` (sibling of this SKILL.md) for the shap
 
 - Resolve every `TBD (needs grilling)` the session answered; anything still unknown stays an explicit TBD rather than invented content.
 - Fill the scoped sections: **Design decisions** (interfaces and contracts, not file paths or code snippets — those go stale), **Test strategy**, and **Slices**.
-- Slices are vertical tracer bullets: each a thin, complete, demoable cut through every layer it touches, listed in dependency order — list order IS the build order. Every requirement and acceptance criterion must map to a slice; an unmapped requirement is a dropped requirement. If the design yields exactly one slice, omit the Slices section entirely — the task itself is the unit of work.
+- Slices are the only decomposition unit: one coherent ask stays one task file, never a set of sibling per-area files. Slices are vertical tracer bullets: each a thin, complete, demoable cut through every layer it touches, listed in dependency order — list order IS the build order. Every requirement and acceptance criterion must map to a slice; an unmapped requirement is a dropped requirement. If the design yields exactly one slice, omit the Slices section entirely — the task itself is the unit of work.
 - Flip frontmatter to `status: scoped`.
 
 No GitHub issues, labels, or sub-issues — the file is the tracker.
