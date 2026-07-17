@@ -15,6 +15,7 @@ Capture what the user just described as one markdown file in `docs/tasks/`, then
 - Verification budget is seconds, not minutes: confirm a file path or symbol name with a quick search if it makes the capture more precise, but never launch an investigation. Capture speed beats completeness.
 - Do not design the fix. Noting a suspected cause or a rough shape the user voiced is fine; solutioning is the future session's job.
 - Fill only what the conversation actually surfaced. A section with nothing known gets a single `TBD (needs grilling)` line, never invented content. The explicit gap is what separates decided from needs-discovery for the team.
+- One coherent ask is one file, even when it spans several surfaces or decision areas: group requirements by area inside the single file rather than splitting into per-area siblings — decomposition into slices happens later at scoping, with the code in view. Separate files are only for genuinely unrelated items the user brought as separate asks; if a split seems warranted anyway, put parent-vs-split to the user as an explicit question recommending the single parent, never as a pre-bundled choice inside one confirm.
 
 ## Task file
 
