@@ -92,6 +92,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Use the `linear` MCP for Linear issue, project, and cycle operations (`mcp__linear__*`). Configured at project scope in `.mcp.json`; requires per-user approval and OAuth via `/mcp`.
 - The `stripe` MCP (`mcp__plugin_stripe_stripe__*`) is for docs search and read-only lookups only.
 - For any Clerk auth task (auth state, user/org/session lookup, instance config, env keys, webhook integration), use the `clerk` MCP server (checked into `.mcp.json`, enabled for everyone); the `mcp__clerk__*` tools are the source of truth for in-code SDK snippets. (There is no `clerk` skill.)
+- Account-bound OAuth MCP servers are project-scoped in `.mcp.json` and named `<service-server>-<slug>` using the project MCP slug documented in this section: Claude Code keys MCP OAuth tokens by server name in one machine-global store, so a fixed-name server shares one token across every project on the machine. Fixed-name plugin or user-level servers are for unauthenticated or single-account services only. Never re-auth a shared fixed-name server from inside a project, and never deduplicate the project-suffixed servers into a shared one.
 - Use PostHog (`mcp__plugin_posthog_posthog__*`) for product analytics: event/insight queries, error tracking, session recordings, feature flags, and SQL over product data (project "[]", id ``). Reach for it when a question is about user behavior, adoption, funnels, or production errors rather than code.
 
 ### Skills
