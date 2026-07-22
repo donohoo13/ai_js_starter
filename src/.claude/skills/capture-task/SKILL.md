@@ -35,6 +35,6 @@ The quality bar: someone new to the project should be able to read the file and 
 
 ## After writing
 
-Confirm in one line with the file path, and note the task can be picked up later by running `/grill-me engineer: <file>` (or `/grill-engineer` directly) against the file in a fresh session. Do not commit, do not create GitHub issues, and do not edit any other files.
+Confirm in one line with the file path, and note the task can be picked up by running `/grill-me engineer: <file>` (or `/grill-engineer` directly) against the file. Cold-start survivability is the file's quality bar, not a prescription for the user: whether scoping continues in this session or a later one is not capture's call, so do not append "in a fresh session" to the confirm. Do not commit, do not create GitHub issues, and do not edit any other files.
 
 $ARGUMENTS
