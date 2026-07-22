@@ -22,6 +22,15 @@
             "command": "input=$(cat); case \"$input\" in *git*) printf '%s' \"$input\" | node \"$CLAUDE_PROJECT_DIR/.claude/hooks/guard-main.mjs\";; esac"
           }
         ]
+      },
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "input=$(cat); case \"$input\" in *.claude/skills/*) printf '%s' \"$input\" | node \"$CLAUDE_PROJECT_DIR/.claude/hooks/guard-skill-edit.mjs\";; esac"
+          }
+        ]
       }
     ]
   },

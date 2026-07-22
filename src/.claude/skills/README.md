@@ -18,7 +18,7 @@ One front door for interview sessions, three lenses behind it, and a task file t
 /diagnose — the bug front door: feedback loop → repro+minimize → ranked hypotheses → fix via /tdd + human QA gate; no-seam and prevention findings → /capture-task
 /codify — end-of-session knowledge capture; durable conventions to the narrowest CLAUDE.md or design file, vocabulary, shape facts, and ADRs hand off to domain-modeling
 /ship-pr — the one door to the remote: push the branch and open a PR documenting QA and the review-board outcome; offered by implement-task and review-board, run only on the user's word
-primitives under the hood: grilling, domain-modeling, tdd, frontend-design
+primitives under the hood: grilling, domain-modeling, tdd, frontend-design, skill-creator
 ```
 
 The task file lifecycle lives in its frontmatter: `captured` (filed, unknowns explicit as `TBD (needs grilling)`) → `scoped` (grilled; design decisions, test strategy, and slices written) → `in-progress` → `done`. The shared format is defined once in `capture-task/assets/task-template.md` and referenced by capture-task, grill-engineer, and implement-task. No GitHub issues anywhere in the chain — the file is the tracker; push and PR happen only through `/ship-pr`, only on the user's word.
@@ -58,6 +58,10 @@ Test-driven development discipline: red before green, one seam at a time, tests 
 ## frontend-design
 
 Design-quality primitive for anything user-facing: reads the project's `BRAND_DESIGN.md` / `UI_UX.md` (plus app-level overrides and the theme CSS, the source of truth for token values) before proposing anything, spends creativity only on the axes those docs leave free, and holds every build to an objective quality floor — interaction states, 150–300ms motion with `prefers-reduced-motion`, real form labels, layout stability, SVG-not-emoji icons, both-theme contrast, keyboard access. On greenfield projects with skeletal docs it derives the first token system and offers once to codify it back into the design docs. Invoked by implement-task's deep-plan step for UI-surface slices; also triggers directly on any build-or-restyle-UI request.
+
+## skill-creator
+
+The skill-authoring primitive and the mandated path for any change under `.claude/skills/`: a CLAUDE.md rule plus wire-ins in grill-engineer's build-now exit and implement-task's deep plan load it, and the `guard-skill-edit` PreToolUse hook denies skill-file edits until it is loaded. Carries the authoring discipline — trigger-accurate third-person descriptions, progressive disclosure with references one hop deep, why-over-MUSTs style, rewrite-accreted-prose — with limits, frontmatter keys, and sources in `skill-creator/references/skill-quality.md`, and closes every substantive change with a gut-check handoff: test prompts the user runs in a fresh session, because the authoring session is too warm to prove cold-start triggering. Every change lands with its checklist: project/template dual-layer sync, README blurb updates, and fork-points coupling checks. It never runs tests itself — evaluation is the user's fresh session, not the author's warm one.
 
 ## review-board
 
@@ -110,6 +114,7 @@ Strictly HITL and never a session-end ritual: user-invoked ("codify", "add this 
 | Build scoped work                    | `implement-task`                                                   | Yes — the resume door                                  |
 | Test-first discipline                | `tdd`                                                              | Rarely — invoked under the hood                        |
 | UI/visual design                     | `frontend-design`                                                  | Rarely — triggers on UI work or via implement-task     |
+| Skill authoring                      | `skill-creator`                                                    | Rarely — loads on any skill-file edit (hook-enforced)  |
 | Interview mechanics                  | `grilling`                                                         | Rarely — lens skills run it                            |
 | Context docs (glossary, shape, ADRs) | `domain-modeling`                                                  | Rarely — lens sessions, or "document the architecture" |
 | Pre-merge review                     | `review-board`                                                     | Yes, or offered by implement-task                      |

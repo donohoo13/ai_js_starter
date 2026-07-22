@@ -72,7 +72,7 @@ Each entry: what the artifact assumes today → the tailoring lever when the pro
 
 ## Neutral by design (rarely forked)
 
-`grilling`, `grill-me`, `grill-product`, `grill-research`, `domain-modeling`, `tdd`, `frontend-design`, `diagnose`, `skill-creator` — mechanics are platform- and stack-agnostic on purpose; they inherit tailoring through the context files. Fork one of these only on demonstrated need from the interview, never speculatively.
+`grilling`, `grill-me`, `grill-product`, `grill-research`, `domain-modeling`, `tdd`, `frontend-design`, `diagnose`, `skill-creator` — mechanics are platform- and stack-agnostic on purpose; they inherit tailoring through the context files. Fork one of these only on demonstrated need from the interview, never speculatively. `skill-creator`'s dual-layer sync line self-deactivates outside the template meta-repo, and its `guard-skill-edit` PreToolUse hook (settings.json entry + `.claude/hooks/guard-skill-edit.mjs`) ships as neutral machinery alongside `guard-main`.
 
 ## Drift greps
 
