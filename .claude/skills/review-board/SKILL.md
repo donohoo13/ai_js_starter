@@ -16,7 +16,8 @@ Two principles run through every step:
 ## State at invocation
 
 - Branch: !`git branch --show-current`
-- Committed delta vs merge-base with main: !`base=$(git merge-base main HEAD 2>/dev/null); [ -n "$base" ] && [ "$base" != "$(git rev-parse HEAD)" ] && git diff --stat "$base" HEAD | tail -1 || echo "(none: on main, or no main merge-base)"`
+- Default branch: !`def=$(git symbolic-ref --short refs/remotes/origin/HEAD 2>/dev/null); def=${def#*/}; echo "${def:-main}"`
+- Committed delta vs merge-base with the default branch: !`def=$(git symbolic-ref --short refs/remotes/origin/HEAD 2>/dev/null); def=${def#*/}; def=${def:-main}; base=$(git merge-base "$def" HEAD 2>/dev/null); [ -n "$base" ] && [ "$base" != "$(git rev-parse HEAD)" ] && git diff --stat "$base" HEAD | tail -1 || echo "(none: on the default branch, or no merge-base)"`
 
 Uncommitted changes at invocation (empty = clean):
 
@@ -32,7 +33,7 @@ Parse the arguments:
 - A PR number (`142` or `#142`): use `gh pr diff <n>` and `gh pr view <n>`.
 - A commit range (`abc123..def456`): use it directly.
 - Paths: restrict the default scope to those paths.
-- Nothing: the current branch versus the merge base with `main` (`git diff $(git merge-base main HEAD)`) **plus** uncommitted changes (`git diff HEAD` and untracked files via `git status --porcelain`).
+- Nothing: the current branch versus the merge base with the default branch from the snapshot above (`git diff $(git merge-base <default> HEAD)`, where `<default>` is the local default-branch name — the origin/HEAD detection `ship-pr` uses, with the remote prefix stripped, falling back to `main` when no origin/HEAD ref exists; the local name, not `origin/<name>`, so unpushed commits on the default branch never widen the scope) **plus** uncommitted changes (`git diff HEAD` and untracked files via `git status --porcelain`).
 
 If that resolves to an empty diff, tell the user there is nothing to review and ask what they meant. Do not review the whole repository unasked.
 
@@ -132,7 +133,7 @@ This is where the deep verification deferred from triage happens — now, on the
 
 ## Step 6: Leave the record commit
 
-The board's outcome must outlive this conversation — `/ship-pr` documents it in the PR body, and a record nobody can find is a review that never happened. On a non-main branch, once the user's selection is resolved (including `none`): commit any Step 5 fixes first (explicit paths, message naming the finding), then leave an always-empty record commit as the last commit on the branch:
+The board's outcome must outlive this conversation — `/ship-pr` documents it in the PR body, and a record nobody can find is a review that never happened. On a branch other than the default, once the user's selection is resolved (including `none`): commit any Step 5 fixes first (explicit paths, message naming the finding), then leave an always-empty record commit as the last commit on the branch:
 
 ```bash
 git commit --allow-empty -m "review: board (<mode>) — <N> findings, <X> addressed, <Y> dismissed, <Z> rejected" -m "<record body>"
@@ -142,4 +143,4 @@ The record body carries one line per finding — ID, severity, verdict, title, o
 
 Capture dismissal reasons at selection time: when the user declines a confirmed or plausible finding, take the one-line why from their reply or ask for it — it is the one datum nobody can reconstruct later, and it is what makes a dismissal defensible instead of silent. Always empty, always last: fix commits describe fixes, the record commit records the board — two jobs, two commits, one shape to parse. Pinning the record to the branch also pins it to the exact tree that was reviewed; a dated file could drift from that, a commit cannot.
 
-On `main` (the solo flow) skip the commit — the report stays conversational, and nothing ships from main anyway. An interactive rebase can silently drop an empty commit; if the user rewrites the branch before shipping, warn them the record goes with it. Finally, when the branch has a remote to ship to, close with a one-line `/ship-pr` offer — offer only, never invoke it yourself.
+On the default branch (the solo flow) skip the commit — the report stays conversational, and nothing ships from there anyway. An interactive rebase can silently drop an empty commit; if the user rewrites the branch before shipping, warn them the record goes with it. Finally, when the branch has a remote to ship to, close with a one-line `/ship-pr` offer — offer only, never invoke it yourself.

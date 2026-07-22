@@ -1,6 +1,6 @@
 ---
 name: grilling
-description: Interview the user relentlessly about a plan or design until a shared understanding is reached. Use when user wants to discuss a new request, idea, concept, issue, or stress-test a plan, or to resolve the `TBD (needs grilling)` items in a captured task or spec. Grilling sessions are best had before an implementation and should be used when the user uses any 'grill' trigger phrases.
+description: Interview the user relentlessly about a plan or design until a shared understanding is reached. Use when user wants to discuss a new request, idea, concept, issue, or stress-test a plan, or to resolve the `TBD (needs grilling)` items in a captured task or spec. Grilling sessions are best had before an implementation and should be used when the user uses any 'grill' trigger phrases. When the ask fits an engineering, product, or research lens, load the matching `grill-engineer`, `grill-product`, or `grill-research` skill instead; this bare primitive runs directly only when no lens fits or another skill invokes it under its own frame.
 ---
 
 Open with one line — "Grilling on <subject>, until <objective>." — so each session has a clear boundary when several happen in one conversation. Default objective: a shared, unambiguous understanding of what to build and why.

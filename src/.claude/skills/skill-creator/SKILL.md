@@ -9,7 +9,7 @@ The authoring discipline for skills. Load it before touching any file under `.cl
 
 ## Scope first
 
-- Confirm the layer: project (`.claude/skills/`) and template (`src/.claude/skills/`) are separate products per CLAUDE.md. Changes usually land in both, kept byte-identical, but the call is the user's when only one layer is in play.
+- Confirm the layer when a `src/.claude/skills/` twin exists (the template meta-repo): project (`.claude/skills/`) and template (`src/.claude/skills/`) are separate products, and changes usually land in both, kept byte-identical, with the call the user's when only one layer is in play. In single-layer repos this bullet is inert.
 - Mine the session before interviewing: the conversation that triggered the change usually already contains the workflow, the correction, or the gap. Extract what the skill should enable, when it should trigger, and what it should produce; put only the real gaps to the user.
 - A new skill or a structural rewrite means reading `references/skill-quality.md` in full first. For a small edit, the rules below are the floor either way.
 
