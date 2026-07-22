@@ -2,7 +2,8 @@
 set -euo pipefail
 
 # Usage: ./scripts/gwt-add.sh [--no-open] <branch-name> [git worktree add flags]
-# Creates a git worktree at $HOME/Code/.worktrees/<project>/<branch>, copies
+# Creates a git worktree at $HOME/Code/.worktrees/<project>/<branch> (slashes
+# in <branch> flattened to dashes, so feature/foo lands at feature-foo), copies
 # env files, runs pnpm install, and opens the worktree in Zed.
 # --no-open skips the editor launch (scripted/AI invocations, e.g. implement-task).
 
@@ -30,7 +31,9 @@ if [[ -z "$main_root" ]]; then
 fi
 
 project=$(basename "$main_root")
-target="$HOME/Code/.worktrees/$project/$branch"
+# Flatten branch slashes to dashes so any branch convention (feature/foo,
+# user/eng-123) yields one predictable directory level under the base.
+target="$HOME/Code/.worktrees/$project/${branch//\//-}"
 
 echo "Creating worktree at $target for branch $branch"
 if git rev-parse --verify --quiet "refs/heads/$branch" >/dev/null; then

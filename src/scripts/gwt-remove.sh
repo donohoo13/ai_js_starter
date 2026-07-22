@@ -2,8 +2,9 @@
 set -euo pipefail
 
 # Usage: ./scripts/gwt-remove.sh <branch-name> [git worktree remove flags]
-# Removes the worktree at $HOME/Code/.worktrees/<project>/<branch>, deletes
-# the branch (soft — warns on unmerged), and prunes worktree metadata.
+# Removes the worktree at $HOME/Code/.worktrees/<project>/<branch> (slashes
+# in <branch> flattened to dashes, matching gwt-add.sh), deletes the branch
+# (soft — warns on unmerged), and prunes worktree metadata.
 
 if [[ $# -lt 1 || -z "${1:-}" ]]; then
   echo "Usage: $(basename "$0") <branch-name> [git worktree remove flags]" >&2
@@ -23,7 +24,12 @@ if [[ -z "$main_root" ]]; then
 fi
 
 project=$(basename "$main_root")
-target="$HOME/Code/.worktrees/$project/$branch"
+target="$HOME/Code/.worktrees/$project/${branch//\//-}"
+
+# Worktrees created before path flattening live at the raw nested path.
+if [[ ! -d "$target" && -d "$HOME/Code/.worktrees/$project/$branch" ]]; then
+  target="$HOME/Code/.worktrees/$project/$branch"
+fi
 
 echo "Removing worktree at $target"
 git worktree remove "$target" "$@"
@@ -36,8 +42,8 @@ fi
 
 git worktree prune
 
-# Slash-named branches (feature/foo) nest directories under the worktree
-# base; prune any now-empty parents up to (and including) the project dir.
+# Prune now-empty parents up to (and including) the project dir; legacy
+# pre-flattening worktrees may have nested several levels under the base.
 parent=$(dirname "$target")
 while [[ "$parent" != "$HOME/Code/.worktrees" && "$parent" != "/" ]]; do
   rmdir "$parent" 2>/dev/null || break

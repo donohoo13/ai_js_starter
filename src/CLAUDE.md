@@ -72,6 +72,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Use CLI tools (like `gh` for GitHub) for PR, issue, and remote repository management; fall back to raw git only when no CLI covers the operation.
 - Always verify you are on a valid branch before committing.
 - Never commit to main.
+- AI-created branches are named `<type>/<kebab-slug>` (`type`: `feature` | `bug` | `chore`), matching the captured-task taxonomy; `implement-task` derives this from the task filename, and ad hoc branches follow the same rule.
 - `implement-task` builds run in a dedicated git worktree — `scripts/gwt-add.sh --no-open <branch>` creates it, the native `EnterWorktree` tool relocates the session into it — so the main checkout stays on `main`; declining the skill's one confirm falls back to a plain feature branch. Post-merge cleanup is `scripts/gwt-remove.sh <branch>` from the main checkout.
 
 ### Markdown
@@ -107,7 +108,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Commands
 
 - `scripts/doctor.sh` — warn-only check that the machine has the LSP server binaries Claude Code's plugins need (`typescript-language-server` for TS/JS, `pyright` for Python); wire it into `package.json` `prepare` so every `pnpm install` self-reports gaps. It informs, never blocks.
-- `scripts/gwt-add.sh [--no-open] <branch>` / `scripts/gwt-remove.sh <branch>` — worktree create (env copy, `pnpm install`, Zed unless `--no-open`) and remove (worktree + branch + empty-parent prune); both resolve the main checkout themselves, so they run correctly from inside a worktree.
+- `scripts/gwt-add.sh [--no-open] <branch>` / `scripts/gwt-remove.sh <branch>` — worktree create (env copy, `pnpm install`, Zed unless `--no-open`) and remove (worktree + branch + empty-parent prune); both resolve the main checkout themselves, so they run correctly from inside a worktree, and both flatten branch slashes to dashes for the worktree dir (`feature/foo` → `feature-foo`), keeping the layout one level deep under any branch convention.
 
 ## Architecture / Tech Stack
 
