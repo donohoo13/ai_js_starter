@@ -77,7 +77,7 @@ Show your work — this is where "picky" becomes visible. Present **every candid
 - **Reject** → the candidate and its attribution (A / C / generic / already-covered), in one line each.
 - **Hand off** → candidates routed to `domain-modeling` (vocabulary or ADR), so the user can pick that up next.
 
-The deliberation can be long; what lands in the files stays lean. Apply only on approval: insert approved text under the right heading, do not reorder or rewrite existing content. If a candidate is already implied by an existing bullet, strengthen that bullet instead of adding a near-duplicate.
+The deliberation can be long; what lands in the files stays lean. Apply only on approval, and append-only: insert approved text under the right heading and leave surrounding content as it stands, because the user approved exact text, not a rewrite. This apply step is the documented point-of-use exception to the prose restatement rule in CLAUDE.md Standards, and during a codify apply this routing wins over that rule's same-change restatement: a candidate already implied by an existing bullet strengthens that bullet instead of adding a near-duplicate; a candidate that contradicts an existing bullet halts — surface both statements, let the user pick the survivor, then land the winner; a target file whose decay the apply exposes (stacked near-duplicates, contradictions, run-on accretion) gets flagged as a restatement candidate for its own visible pass instead of receiving another bullet on the pile, so the whole-artifact rewrite happens with the user's eyes on it, never as a side effect of landing one approved bullet.
 
 ## Quality checks
 
