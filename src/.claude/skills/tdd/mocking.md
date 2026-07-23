@@ -3,9 +3,8 @@
 Mock at **system boundaries** only:
 
 - External APIs (payment, email, etc.)
-- Databases (sometimes - prefer test DB)
+- Databases and the file system, only when a local stand-in cannot run in the test — a real test DB or temp directory beats a mock (per the dependency classification in `SKILL.md`)
 - Time/randomness
-- File system (sometimes)
 
 Don't mock:
 

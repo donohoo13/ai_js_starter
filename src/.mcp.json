@@ -3,12 +3,25 @@
     "playwright-local": {
       "command": "npx",
       "args": [
-        "@playwright/mcp@latest",
+        "@playwright/mcp@0.0.78",
         "--user-data-dir",
         ".playwright/mcp-profile",
         "--headless",
         "--browser=chromium"
       ]
+    },
+    "firefox-devtools": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@mozilla/firefox-devtools-mcp@0.9.12",
+        "--headless",
+        "--viewport",
+        "1280x720"
+      ],
+      "env": {
+        "START_URL": "about:blank"
+      }
     }
   }
 }

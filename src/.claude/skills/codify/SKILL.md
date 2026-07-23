@@ -55,10 +55,16 @@ If `domain-modeling` was active this session (the grill lenses run it), whatever
 
 Route to the **nearest enclosing `CLAUDE.md`** to the code the rule governs. A rule about one package belongs in that package's `CLAUDE.md`, not the root; prefer the deepest file that still covers the code. If only a broad file exists today but the rule is really package-specific, place it in the narrowest available file and note that a nested file would be the better home once that package grows. When unsure, choose the narrower scope.
 
+**Which layer owns it?**
+
+A lesson about how the user collaborates or wants to be spoken to — register, persona, pushback style, glossing — is a property of the user, not the repo: offer it for `~/.claude/CLAUDE.md` and leave project files to project discipline. A genuinely two-natured rule (a personal standard that is also a project standard) may live in both layers deliberately, wordings kept aligned. When a user-layer preference and a project standard could collide, the bullet carries an explicit precedence clause naming which wins, because two contradictory absolutes loaded together make the model silently pick one.
+
 ## Step 4: Draft the bullets
 
 - **Imperative voice, present tense** ("Use `DialogContent` props for headers, never build them in children"). No "we decided", "going forward", "always remember".
 - **Front-load the constraint**, then the _why_ only when it is non-obvious. The why is what lets a future model generalize instead of following blindly.
+- **State the action, not the ban.** Positive instructions outperform prohibitions: name the concrete act that satisfies the rule — the command to run, the file to check, the replacement behavior — and when the rule governs uncertainty, grant explicit permission to say "unknown" rather than guess. A bare prohibition is the wording most likely to be ignored or over-applied.
+- **Scope the surfaces.** Rules do not generalize across surfaces on their own: when a rule could bleed (register, tone, formatting), say where it applies — conversation, code, docs, commits — so a style rule cannot leak into precision-critical artifacts.
 - **Point at a living example with `path` or `path:line`** rather than pasting a snippet; pointers drift less. Only cite a file that cleanly demonstrates the convention.
 - **Match the target file's tone and density** (read it first). Write long prose as single continuous lines per the repo markdown convention.
 - Avoid `ALWAYS`/`NEVER` shouting. If you reach for it, you usually have not explained the why well enough yet.

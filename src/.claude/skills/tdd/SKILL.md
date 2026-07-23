@@ -42,4 +42,4 @@ What the code under test depends on decides where the seam goes and whether a te
 
 - **Red before green.** Write the failing test first, then only enough code to pass it. Don't anticipate future tests or add speculative features.
 - **One slice at a time.** One seam, one test, one minimal implementation per cycle.
-- **Refactoring is not part of the loop.** It belongs to the review stage (see the `review-board` skill), not the red → green implementation cycle.
+- **Refactoring is not part of the loop.** Land it as a separate tidy step after green — tests unchanged, proving the behavior held — or in an explicit user-requested cleanup pass; never mid-cycle between red and green.

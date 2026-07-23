@@ -8,8 +8,12 @@ Opinionated JS/TS starter template optimized for AI-assisted development with Cl
 
 ## Standards
 
-- Be concise but maintain clear grammar. Commit messages: 50-char subject in imperative mood, explain WHY in body.
+- Commit messages: 50-char subject in imperative mood, explain WHY in body.
+- Plain language first; attach the technical term in parentheses or an "e.g." on first use so the user learns the connections. Skip the gloss once the user has used the term themselves. Conversation only; artifacts keep precise terms.
+- Every stated time, date, or duration comes from an objective source checked in-session (`date` via Bash, message/file/git timestamps); when none exists, express order without duration ("earlier in this session", never "an hour ago"). Size work in complexity and scope, never in wall-clock or calendar estimates.
 - AI context files (CLAUDE.md, BRAND_DESIGN.md, UI_UX.md, ARCHITECTURE.md) state what is true TODAY in strict present tense. No aspirational language ("we'd like to", "try to") and no preferential language ("prefer", "prioritize", "when possible"): a soft verb leaves the exception to the model's discretion. Write rules as absolutes and document exceptions at point of use.
+- Write rules for AI as positive instructions: state the action to take and the concrete check that grounds it, not the behavior to ban; scope each rule to the surfaces it governs; when a rule meets uncertainty, grant explicit permission to say "unknown" rather than guess.
+- The docker `ask` gate in `.claude/settings.json` lists every code-executing, destructive, and data-exporting docker verb in both its short and object-command spellings; read-only verbs (`ps`, `logs`, `images`, `inspect`) ride the blanket `Bash` allow. Grow the list by that criterion, and keep the root and `src/` permission lists in lockstep.
 - Do not treat memory from previous conversations as gospel. Treat as an ephemeral starting point and verify intelligently often.
 - Use LSP tools for code navigation, symbol searches, and diagnostics. Fall back to terminal commands only if LSP unavailable.
 - `UI_UX.md` and `BRAND_DESIGN.md` exist only under `src/` as template artifacts; this repo has no UI. Edit them as shipped content, holding them to the AI context file rules above.
@@ -31,7 +35,7 @@ Opinionated JS/TS starter template optimized for AI-assisted development with Cl
 
 ### Markdown
 
-- Keep bullet points and long descriptions as single continuous lines (no line breaks within a bullet). This ensures `cmd+x` cuts the entire bullet point instead of just one visual line.
+- Keep bullet points and long descriptions as single continuous lines (no line breaks within a bullet); one bullet per line keeps cuts, moves, and diffs atomic.
 - Use `- [ ]` for TODO items and `- [x]` for completed items instead of plain bullet points.
 - Always wrap code snippets, commands, and technical terms in single backticks: `` `git commit` `` not just git commit.
 - Use `###` for section headings with descriptive names (not just "Overview") to improve navigation.
@@ -41,15 +45,13 @@ Opinionated JS/TS starter template optimized for AI-assisted development with Cl
 
 ## MCP Tools
 
-- Use `playwright-local` MCP server for UI/UX verification (more reliable than plugin) (`mcp__playwright_local__*`).
-- Use Chrome DevTools plugin for performance traces and heap analysis (`mcp__chrome_devtools__*`).
-- Use Context7 for context gathering when applicable (`mcp__context7__*`).
+- For library and framework docs, query Context7 first (`mcp__plugin_context7_context7__*`) whenever a decision leans on version-specific API surface or framework behavior — one concept per query — and fall back to web search, then web fetch of primary docs, when it lacks the library or returns thin results.
 - Use the `linear` MCP for Linear issue, project, and cycle operations (`mcp__linear__*`). Configured at project scope in `.mcp.json`; requires per-user approval and OAuth via `/mcp`.
 
 ### Skills
 
-- Skill usage should be documented concisely inside `src/.claude/skills/README.md` as a human readable reference.
-- Use project skills when applicable instead of improvising.
+- Document skill usage concisely inside `src/.claude/skills/README.md` as a human readable reference.
+- Use the project skill whose trigger matches the task instead of improvising; improvise only when no skill matches.
 - Every change to a skill file — anything under `.claude/skills/` or `src/.claude/skills/` — loads the `skill-creator` skill first, whatever brought the change (a grilling exit, another skill's follow-through, a one-line tweak). It owns the authoring discipline, the gut-check prompt handoff, and the landing checklist (dual-layer sync, README blurbs, fork-points). The `guard-skill-edit` PreToolUse hook denies skill-file edits until it is loaded.
 - Task capture is user's responsibility (tracking system, not memory). Suggest `/capture-task` once when user voices actionable asides or conversation drifts. Suggest, never auto-file. One nudge; if user doesn't bite, drop it. Do not use memory for work items.
 - Captured tasks land in `docs/tasks/YYYY-MM-DD-<type>-<slug>.md` (`type`: `bug` | `feature` | `chore`), structured per `.claude/skills/capture-task/assets/task-template.md`: frontmatter (`type`, `status: captured`, `created`) plus Context, Problem, Scope, Requirements, Acceptance criteria, Dependencies, Risks / open questions, with unknowns kept explicit as `TBD (needs grilling)`.
@@ -57,8 +59,8 @@ Opinionated JS/TS starter template optimized for AI-assisted development with Cl
 
 #### Project VS Template
 
-- The project and template source claude skills should be treated as separate.
-- Overlap is allowed between the project and template source skills but should be HITL (human-in-the-loop) to confirm the overlap is intentional.
+- Treat the project and template source claude skills as separate.
+- Overlap between the project and template source skills requires HITL (human-in-the-loop) confirmation that it is intentional.
 - When asked to use a skill, always use the project skill if available, and do not attempt to use the template skill unless specified by the user.
 - When asked to create or modify a skill, always clarify if we are doing so for the project or the template.
 
@@ -74,7 +76,7 @@ Opinionated JS/TS starter template optimized for AI-assisted development with Cl
 Two-layer meta-repo: `src/` is the product (the payload copied into new projects), everything at the root is tooling for maintaining it. Most AI-context files exist twice, once per layer; do not conflate them.
 
 - **Root layer**: `CLAUDE.md`, `.claude/settings.json`, `.claude/skills/`, `.claude/agents/` govern AI sessions working on the template repo itself.
-- **Template layer**: `src/CLAUDE.md`, `src/.claude/`, `src/UI_UX.md`, `src/BRAND_DESIGN.md`, `src/CONTEXT.md`, `src/.mcp.json`, `src/docs/adr/`, `src/scripts/` ship into new projects. Editing these is editing the product. Claude Code discovers `src/.claude/skills/` as scoped skills (`src:` prefix); use the unscoped project skill unless explicitly working on the template copy (see Project VS Template above).
+- **Template layer**: `src/CLAUDE.md`, `src/.claude/`, `src/UI_UX.md`, `src/BRAND_DESIGN.md`, `src/.mcp.json`, `src/docs/adr/`, `src/scripts/` ship into new projects; `CONTEXT.md` and `ARCHITECTURE.md` are created lazily by the domain-modeling skill at the first real entry, so they do not ship. Editing these is editing the product. Claude Code discovers `src/.claude/skills/` as scoped skills (`src:` prefix); use the unscoped project skill unless explicitly working on the template copy (see Project VS Template above).
 - `.claude/skills/README.md` is the human-readable map of the skill chain (`/grill-me` router → engineer/product/research lenses → capture/diagnose/implement/review/codify, with `grilling`, `domain-modeling`, and `tdd` as primitives). Read it before editing any skill; skills invoke each other by name, so check callers and callees.
 - `.claude/agents/` holds the five `review-*` agents (the review-board seats, each pointing at a checklist in `.claude/skills/review-board/references/`) plus `research-analyst`, the background evidence fetcher dispatched mid-interview by `grill-research` and `grill-product`. Same set mirrored in `src/.claude/agents/`.
 - `src/.claude/skills/project-init/` exists only in the template layer (deliberately no root counterpart — the template repo itself never gets inited): a one-shot, self-removing onboarding auditor that tailors the shipped suite to its destination project. Its `references/fork-points.md` is the maintained map of every tool and platform coupling in the payload; any edit that changes a shipped skill's coupling (platform CLI, tracker path, branch model, LSP or plugin dependency) updates that manifest in the same change.

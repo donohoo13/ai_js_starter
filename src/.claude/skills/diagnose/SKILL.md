@@ -44,7 +44,7 @@ Then shrink to the smallest scenario that still goes red: cut inputs, callers, c
 
 Generate **3–5 ranked hypotheses** before testing any; single-hypothesis generation anchors on the first plausible idea. Each must be falsifiable — state its prediction: "if X is the cause, then changing Y makes the bug disappear / changing Z makes it worse." No prediction means it is a vibe; sharpen or discard.
 
-Show the ranked list to the user before testing. They often re-rank instantly ("we just deployed a change to #3") or have already ruled some out — cheap checkpoint, big time saver. Don't block on it; proceed with your ranking if they're AFK.
+Show the ranked list to the user before testing. They often re-rank instantly ("we just deployed a change to #3") or have already ruled some out — cheap checkpoint, big time saver. Present the list and proceed with your ranking in the same turn, folding in any re-rank the user sends back.
 
 Then probe: each probe maps to one prediction, one variable changed at a time. Prefer a debugger or REPL breakpoint over logs, targeted logs at hypothesis-distinguishing boundaries over that, and never "log everything and grep". Tag every debug log with a unique prefix like `[DEBUG-a4f2]` so cleanup is a single grep — untagged logs survive into commits.
 

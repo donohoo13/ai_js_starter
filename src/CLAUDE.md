@@ -8,8 +8,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Standards
 
-- Be concise but maintain clear grammar. Commit messages: 50-char subject in imperative mood, explain WHY in body.
+- Commit messages: 50-char subject in imperative mood, explain WHY in body.
+- Plain language first; attach the technical term in parentheses or an "e.g." on first use so the user learns the connections. Skip the gloss once the user has used the term themselves. Conversation only; artifacts keep precise terms.
+- Every stated time, date, or duration comes from an objective source checked in-session (`date` via Bash, message/file/git timestamps); when none exists, express order without duration ("earlier in this session", never "an hour ago"). Size work in complexity and scope, never in wall-clock or calendar estimates.
 - AI context files (`CLAUDE.md`, `BRAND_DESIGN.md`, `UI_UX.md`) state what is true TODAY in strict present tense. No aspirational language ("we'd like to", "try to") and no preferential language ("prefer", "prioritize", "when possible"): a soft verb leaves the exception to the model's discretion. Write rules as absolutes and document exceptions at point of use.
+- Write rules for AI as positive instructions: state the action to take and the concrete check that grounds it, not the behavior to ban; scope each rule to the surfaces it governs; when a rule meets uncertainty, grant explicit permission to say "unknown" rather than guess.
+- The docker `ask` gate in `.claude/settings.json` lists every code-executing, destructive, and data-exporting docker verb in both its short and object-command spellings; read-only verbs (`ps`, `logs`, `images`, `inspect`) ride the blanket `Bash` allow. Grow the list by that criterion.
 - Do not treat memory from previous conversations as gospel. Treat as an ephemeral starting point and verify intelligently often.
 - Use LSP tools for code navigation, symbol searches, and diagnostics. Fall back to terminal commands only if LSP unavailable. LSP is active only when the per-machine server binary is installed (`typescript-language-server` for TS/JS, `pyright` for Python); `scripts/doctor.sh` checks this and prints the fix.
 - Follow [@UI_UX.md](UI_UX.md) for all UI/UX design and implementation decisions.
@@ -40,6 +44,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - At trust boundaries and function entry, validate aggressively: assert invariants, reject impossible inputs, and use exhaustive `switch`/discriminated unions so unhandled cases fail fast and loudly.
 - Reserve these fail-fast checks for programmer errors (missing state, impossible combinations); handle expected operational errors (user input, network failures, etc.) through normal, graceful error handling.
 - Don't propose a bug fix from reading code alone. If a bug can't be root-caused by inspection, reproduce it and prove the cause before changing code.
+- Never leave stubs, TODO comments, or placeholder logic in delivered code unless explicitly asked to scaffold. Finish the implementation.
 - Treat captured debugging artifacts (HAR files, log dumps, real request/response payloads, screen recordings) as secret-bearing: they routinely contain auth headers, session cookies, and PII. Keep them in a gitignored scratch path, never commit them, and delete them when the investigation ends.
 - Kill every long-running process this session started (dev servers, watch-mode runners, tunnels, containers) once the active task no longer needs it, and never kill a process the session did not start. Two exceptions keep a process alive: the user directs it, or killing it loses state the task still needs (in-memory DB contents, an in-progress job or write); a slow restart is not lost state. An exercised exception is reported immediately: what is running, its port or PID, and the kill command. Nothing AI-started survives the human QA handoff or session end unreported; QA scripts state anything still running and how to stop it.
 - Shipped shell scripts (`scripts/`, skill `scripts/`) stay bash-3.2 compatible: macOS pins `/bin/bash` there permanently, so no associative arrays, `mapfile`/`readarray`, or `${var,,}`. Anything needing bash 4+ isn't portable to stock developer Macs.
@@ -64,8 +69,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Register process.on('unhandledRejection') to catch unhandled promise rejections—errors that would otherwise be swallowed.
 - Name all functions, including callbacks and closures. Anonymous functions make debugging and profiling harder.
 - Validate function/API arguments upfront using a library like Zod. Fail fast instead of letting bad data propagate.
-- Enable TypeScript `strict: true` in `tsconfig.json`. Define explicit interfaces/types for all data structures. Avoid `any`.
-- Define explicit interfaces/types for all data structures, API payloads, and function parameters. Avoid `any`.
+- Enable TypeScript `strict: true` in `tsconfig.json`. Define explicit interfaces/types for all data structures, API payloads, and function parameters. Avoid `any`.
 - In Monorepo projects, use `pnpm` (faster installs via pnpm-workspace.yaml, better workspace support than npm/yarn) and `Turborepo` for build orchestration (caching, task pipelines, parallel execution). Configure `package.json` scripts to use Turborepo's `turbo` CLI (e.g., `turbo build`, `turbo lint`).
 
 ### Git Control
@@ -78,7 +82,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ### Markdown
 
-- Keep bullet points and long descriptions as single continuous lines (no line breaks within a bullet). This ensures `cmd+x` cuts the entire bullet point instead of just one visual line.
+- Keep bullet points and long descriptions as single continuous lines (no line breaks within a bullet); one bullet per line keeps cuts, moves, and diffs atomic.
 - Use `- [ ]` for TODO items and `- [x]` for completed items instead of plain bullet points.
 - Always wrap code snippets, commands, and technical terms in single backticks: `` `git commit` `` not just git commit.
 - Use `###` for section headings with descriptive names (not just "Overview") to improve navigation.
@@ -90,7 +94,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 - Use `playwright-local` MCP server for UI/UX verification (more reliable than plugin) (`mcp__playwright_local__*`).
 - Use Chrome DevTools plugin for performance traces and heap analysis (`mcp__chrome_devtools__*`).
-- Use Context7 for context gathering when applicable (`mcp__context7__*`).
+- Use Firefox DevTools plugin (`mcp__firefox_devtools__*`) for Firefox-specific rendering and compatibility verification; Chrome DevTools stays the primary for performance traces and heap analysis.
+- For library and framework docs, query Context7 first (`mcp__plugin_context7_context7__*`) whenever a decision leans on version-specific API surface or framework behavior — one concept per query — and fall back to web search, then web fetch of primary docs, when it lacks the library or returns thin results.
 - Use the `linear` MCP for Linear issue, project, and cycle operations (`mcp__linear__*`). Configured at project scope in `.mcp.json`; requires per-user approval and OAuth via `/mcp`.
 - The `stripe` MCP (`mcp__plugin_stripe_stripe__*`) is for docs search and read-only lookups only.
 - For any Clerk auth task (auth state, user/org/session lookup, instance config, env keys, webhook integration), use the `clerk` MCP server (checked into `.mcp.json`, enabled for everyone); the `mcp__clerk__*` tools are the source of truth for in-code SDK snippets. (There is no `clerk` skill.)
@@ -99,7 +104,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ### Skills
 
-- Use project skills when applicable instead of improvising; per-skill roles and usage live in [the skills README](.claude/skills/README.md). When unsure which skill fits, read it before reaching for one.
+- Use the project skill whose trigger matches the task instead of improvising, and improvise only when no skill matches; per-skill roles and usage live in [the skills README](.claude/skills/README.md). When unsure which skill fits, read it before reaching for one.
 - Every change to a skill file (anything under `.claude/skills/`) loads the `skill-creator` skill first, whatever brought the change (a grilling exit, another skill's follow-through, a one-line tweak). It owns the authoring discipline, the gut-check prompt handoff, and the landing checklist (README blurb, fork-points where `project-init` ships). The `guard-skill-edit` PreToolUse hook denies skill-file edits until it is loaded.
 - `/grilling` is the interview primitive: a relentless, one-question-at-a-time session that resolves the decision tree of a plan, request, or captured task before implementation — facts get looked up in the codebase, decisions are put to the user. `/grill-me` (user-invoked only, never model-triggered) wraps it with the `domain-modeling` skill so glossary entries and ADRs are captured as decisions crystallise.
 - Domain vocabulary, architectural decisions, and engineering shape live OUTSIDE this file: glossaries in `CONTEXT.md` (or per-context `CONTEXT.md` indexed by a root `CONTEXT-MAP.md`), decisions in `docs/adr/`, and shape in `ARCHITECTURE.md` (root doc = system topology; per-context docs beside each app or package). Read them for ubiquitous language and orientation, treating `ARCHITECTURE.md` claims as verify-before-act; invoke the `domain-modeling` skill (or `/grill-me`, which wraps it) to change the model or the shape docs.
