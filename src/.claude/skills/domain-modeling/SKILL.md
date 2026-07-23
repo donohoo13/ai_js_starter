@@ -53,6 +53,10 @@ Create all three doc kinds lazily. A three-term glossary is already useful, so `
 
 When the user uses a term that conflicts with the existing language in `CONTEXT.md`, call it out immediately. "Your glossary defines 'cancellation' as X, but you seem to mean Y — which is it?"
 
+### Challenge against the shape doc
+
+When an ask conflicts with a boundary, flow, or invariant documented in `ARCHITECTURE.md`, surface the conflict as a decision instead of designing around it: "This crosses the documented invariant that billing is the only writer of invoice rows — it exists because X. Crossing it is a real option; here is what it costs." The doc is orientation, not a wall — silently designing within the boundary hides a real option from the user, and silently designing through it breaks the map; either way a decision that belongs to the user got taken for them. A crossing the user chooses is usually hard to reverse, surprising without context, and a genuine trade-off — the ADR bar below — and the shape doc itself updates only when the new shape lands with the code, per the maintenance contract.
+
 ### Sharpen fuzzy language
 
 When the user uses vague or overloaded terms, propose a precise canonical term. "You're saying 'account' — do you mean the Customer or the User? Those are different things."
