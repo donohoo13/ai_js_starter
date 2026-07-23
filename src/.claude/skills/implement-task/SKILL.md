@@ -49,7 +49,7 @@ For each slice:
 2. **Build with `/tdd`** — red before green, one seam at a time.
 3. **Validate** — the project's own typecheck (where the stack has one), lint, and format checks, plus the slice's test files. Every language has its way to lint, format, and test; discover the actual commands from the root `CLAUDE.md` and the project's manifest or config rather than assuming a toolchain — the flow here is the same regardless of stack. Run the cheap checks and single test files regularly while building, not just at the slice boundary — feedback is most useful when it is one edit old, not one slice old. Do not run the full test suite here; it is slow and its job comes once, at the end of the task. Fix iteratively until clean.
 4. **Commit** — verify the branch again, stage by explicit path (the slice's files plus the updated task file with its checkboxes ticked), commit with a message naming the slice's behavior.
-5. **Completeness audit** — after multi-file changes: schemas, constant maps/enums, and import references updated consistently.
+5. **Completeness audit** — after multi-file changes: schemas, constant maps/enums, and import references updated consistently, and any code the slices orphaned verified dead per the CLAUDE.md dead-code rule — removed or reported, never silently left.
 
 ## 4. Land
 
