@@ -11,11 +11,11 @@ The one front door for interview sessions of any size and subject. Every session
 
 ## The lenses
 
-| Lens       | Skill            | Route here when                                                                                                                |
-| ---------- | ---------------- | ------------------------------------------------------------------------------------------------------------------------------ |
-| `engineer` | `grill-engineer` | The ask changes this codebase: a feature, bug, chore, refactor, or architecture question. The default when in doubt.           |
-| `product`  | `grill-product`  | The ask is about UX, UI, branding, or product direction — what to build and why, at design altitude.                           |
-| `research` | `grill-research` | The ask is understanding a concept, technology, or idea — learning and evaluating, with no intent to build anything right now. |
+| Lens       | Skill            | Route here when                                                                                                                                        |
+| ---------- | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `engineer` | `grill-engineer` | The ask changes this codebase — a feature, bug, chore, refactor, or architecture question — and the _what_ is settled. The default among settled asks. |
+| `product`  | `grill-product`  | The ask is about UX, UI, branding, or product direction — what to build and why, at design altitude.                                                   |
+| `research` | `grill-research` | The ask is understanding a concept, technology, or idea — learning and evaluating, with no intent to build anything right now.                         |
 
 ## Parse and route
 
@@ -26,6 +26,6 @@ The one front door for interview sessions of any size and subject. Every session
 
 Accept obvious lens synonyms rather than being pedantic: eng, engineering, code → engineer; design, ux, ui, brand → product; learn, explore, investigate → research.
 
-**Lead with product when the _what_ is unsettled.** Some asks name a user-facing outcome without pinning down what it should become — "clean up how we display X", "build feature Y, what's a good design for it". The _how_ cannot be settled before the _what_, so route these to `grill-product` first; its existing hand-off carries the session into `grill-engineer` once the design position is sharp. When the _what_ is already specified — "change the list to a table with these columns", "add pagination to the users table" — go straight to `grill-engineer`; a known pattern needs no product pass, and `frontend-design`'s quality floor covers the polish during the build. This stays one routing decision: you pick the entry lens, the lens chain does the rest, the router never orchestrates or re-enters. A wrong call costs one corrective sentence, like any lens inference.
+**Settledness of the _what_ is the first routing check — it comes before subject matter.** An ask whose what is still fuzzy — a half-baked idea, a user-facing outcome named but not pinned down ("clean up how we display X", "build feature Y, what's a good design for it"), or an idea that keeps fanning out into more outcomes as it is described — routes to `grill-product` first even when phrased in engineering vocabulary, because the mis-routing costs are asymmetric: product-first by mistake costs almost nothing (the product lens's hand-off carries the session into `grill-engineer` the moment the what proves settled), while engineer-first by mistake designs the how of an undecided what against possibly irrelevant code and drives toward a singular exit the idea does not fit. When the _what_ is already specified — "change the list to a table with these columns", "add pagination to the users table" — go straight to `grill-engineer`; a known pattern needs no product pass, and `frontend-design`'s quality floor covers the polish during the build. Doubt about the _lens_ still defaults to engineer; doubt about the _what_ is itself the routing answer, and it resolves product-first. This stays one routing decision: you pick the entry lens, the lens chain does the rest, the router never orchestrates or re-enters. A wrong call costs one corrective sentence, like any lens inference.
 
 Route once and get out of the way. If the subject drifts mid-session (a research chat crystallises into a build), the lens skill handles the pivot; the router never re-enters.

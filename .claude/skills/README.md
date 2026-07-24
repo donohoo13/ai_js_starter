@@ -11,7 +11,10 @@ One front door for interview sessions, three lenses behind it, and a task file t
    │                            │                 └─> /implement-task ─> slice loop (/tdd, commit per slice)
    │                            │                        └─> human QA gate ─> /review-board offer ─> /ship-pr offer ─> stop
    │                            └─ park it ──> /capture-task
-   ├─> grill-product ──> design docs / product brief (docs/briefs/) / ADRs / capture / nothing
+   ├─> grill-product ──> design docs / ADRs / capture / nothing
+   │        └─ product brief (docs/briefs/, status: draft)
+   │              ├─ single workstream ─> seeds grill-engineer (feasibility + spec against the code)
+   │              └─ multi-workstream ─> /ground-brief (same session) ─> status: grounded ─> fresh grill-engineer session per workstream, in recommended order
    └─> grill-research ─> summary writeup / capture / nothing
 
 /capture-task — park anything, any time; the captured file seeds a later grill-engineer session
@@ -25,7 +28,7 @@ The task file lifecycle lives in its frontmatter: `captured` (filed, unknowns ex
 
 ## grill-me
 
-User-invoked router (never model-triggered) and the one front door for grilling sessions: parses an explicit lens argument (`/grill-me engineer: <ask>`), a bare lens, or a freeform ask whose lens it infers, then hands off to `grill-engineer`, `grill-product`, or `grill-research`. The lens skill declares itself in its opening line, so a wrong inference costs one corrective sentence. When an ask names a user-facing outcome without deciding what it should be, it leads with `grill-product` so the _what_ is settled before `grill-engineer` builds the _how_ — still one routing decision, the lens chain carries the rest. Routes once and gets out of the way.
+User-invoked router (never model-triggered) and the one front door for grilling sessions: parses an explicit lens argument (`/grill-me engineer: <ask>`), a bare lens, or a freeform ask whose lens it infers, then hands off to `grill-engineer`, `grill-product`, or `grill-research`. The lens skill declares itself in its opening line, so a wrong inference costs one corrective sentence. Settledness of the _what_ is the first routing check: a fuzzy or fanning-out ask leads with `grill-product` even when phrased in engineering vocabulary — mis-routing to product is nearly free (the hand-off carries into `grill-engineer` once the what proves settled) while mis-routing a half-baked idea to engineer designs the how of an undecided what — and engineer stays the default only among settled asks. Routes once and gets out of the way.
 
 ## grilling
 
@@ -33,11 +36,15 @@ Relentless one-question-at-a-time interview that walks the decision tree of a pl
 
 ## grill-engineer
 
-The engineering lens (roughly 8 of 10 sessions): runs `grilling` with `domain-modeling` active, framed as an implementing-engineer peer with the codebase as ground truth for what exists and Context7 (falling back to web search → web fetch) as ground truth for how the stack's libraries actually behave. At objective-met it asks one exit question with a size-based recommendation — build now (`/tdd`, validate, human QA gate, then `/stage-for-commit`), spec it (evolve or create the docs/tasks file with design decisions, test strategy, and vertical tracer-bullet slices, flipping `status: scoped`), or park it (`/capture-task`) — and pure discussions simply end with no forced exit. Carries the old write-a-trd guts (deep dive, design, slicing) as spec-it behavior, minus all GitHub ceremony, with `references/example-scoped-task.md` as the worked example of a scoped file's shape and altitude. A product brief from `docs/briefs/` can seed the session the same way a captured task can.
+The engineering lens (roughly 8 of 10 sessions): runs `grilling` with `domain-modeling` active, framed as an implementing-engineer peer with the codebase as ground truth for what exists and Context7 (falling back to web search → web fetch) as ground truth for how the stack's libraries actually behave. At objective-met it asks one exit question with a size-based recommendation — build now (`/tdd`, validate, human QA gate, then `/stage-for-commit`), spec it (evolve or create the docs/tasks file with design decisions, test strategy, and vertical tracer-bullet slices, flipping `status: scoped`), or park it (`/capture-task`) — and pure discussions simply end with no forced exit. Carries the old write-a-trd guts (deep dive, design, slicing) as spec-it behavior, minus all GitHub ceremony, with `references/example-scoped-task.md` as the worked example of a scoped file's shape and altitude. A product brief from `docs/briefs/` can seed the session the same way a captured task can — a grounded multi-workstream brief seeds one workstream at a time, with spec-it copying that workstream's contracts into the task file and recording the `brief:` back-link — and mid-grill fan-out (independently shippable outcomes multiplying while the what stays unsettled) is a named hand-up trigger to `grill-product`, since this lens's exits are all singular.
 
 ## grill-product
 
-The product/design lens: runs `grilling` with `domain-modeling` active, framed as a product-design partner grounded in `UI_UX.md`, `BRAND_DESIGN.md`, the existing UI code, and web research into named design patterns, accessibility standards, and published UX findings — recommendations come from real-world evidence, never invented UI/UX concepts, and stay at design altitude (what and why, never how). Web-evidence questions dispatch the `research-analyst` agent (`.claude/agents/research-analyst.md`) in the background so the interview continues in real time while sourced claims arrive. Exits offer only what crystallised: design-doc updates, a product brief in `docs/briefs/` (shaped by `references/example-product-brief.md`, evidence-grounded and implementation-free, later seeding a grill-engineer session), an ADR, a captured task, or nothing.
+The product/design lens: runs `grilling` with `domain-modeling` active, framed as a product-design partner grounded in `UI_UX.md`, `BRAND_DESIGN.md`, the existing UI code, and web research into named design patterns, accessibility standards, and published UX findings — recommendations come from real-world evidence, never invented UI/UX concepts, and stay at design altitude (what and why, never how). Web-evidence questions dispatch the `research-analyst` agent (`.claude/agents/research-analyst.md`) in the background so the interview continues in real time while sourced claims arrive. Exits offer only what crystallised: design-doc updates, a product brief in `docs/briefs/` (shaped by `references/example-product-brief.md`, evidence-grounded and implementation-free, written with `status: draft` frontmatter), an ADR, a captured task, or nothing at all. Mid-session fan-out detection catches fog-plus-fan-out — two or more independently shippable outcomes while the what stays unsettled — with a one-line naming confirm, after which the interview consolidates the feature-set: workstreams split on UI/UX seams with restraint, each entry carrying its own settledness call (settled ones captured and linked on the spot). Session boundaries follow the residue principle: a single-workstream brief seeds `grill-engineer` and continues in-session by default; a multi-workstream brief chains into `ground-brief` in the same session, then stops hard — every workstream grilling runs fresh from the grounded brief.
+
+## ground-brief
+
+The engineering reconciliation pass between a product-pure multi-workstream brief and the isolated workstream grillings it seeds: reads the brief and the code each workstream would touch at orientation depth, then produces per-workstream feasibility (with the risky bit named), cross-workstream contracts (interface-level promises that keep later workstreams grillable and buildable in isolation), and a recommended grilling order. When the code contradicts the product split, it surfaces a re-split proposal as a user decision with costs attached — never redrawing product lines silently. One HITL approval gates the write: it appends the brief's `## Engineering grounding` section, applies accepted re-splits to Workstreams, and flips `status: draft → grounded` — the one brief fact not derivable from child task files. Chained in-session from grill-product's brief exit (judging re-splits needs the interview residue) or invoked standalone on a draft brief; declines single-workstream briefs, which seed `grill-engineer` directly. Closes with a hard stop and pickup instructions: each workstream is grilled in a fresh session, one at a time, in the recommended order — the grounded brief carries everything a cold session needs, which is the point of the pass.
 
 ## grill-research
 
@@ -101,18 +108,19 @@ Strictly HITL and never a session-end ritual: user-invoked ("codify", "add this 
 
 ## stage map
 
-| Stage                                | Skill                                                              | You type it?                                           |
-| ------------------------------------ | ------------------------------------------------------------------ | ------------------------------------------------------ |
-| Interview (any lens)                 | `grill-me` → `grill-engineer` / `grill-product` / `grill-research` | Yes — the front door                                   |
-| Park for later                       | `capture-task`                                                     | Yes, or suggested once mid-flow                        |
-| Diagnose a bug                       | `diagnose`                                                         | Yes — "diagnose"/"debug this", fix-it-now bug reports  |
-| Build scoped work                    | `implement-task`                                                   | Yes — the resume door                                  |
-| Test-first discipline                | `tdd`                                                              | Rarely — invoked under the hood                        |
-| UI/visual design                     | `frontend-design`                                                  | Rarely — triggers on UI work or via implement-task     |
-| Skill authoring                      | `skill-creator`                                                    | Rarely — loads on any skill-file edit (hook-enforced)  |
-| Interview mechanics                  | `grilling`                                                         | Rarely — lens skills run it                            |
-| Context docs (glossary, shape, ADRs) | `domain-modeling`                                                  | Rarely — lens sessions, or "document the architecture" |
-| Pre-merge review                     | `review-board`                                                     | Yes, or offered by implement-task                      |
-| Hand back a commit                   | `stage-for-commit`                                                 | Yes, or the build-now landing (after human QA)         |
-| Ship a PR                            | `ship-pr`                                                          | Yes, or offered once by implement-task / review-board  |
-| Codify lessons                       | `codify`                                                           | Yes, or suggested once when a durable lesson surfaces  |
+| Stage                                | Skill                                                              | You type it?                                                                   |
+| ------------------------------------ | ------------------------------------------------------------------ | ------------------------------------------------------------------------------ |
+| Interview (any lens)                 | `grill-me` → `grill-engineer` / `grill-product` / `grill-research` | Yes — the front door                                                           |
+| Park for later                       | `capture-task`                                                     | Yes, or suggested once mid-flow                                                |
+| Ground a multi-workstream brief      | `ground-brief`                                                     | Rarely — chained from grill-product's brief exit, or point it at a draft brief |
+| Diagnose a bug                       | `diagnose`                                                         | Yes — "diagnose"/"debug this", fix-it-now bug reports                          |
+| Build scoped work                    | `implement-task`                                                   | Yes — the resume door                                                          |
+| Test-first discipline                | `tdd`                                                              | Rarely — invoked under the hood                                                |
+| UI/visual design                     | `frontend-design`                                                  | Rarely — triggers on UI work or via implement-task                             |
+| Skill authoring                      | `skill-creator`                                                    | Rarely — loads on any skill-file edit (hook-enforced)                          |
+| Interview mechanics                  | `grilling`                                                         | Rarely — lens skills run it                                                    |
+| Context docs (glossary, shape, ADRs) | `domain-modeling`                                                  | Rarely — lens sessions, or "document the architecture"                         |
+| Pre-merge review                     | `review-board`                                                     | Yes, or offered by implement-task                                              |
+| Hand back a commit                   | `stage-for-commit`                                                 | Yes, or the build-now landing (after human QA)                                 |
+| Ship a PR                            | `ship-pr`                                                          | Yes, or offered once by implement-task / review-board                          |
+| Codify lessons                       | `codify`                                                           | Yes, or suggested once when a durable lesson surfaces                          |
