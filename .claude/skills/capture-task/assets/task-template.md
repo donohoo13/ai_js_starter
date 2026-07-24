@@ -3,9 +3,10 @@ type: bug | feature | chore
 status: captured
 created: YYYY-MM-DD
 brief: docs/briefs/<file>.md
+design: docs/designs/<file>.md
 ---
 
-<!-- Status lifecycle: captured (filed, unknowns explicit) → scoped (grilled: TBDs resolved, design and slices written by grill-engineer's spec-it exit) → in-progress (implement-task is building) → done (every acceptance criterion checked). Capture always starts at `captured`; grill-engineer flips to `scoped`; implement-task owns the last two transitions. `brief:` appears only when this task is a workstream of a product brief — it back-links the brief whose Engineering grounding section holds the contracts this task copies into Design decisions; omit the key otherwise. -->
+<!-- Status lifecycle: captured (filed, unknowns explicit) → scoped (grilled: TBDs resolved, design and slices written by grill-engineer's spec-it exit) → in-progress (implement-task is building) → done (every acceptance criterion checked). Capture always starts at `captured`; grill-engineer flips to `scoped`; implement-task owns the last two transitions. `brief:` appears only when this task is a workstream of a product brief — it back-links the brief whose Engineering grounding section holds the contracts this task copies into Design decisions; omit the key otherwise. `design:` appears only when the task renders or reshapes a user-facing surface — it links the grill-design artifact the build is held to (a governed-verdict recorded in Design decisions satisfies the same gate); omit the key otherwise. -->
 
 # Imperative title under 70 chars
 

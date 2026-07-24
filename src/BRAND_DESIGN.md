@@ -1,6 +1,6 @@
 # Brand Design Principles
 
-Brand identity for this project. Filled sections are fixed constraints: `frontend-design` and `grill-product` read this file at runtime and design inside them. Bracketed placeholders mark axes not yet decided; the first real design session fills them in (offer `/codify` after). The app's CSS is the source of truth for actual token values; read it before quoting any value in code. In monorepos, a per-app `BRAND_DESIGN.md` (e.g. `apps/<app>/BRAND_DESIGN.md`) overrides or extends this file.
+Brand identity for this project. Filled sections are fixed constraints: `grill-design` and `grill-product` read this file at runtime and design inside them. Bracketed placeholders mark axes not yet decided; the first `grill-design` session fills them in via its greenfield mode (offer `/codify` after). The app's CSS is the source of truth for actual token values; read it before quoting any value in code. In monorepos, a per-app `BRAND_DESIGN.md` (e.g. `apps/<app>/BRAND_DESIGN.md`) overrides or extends this file.
 
 ## Aesthetic
 

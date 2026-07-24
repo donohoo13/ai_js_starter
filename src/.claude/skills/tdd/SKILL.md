@@ -32,6 +32,12 @@ What the code under test depends on decides where the seam goes and whether a te
 - **Remote but owned** (your own services across a network) — define a port at the seam, inject a real transport adapter (HTTP/gRPC/queue) in production and an in-memory adapter in tests. Two adapters, so the seam is real.
 - **True external** (a third party you don't control: Stripe, Twilio) — inject a port, provide a mock adapter in tests. Mock only here, at the outermost edge; never mock internal collaborators.
 
+### The UI seam split
+
+Layout, appearance, and composition are never test targets: jsdom computes no layout (its own README — no layout or rendering), so a test can neither see nor protect how a surface looks, and appearance verification belongs to the surface's design artifact and the build's rendered checks, not to assertions. UI code still gets the full discipline at the right seams — the logic behind the view (state, view-model math, derived values) tests through its module interface, and behavioral contracts test at the component seam the way a user exercises them: clicking save submits the right payload, the error message renders, the hidden section stays hidden until toggled. The Humble View shape — thin view, logic pushed behind a testable interface — is what makes this split natural rather than a coverage hole.
+
+When the loop touches an existing test file, appearance-shaped tests found there are cleaned up in the same change: assertions targeting inline styles, look-classes, render-tree snapshots, or geometry values (which jsdom fakes as zeros) are removed within the change's blast radius. Before deleting, check whether the test smuggles a behavioral guarantee — `display: none` asserted directly is really "hidden until X", so re-express it at the behavior seam instead. Assertions on roles, accessible names, and `aria-*` stay: those are contracts, not looks. Report every removal in the change summary; a purge wider than the touched files is a `/capture-task`, never a hunt.
+
 ## Anti-patterns
 
 - **Implementation-coupled** — mocks internal collaborators, tests private methods, or verifies through a side channel (querying the database instead of using the interface). The tell: the test breaks when you refactor but behavior hasn't changed.

@@ -17,6 +17,7 @@ Each entry: what the artifact assumes today → the tailoring lever when the pro
 - `implement-task/SKILL.md` — reads `scoped` files from `docs/tasks/`, carries status frontmatter `scoped → in-progress → done`, dynamic context greps `docs/tasks/*.md`. → if scoped work lives in the tracker, define how a task file is seeded from a tracker issue (recommend the file remains the build artifact; the tracker links to it).
 - `grill-engineer/SKILL.md` — spec-it exit writes `docs/tasks/`; product briefs seed from `docs/briefs/`. → decide whether specs/briefs also post to the tracker, and to which project/team.
 - `ground-brief/SKILL.md`, `grill-product/SKILL.md` — multi-workstream briefs live at `docs/briefs/` with `status: draft|grounded` frontmatter; ground-brief appends the Engineering grounding section, and workstream entries link `docs/tasks/` files (which back-link via `brief:` frontmatter). → if specs/briefs post to a tracker, decide where grounded briefs and their workstream links live there too.
+- `grill-design/SKILL.md` — design artifacts land in `docs/designs/YYYY-MM-DD-<slug>.md`, task files back-link via `design:` frontmatter (task template + implement-task's surface gate). → if design artifacts live elsewhere (Figma, tracker attachments), keep the in-repo file as the build contract and link out from it.
 - `ship-pr/SKILL.md` — QA evidence reads `docs/tasks/` status. → keep aligned with wherever task status actually lives.
 - `.claude/skills/README.md` — "No GitHub issues anywhere in the chain — the file is the tracker." → restate to match the agreed structure.
 - ADRs (`docs/adr/`) stay in repo regardless of tracker; recommend against moving them.
@@ -55,6 +56,7 @@ Each entry: what the artifact assumes today → the tailoring lever when the pro
 - `agents/review-*.md` (five) — declare `Bash, Read, Grep, Glob, LSP`; LSP works only with the language plugin enabled plus the per-machine binary (doctor's whole job). Checklists in `review-board/references/` are stack-neutral best practice. → verify tool viability; add checklist content only on a clear project signal (e.g. a payments integration justifies a PCI note in security), proposed as its own plan item.
 - `agents/research-analyst.md` — declares Context7 MCP tools, WebSearch, WebFetch; already instructs fallback when Context7 is absent. → if Context7 is not connected, nothing breaks, but consider enabling the plugin since three grill lenses cite it as the primary fact source.
 - `CLAUDE.md` (shipped) MCP Tools section — names playwright-local, chrome-devtools, firefox-devtools, context7. → rewrite to the project's actual server list.
+- `implement-task/SKILL.md` — the render checks (first render of a new surface + task-end pass) screenshot via the UI verification tool the shipped `CLAUDE.md` MCP section names (`playwright-local`). → projects with no UI leave the checks inert (they fire only on surface slices); projects on a different browser tool rename it in `CLAUDE.md`, which the skill reads at runtime.
 
 ## Compliance posture (shipped assumption: none)
 
@@ -67,20 +69,20 @@ Each entry: what the artifact assumes today → the tailoring lever when the pro
 
 ## Design and domain files (init reads, never interviews on)
 
-- `BRAND_DESIGN.md` — skeletal on arrival; `UI_UX.md` — brand-agnostic usability standards, complete on arrival. `frontend-design` and `grill-product` read both at runtime, so the brand skeleton self-heals as the project fleshes it out. → report pointer to `/grill-me product`; no init-time edits.
+- `BRAND_DESIGN.md` — skeletal on arrival; `UI_UX.md` — brand-agnostic usability standards, complete on arrival. `grill-design` and `grill-product` read both at runtime, and `grill-design`'s greenfield mode is the intended path for filling the brand skeleton, so it self-heals as the project fleshes it out. → report pointer to `/grill-me design`; no init-time edits.
 - `CONTEXT.md`, `ARCHITECTURE.md`, `docs/adr/` — `domain-modeling` territory; monorepos may warrant the `CONTEXT-MAP.md` + root `ARCHITECTURE.md` layout it documents, and all three grow lazily from their first real entry, with the survey bootstrap in `domain-modeling/ARCHITECTURE-FORMAT.md` available when a brownfield destination wants the whole shape map in one pass. → report pointer; no invented glossary entries, no stub architecture docs.
 - `codify/SKILL.md` — routes conventions to the nearest enclosing `CLAUDE.md`; the shipped monorepo convention (nested per-app `CLAUDE.md`) affects where that lands. → confirm the layout matches the repo shape.
 
 ## Neutral by design (rarely forked)
 
-`grilling`, `grill-me`, `grill-product`, `grill-research`, `domain-modeling`, `tdd`, `frontend-design`, `skill-creator` — mechanics are platform- and stack-agnostic on purpose; they inherit tailoring through the context files. Fork one of these only on demonstrated need from the interview, never speculatively. `skill-creator`'s dual-layer sync line self-deactivates outside the template meta-repo, and its `guard-skill-edit` PreToolUse hook (settings.json entry + `.claude/hooks/guard-skill-edit.mjs`) ships as neutral machinery alongside `guard-main`.
+`grilling`, `grill-me`, `grill-product`, `grill-design`, `grill-research`, `domain-modeling`, `tdd`, `skill-creator` — mechanics are platform- and stack-agnostic on purpose; they inherit tailoring through the context files. Fork one of these only on demonstrated need from the interview, never speculatively. `skill-creator`'s dual-layer sync line self-deactivates outside the template meta-repo, and its `guard-skill-edit` PreToolUse hook (settings.json entry + `.claude/hooks/guard-skill-edit.mjs`) ships as neutral machinery alongside `guard-main`.
 
 ## Drift greps
 
 Run over `.claude/skills`, `.claude/agents`, `.claude/settings.json`, `.claude/hooks`, and the shipped `CLAUDE.md`; anything matching outside the entries above is drift — treat it as an unmanifested fork point and handle it like any other finding.
 
 - Platform: `grep -rniE 'github|gitlab|\bgh\b|\bglab\b|pull_request|merge_request'`
-- Tracker: `grep -rniE 'linear|jira|docs/tasks|docs/briefs'`
+- Tracker: `grep -rniE 'linear|jira|docs/tasks|docs/briefs|docs/designs'`
 - Branch model: `grep -rniE '\bmain\b|default branch|guard-main'`
 - Toolchain: `grep -rniE 'pnpm|\buv\b|prettier|eslint|ruff|turbo'`
 - Infra: `grep -rniE 'lsp|context7|playwright|chrome-devtools|doctor|husky|prepare|worktree|gwt|zed|oauth|cloudflare|mcp slug'`
