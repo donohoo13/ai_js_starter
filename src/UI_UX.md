@@ -14,6 +14,7 @@ Brand-agnostic usability and implementation standards. Brand identity (palette, 
 - **Accessibility**: WCAG 2.1 AA minimum — keyboard-navigable with focus order matching visual order, visible focus states, `aria-label` on icon-only controls, plus the contrast and target floors above.
 - **Interaction states**: every interactive element has visible hover, focus, pressed, and disabled treatments; pressed states never shift layout; no critical action lives behind hover alone — a tap path always exists.
 - **Icons**: one SVG family with a consistent stroke width per app; emoji never serve as UI icons.
+- **Dark elevation**: in dark themes, elevation reads from lightened surface tone, not shadow — shadows are nearly invisible on dark backgrounds (Material dark-theme elevation).
 - **CSS-First**: use modern native CSS capabilities over JS libraries for visual behavior (layout, animation, scroll effects); reach for JS only when CSS cannot express it.
 
 ### CSS
@@ -46,6 +47,7 @@ Every surface is composed from its user task, never from its data payload — an
 
 - **Constrained scale**: every spacing value comes from the project's spacing scale on an 8px base with 4px half-steps; arbitrary one-off values never appear (Material, Carbon, and Atlassian all constrain spacing to base-unit multiples).
 - **Proximity is grouping**: space within a group is smaller than space between groups; two unrelated elements sitting closer than two related ones means the spacing is wrong (Gestalt proximity, NN/g). Uniform spacing everywhere destroys grouping as surely as crowding does.
+- **Borders are the last grouping tool**: reach for spacing and a background tone step before a border; excessive borders read as clutter (Refactoring UI). A deliberately line-led brand documents that choice in `BRAND_DESIGN.md`, which wins.
 - **Tiered separation**: 0–8px inside components and groups, 12–24px between distinct elements, 32px and up between sections (Atlassian's documented tiering as the directional shape).
 - **Line length**: reading text caps near `70ch` (the 45–75 characters-per-line consensus; WCAG 1.4.8 sets ≤80 as the accessibility bound).
 - **Data surfaces never stretch to fill a wide viewport**: cap the container or tighten columns so row association survives — excess space between a row's cells makes related data read as unrelated (the proximity rule applied to tables); predictable columns (status, date, actions) take fixed widths and text columns flex.
@@ -97,6 +99,7 @@ Pick the control by what the user knows, and label the unit on the control.
 These rules govern any table rendering more than a handful of rows. They are brand-agnostic usability floors; density, emphasis treatment, and voice come from `BRAND_DESIGN.md` and take precedence where they overlap.
 
 - **Alignment**: Left-align text and labels; right-align all numerics so columns share a decimal axis and scan vertically. Render numeric columns in the code/data (monospaced) family from `BRAND_DESIGN.md` Typography with consistent decimal places and thousands separators per column.
+- **A table is not a net**: rows separate with hairline dividers; columns separate by alignment and spacing on the shared decimal axis, never by enclosing every cell in a box (Tufte).
 - **Sticky headers**: Column headers stay pinned during vertical scroll so context never leaves view on long tables.
 - **Frozen identity column**: Pin the row-identity column during horizontal scroll so the user never loses which row they are reading across wide sets.
 - **Column controls**: Support resize, show/hide toggles, and multi-level sort. Persist the user's column and sort choices across sessions; a configured table layout is authored work, not transient state.
