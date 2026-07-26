@@ -7,7 +7,7 @@ description: Build and sharpen a project's domain model and its context docs. Us
 
 Actively build and sharpen the project's domain model as you design. This is the _active_ discipline — challenging terms, inventing edge-case scenarios, and writing the glossary and decisions down the moment they crystallise. (Merely _reading_ `CONTEXT.md` for vocabulary is not this skill — that's a one-line habit any skill can do. This skill is for when you're changing the model, not just consuming it.)
 
-The model lives in three kinds of docs, each with exactly one job: `CONTEXT.md` holds the **language** (a glossary, nothing else), `docs/adr/` holds the **decisions** (why X over Y, frozen at the moment of choice), and `ARCHITECTURE.md` holds the **shape** (what exists and how it is wired, kept current). Keeping the jobs separate is what keeps each doc trustworthy — a fact filed in the wrong kind of doc is never found again.
+The model lives in three kinds of docs, each with exactly one job: `CONTEXT.md` holds the **language** (a glossary, nothing else), `docs/adr/` holds the **decisions** (why X over Y, with the reasoning frozen at the moment of choice and the status maintained as later decisions retire it), and `ARCHITECTURE.md` holds the **shape** (what exists and how it is wired, kept current). Keeping the jobs separate is what keeps each doc trustworthy — a fact filed in the wrong kind of doc is never found again.
 
 ## File structure
 
@@ -95,3 +95,9 @@ Only offer to create an ADR when all three are true:
 3. **The result of a real trade-off** — there were genuine alternatives and you picked one for specific reasons
 
 If any of the three is missing, skip the ADR. Use the format in [ADR-FORMAT.md](./ADR-FORMAT.md).
+
+### Retire what a new ADR replaces, in the same change
+
+A new decision usually changes an old one, and the retirement lands in the same change so the two ADRs never disagree about which of them binds. Before writing an ADR, grep `docs/adr/` for its decision area (the table, boundary, technology, or surface it touches), read every hit, and name each ADR this one changes in frontmatter: `supersedes` when the old decision is retired whole, `amends` when part of it survives. The retired ADR gets the reciprocal field, a matching `status`, and a note saying which part died. Partial is the common case, so reach for `amends` first and reserve `supersedes` for an ADR that has nothing left standing.
+
+Ambiguity here belongs to the user, not to a guess: when a grep hit might or might not still hold under the new decision, put the question to them, because a wrong `supersedes` erases a decision that is still in force. The `guard-adr-links` hook enforces the link once it is declared; noticing what to declare is this skill's job. Field vocabulary and the note format are in [ADR-FORMAT.md](./ADR-FORMAT.md).

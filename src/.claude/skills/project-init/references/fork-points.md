@@ -20,7 +20,7 @@ Each entry: what the artifact assumes today → the tailoring lever when the pro
 - `grill-design/SKILL.md` — design artifacts land in `docs/designs/YYYY-MM-DD-<slug>.md`, task files back-link via `design:` frontmatter (task template + implement-task's surface gate). → if design artifacts live elsewhere (Figma, tracker attachments), keep the in-repo file as the build contract and link out from it.
 - `ship-pr/SKILL.md` — QA evidence reads `docs/tasks/` status. → keep aligned with wherever task status actually lives.
 - `.claude/skills/README.md` — "No GitHub issues anywhere in the chain — the file is the tracker." → restate to match the agreed structure.
-- ADRs (`docs/adr/`) stay in repo regardless of tracker; recommend against moving them.
+- ADRs (`docs/adr/`) stay in repo regardless of tracker; recommend against moving them. The `guard-adr-links` PreToolUse hook (settings.json entry + `.claude/hooks/guard-adr-links.mjs`) enforces the status and relation frontmatter from `domain-modeling/ADR-FORMAT.md`, assumes `NNNN-slug.md` numbering, and needs `node` on PATH. → projects whose ADRs live at another path (`decisions/`, `doc/adr/`) retarget the settings.json `case` pattern; a different numbering scheme retargets the filename match inside the hook.
 
 ## Branch model and ceremony (shipped assumption: never commit to main, team of >1)
 
