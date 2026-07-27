@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Usage: ./scripts/gwt-add.sh [--no-open] <branch-name> [git worktree add flags]
+# Usage: ./scripts/setup/gwt-add.sh [--no-open] <branch-name> [git worktree add flags]
 # Creates a git worktree at $HOME/Code/.worktrees/<project>/<branch> (slashes
 # in <branch> flattened to dashes, so feature/foo lands at feature-foo), copies
 # env files, runs pnpm install, and opens the worktree in Zed.

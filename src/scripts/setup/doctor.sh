@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Usage: ./scripts/doctor.sh
+# Usage: ./scripts/setup/doctor.sh
 # Warn-only check that this machine has the toolchain prerequisites the project
 # expects. Claude Code's LSP plugins (typescript-lsp, pyright-lsp) ship only
 # server configuration; each language server binary is a separate per-machine

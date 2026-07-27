@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Usage: ./scripts/gwt-remove.sh <branch-name> [git worktree remove flags]
+# Usage: ./scripts/setup/gwt-remove.sh <branch-name> [git worktree remove flags]
 # Removes the worktree at $HOME/Code/.worktrees/<project>/<branch> (slashes
 # in <branch> flattened to dashes, matching gwt-add.sh), deletes the branch
 # (soft — warns on unmerged), and prunes worktree metadata.

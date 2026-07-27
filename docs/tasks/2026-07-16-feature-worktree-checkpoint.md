@@ -12,7 +12,7 @@ Parallel Claude Code sessions in one checkout clobber each other: branch switche
 
 ## Problem
 
-`implement-task` step 2 today asks the user to create or pick a feature branch in the shared checkout — the only branch-switching skill in the chain, and therefore the source of the cross-session branch clobbering. Desired: step 2 moves the session into a dedicated git worktree (via `scripts/gwt-add.sh` + the native `EnterWorktree` tool) so the main checkout stays permanently pinned to `main`, and `project-init` knows how to tailor the worktree tooling to destination projects.
+`implement-task` step 2 today asks the user to create or pick a feature branch in the shared checkout — the only branch-switching skill in the chain, and therefore the source of the cross-session branch clobbering. Desired: step 2 moves the session into a dedicated git worktree (via `scripts/setup/gwt-add.sh` + the native `EnterWorktree` tool) so the main checkout stays permanently pinned to `main`, and `project-init` knows how to tailor the worktree tooling to destination projects.
 
 ## Scope
 
@@ -35,11 +35,11 @@ Parallel Claude Code sessions in one checkout clobber each other: branch switche
 ## Acceptance criteria
 
 - [x] `gwt-add.sh --no-open <branch>` creates the worktree, copies `.env.local`, runs `pnpm install`, and never launches Zed; without the flag, current behavior is unchanged (verified against a throwaway git repo).
-- [x] Root `scripts/gwt-add.sh` and `scripts/gwt-remove.sh` exist and are byte-identical to the `src/scripts/` pair.
+- [x] Root `scripts/setup/gwt-add.sh` and `scripts/setup/gwt-remove.sh` exist and are byte-identical to the `src/scripts/` pair.
 - [x] `implement-task` (both layers) at step 2 proposes branch `<type>/<slug>` and the worktree target, asks one confirm, then runs the script and relocates via `EnterWorktree path:`; the session's working directory afterward is the worktree.
 - [x] Declining the confirm falls back to the old flow: user names a plain branch in the checkout, build proceeds there.
 - [x] Re-invoking `implement-task` for a task whose worktree already exists re-enters it instead of failing or duplicating.
-- [x] `ship-pr` (both layers), when the session is in a worktree, closes its URL report with the one-line post-merge pointer to `scripts/gwt-remove.sh <branch>` run from the main checkout.
+- [x] `ship-pr` (both layers), when the session is in a worktree, closes its URL report with the one-line post-merge pointer to `scripts/setup/gwt-remove.sh <branch>` run from the main checkout.
 - [x] CLAUDE.md Git Control (both layers) states the worktree rule in strict present tense.
 - [x] `fork-points.md` gains a worktree-isolation section (path convention, Zed, pnpm, env-file list, implement-task dependency, revert lever) and the infra drift grep matches `worktree|gwt|zed`.
 - [x] `pnpm format:check` passes.
@@ -56,12 +56,12 @@ None external; composes the existing gwt scripts with Claude Code's native `Ente
 
 ## Design decisions
 
-- Checkpoint contract (implement-task step 2, "guard the workspace"): derive `<type>/<slug>` from the task filename; one confirm naming the exact worktree path; on yes run `scripts/gwt-add.sh --no-open <branch>` then `EnterWorktree` with `path` set to the created worktree; on no, the current ask-for-a-branch flow verbatim; if `git worktree list` already shows the branch's worktree, skip creation and enter it directly. Slice loop, commit flow, and land phase are untouched — they run identically inside the worktree.
+- Checkpoint contract (implement-task step 2, "guard the workspace"): derive `<type>/<slug>` from the task filename; one confirm naming the exact worktree path; on yes run `scripts/setup/gwt-add.sh --no-open <branch>` then `EnterWorktree` with `path` set to the created worktree; on no, the current ask-for-a-branch flow verbatim; if `git worktree list` already shows the branch's worktree, skip creation and enter it directly. Slice loop, commit flow, and land phase are untouched — they run identically inside the worktree.
 - Script/native split: the script is the machine-setup seam (env, install, human `zed` launch), the native tool is the session seam (true cwd relocation instead of fragile per-Bash `cd`, exit-time unmerged-work protection). Neither absorbs the other's job.
 - `--no-open` is a flag, not an env var: visible in `Usage`, greppable, and the human default (Zed opens) stays untouched.
 - Teardown asymmetry is deliberate: `EnterWorktree path:`-entered worktrees are not removable by `ExitWorktree`, which matches the ownership model — the script created it, the human removes it post-merge with `gwt-remove.sh`.
 - project-init integration is config-first per its own operating principles: the `fork-points.md` section is the mechanism (Phase 1 reads it, Phase 4 applies it); tailoring levers are the editor (`zed`), install command (`pnpm install`), env-file list (`.env.local`), worktree root (`~/Code/.worktrees/<project>`), and reverting step 2 to the branch dance where a destination drops the scripts. One line joins `gwt-add.sh`/`gwt-remove.sh` to the Phase 4 scripts bullet beside `doctor.sh`.
-- CLAUDE.md rule (both layers, Git Control): `implement-task` builds run in a git worktree created by `scripts/gwt-add.sh`; this line doubles as the instruction that legitimizes the native `EnterWorktree` tool under its usage gate.
+- CLAUDE.md rule (both layers, Git Control): `implement-task` builds run in a git worktree created by `scripts/setup/gwt-add.sh`; this line doubles as the instruction that legitimizes the native `EnterWorktree` tool under its usage gate.
 
 ## Test strategy
 
@@ -69,7 +69,7 @@ This repo ships no test suite (no application code), so validation is behavioral
 
 ## Slices
 
-- [x] Scripts: `--no-open` flag in `src/scripts/gwt-add.sh`, byte-identical copies of both scripts at root `scripts/`, smoke-tested against a throwaway repo — criteria 1, 2, and the slash-branch nice-to-have if trivial.
+- [x] Scripts: `--no-open` flag in `src/scripts/setup/gwt-add.sh`, byte-identical copies of both scripts at root `scripts/`, smoke-tested against a throwaway repo — criteria 1, 2, and the slash-branch nice-to-have if trivial.
 - [x] Checkpoint: `implement-task` step 2 rewrite + CLAUDE.md Git Control rule + skills README rows, both layers — criteria 3, 4, 5, 7.
 - [x] Cleanup pointer: `ship-pr` close gains the conditional `gwt-remove.sh` line, both layers — criterion 6.
 - [x] Manifest: `fork-points.md` worktree section, drift grep extension, `project-init` Phase 4 scripts-bullet line — criterion 8.
