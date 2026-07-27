@@ -54,12 +54,10 @@ Opinionated JS/TS starter template optimized for AI-assisted development with Cl
 
 ### Skills
 
-- Document skill usage concisely inside `src/.claude/skills/README.md` as a human readable reference.
 - Use the project skill whose trigger matches the task instead of improvising; improvise only when no skill matches.
-- Every change to a skill file — anything under `.claude/skills/` or `src/.claude/skills/` — loads the `skill-creator` skill first, whatever brought the change (a grilling exit, another skill's follow-through, a one-line tweak). It owns the authoring discipline, the gut-check prompt handoff, and the landing checklist (dual-layer sync, README blurbs, fork-points). The `guard-skill-edit` PreToolUse hook denies skill-file edits until it is loaded.
-- Task capture is user's responsibility (tracking system, not memory). Suggest `/capture-task` once when user voices actionable asides or conversation drifts. Suggest, never auto-file. One nudge; if user doesn't bite, drop it. Do not use memory for work items.
-- Captured tasks land in `docs/tasks/YYYY-MM-DD-<type>-<slug>.md` (`type`: `bug` | `feature` | `chore`), structured per `.claude/skills/capture-task/assets/task-template.md`: frontmatter (`type`, `status: captured`, `created`) plus Context, Problem, Scope, Requirements, Acceptance criteria, Dependencies, Risks / open questions, with unknowns kept explicit as `TBD (needs grilling)`.
-- Context curation is hook-gated: the `guard-context-edit` PreToolUse hook denies any edit to a prescriptive context file (`CLAUDE.md`/`CLAUDE.local.md` at any depth, `README.md`, `.claude/rules/`, `BRAND_DESIGN.md`, `UI_UX.md`) until the `curate-context` skill is loaded (design docs also open to a loaded `grill-design`/`grill-product` session; files under `.claude/skills/` follow the skill-file rule above instead), and requires `domain-modeling` for the descriptive docs (`CONTEXT.md`, `CONTEXT-MAP.md`, `ARCHITECTURE.md`, `docs/adr/`). HITL means no model-invented content lands unseen: model-proposed rules need per-candidate approval, user-directed edits apply on the ask after the skill's pushback. Suggest distilling a session's lessons (`/curate-context`) at most once when a durable candidate surfaces; if the user doesn't bite, drop it.
+- Skill-file edits (anything under `.claude/skills/` or `src/.claude/skills/`) load `skill-creator` first, whatever brought the change; the `guard-skill-edit` PreToolUse hook denies the edit until it is loaded.
+- Context-file edits are gated the same way: `guard-context-edit` denies edits to the prescriptive context files (enumerated in `curate-context`'s description) until that skill is loaded, and requires `domain-modeling` for the descriptive docs.
+- Task capture is the user's responsibility, tracked in task files, never in memory. Suggest `/capture-task` once when the user voices an actionable aside or the conversation drifts, and `/curate-context` at most once when a durable lesson surfaces; suggest, never auto-run, and if the user doesn't bite, drop it.
 
 #### Project VS Template
 
