@@ -58,7 +58,7 @@ amended-by: [0042]
 Frontmatter carries the relation; the note carries the scope. Splitting them this way keeps the machine-checkable part machine-checkable and leaves "which clause died" in prose, where it belongs — no schema can express it and no reader can act without it.
 
 > [!WARNING]
-> The `guard-adr-links` PreToolUse hook enforces this: it refuses a write to any ADR whose frontmatter omits `status`, declares `status: superseded` or `amended` without naming a successor, or declares a relation the target ADR does not mirror back. A relation naming an ADR that does not exist yet passes, so write the back-link into the older ADR first, then create the new one.
+> The `guard-adr-links` PreToolUse hook enforces this: it refuses a write to any ADR whose frontmatter omits `status`, declares `status: superseded` or `amended` without naming a successor, or claims `supersedes`/`amends` over an ADR that does not acknowledge it. The back-link fields (`superseded-by`, `amended-by`) are always writable, since saying "something retired me" makes no claim about another file. That fixes the order in every case, new corpus or old: annotate the older ADR first, then write the newer one against an acknowledgement that already exists.
 
 ## Before writing a new ADR, check what it retires
 

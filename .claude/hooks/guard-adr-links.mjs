@@ -1,14 +1,19 @@
 #!/usr/bin/env node
 // PreToolUse guard: blocks Edit/Write on an ADR whose frontmatter omits `status`
-// or declares a supersession/amendment relation the target ADR does not mirror
-// back. Supersession recorded only in body prose is invisible to a reader
-// scanning frontmatter, so a retired decision reads as binding — the failure
-// this hook exists to make impossible. Exit 2 blocks the tool call and surfaces
-// stderr to Claude; exit 0 allows it. Fail-open like guard-main: unparseable
-// input, an unreadable file, or a launch failure must not lock the ADR
-// directory shut. A relation pointing at an ADR that does not exist yet also
-// passes, because writing a pair requires one of the two files to name the
-// other first; the back-link is enforced the moment both files exist.
+// or claims to retire another ADR that does not acknowledge it. Supersession
+// recorded only in body prose is invisible to a reader scanning frontmatter, so
+// a retired decision reads as binding — the failure this hook exists to make
+// impossible. Exit 2 blocks the tool call and surfaces stderr to Claude; exit 0
+// allows it. Fail-open like guard-main: unparseable input, an unreadable file,
+// or a launch failure must not lock the ADR directory shut.
+//
+// Only the active claims (`supersedes`, `amends`) are mirror-checked. The
+// passive fields (`superseded-by`, `amended-by`) say "something retired me" and
+// cannot fabricate a claim about another file's content, so they are always
+// writable and are what seeds a pair: annotate the older ADR first, then the
+// newer one lands against an acknowledgement that already exists. Checking both
+// directions deadlocks every corpus where both files predate the convention,
+// and the only escape from a deadlocked guard is switching it off.
 import { readFileSync, readdirSync } from 'node:fs';
 import { dirname, basename } from 'node:path';
 
@@ -18,6 +23,8 @@ const RECIPROCAL = {
   amends: 'amended-by',
   'amended-by': 'amends',
 };
+// The claims that retire another ADR, and so the only ones needing its consent.
+const ACTIVE = new Set(['supersedes', 'amends']);
 const STATUSES = ['proposed', 'accepted', 'amended', 'superseded', 'deprecated'];
 // A status naming a relation is incoherent without that relation declared.
 const STATUS_REQUIRES = { superseded: 'superseded-by', amended: 'amended-by' };
@@ -131,6 +138,8 @@ if (!fm) {
         problems.push(`\`${field}\` names this ADR itself (${selfNum}).`);
         continue;
       }
+      if (!ACTIVE.has(field)) continue; // passive back-link: always writable, seeds the pair
+
       const file = siblings.find((name) => name.startsWith(`${target}-`) && name.endsWith('.md'));
       if (!file) continue; // other half of the pair not written yet
 
