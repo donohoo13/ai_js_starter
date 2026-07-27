@@ -39,11 +39,11 @@ Write `docs/designs/YYYY-MM-DD-<surface-slug>.md`; read `references/example-desi
 
 ## Greenfield mode
 
-Skeletal or placeholder design docs mean nothing is governed, so the first session here is the brand-derivation session: settle the aesthetic direction, palette, type roles, and layout concept as the project's first durable design decisions, then offer once to write them into `BRAND_DESIGN.md` / `UI_UX.md` (via `/codify` where available) so future sessions inherit them instead of re-deriving. Known AI-default attractors — warm cream with a high-contrast serif and terracotta accent, near-black with a single acid accent, hairline broadsheet — are defaults rather than choices; where the docs leave an axis free, spend the freedom on the subject's own world, not on an attractor.
+Skeletal or placeholder design docs mean nothing is governed, so the first session here is the brand-derivation session: settle the aesthetic direction, palette, type roles, and layout concept as the project's first durable design decisions, then offer once to write them into `BRAND_DESIGN.md` / `UI_UX.md` (via `/curate-context` where available) so future sessions inherit them instead of re-deriving. Known AI-default attractors — warm cream with a high-contrast serif and terracotta accent, near-black with a single acid accent, hairline broadsheet — are defaults rather than choices; where the docs leave an axis free, spend the freedom on the subject's own world, not on an attractor.
 
 ## Exits — offer only what crystallised
 
 - **Design artifact** — the normal exit: the file above, then hand into `grill-engineer` in-session by default (residue principle: the rejected alternatives and the why behind each ranking are exactly what the artifact compresses away).
 - **Governed-verdict** — the fast exit: one recorded line, straight into `grill-engineer`.
-- **Grammar codification** — when the interview produced a genuinely new grammar (a new register, a new surface family), offer `/codify` once to write it into `UI_UX.md`, so the next surface with this shape arrives governed. This is the flywheel: every novel surface either fits the doc or grows it, and the design ceremony amortizes toward zero as the doc matures.
+- **Grammar codification** — when the interview produced a genuinely new grammar (a new register, a new surface family), offer `/curate-context` once to write it into `UI_UX.md`, so the next surface with this shape arrives governed. This is the flywheel: every novel surface either fits the doc or grows it, and the design ceremony amortizes toward zero as the doc matures.
 - **Nothing** — as with any grilling, a pure discussion can simply end.

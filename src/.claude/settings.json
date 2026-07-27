@@ -33,6 +33,10 @@
           {
             "type": "command",
             "command": "input=$(cat); case \"$input\" in *docs/adr/*) printf '%s' \"$input\" | node \"$CLAUDE_PROJECT_DIR/.claude/hooks/guard-adr-links.mjs\";; esac"
+          },
+          {
+            "type": "command",
+            "command": "input=$(cat); case \"$input\" in *CLAUDE.md*|*claude.md*|*Claude.md*|*CLAUDE.local.md*|*claude.local.md*|*README.md*|*readme.md*|*Readme.md*|*.claude/rules/*|*CONTEXT.md*|*context.md*|*CONTEXT-MAP.md*|*context-map.md*|*ARCHITECTURE.md*|*architecture.md*|*Architecture.md*|*BRAND_DESIGN.md*|*brand_design.md*|*UI_UX.md*|*ui_ux.md*|*docs/adr/*) printf '%s' \"$input\" | node \"$CLAUDE_PROJECT_DIR/.claude/hooks/guard-context-edit.mjs\";; esac"
           }
         ]
       }

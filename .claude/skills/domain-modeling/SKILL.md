@@ -7,7 +7,7 @@ description: Build and sharpen a project's domain model and its context docs. Us
 
 Actively build and sharpen the project's domain model as you design. This is the _active_ discipline — challenging terms, inventing edge-case scenarios, and writing the glossary and decisions down the moment they crystallise. (Merely _reading_ `CONTEXT.md` for vocabulary is not this skill — that's a one-line habit any skill can do. This skill is for when you're changing the model, not just consuming it.)
 
-The model lives in three kinds of docs, each with exactly one job: `CONTEXT.md` holds the **language** (a glossary, nothing else), `docs/adr/` holds the **decisions** (why X over Y, with the reasoning frozen at the moment of choice and the status maintained as later decisions retire it), and `ARCHITECTURE.md` holds the **shape** (what exists and how it is wired, kept current). Keeping the jobs separate is what keeps each doc trustworthy — a fact filed in the wrong kind of doc is never found again.
+The model lives in three kinds of docs, each with exactly one job: `CONTEXT.md` holds the **language** (a glossary, nothing else), `docs/adr/` holds the **decisions** (why X over Y, with the reasoning frozen at the moment of choice and the status maintained as later decisions retire it), and `ARCHITECTURE.md` holds the **shape** (what exists and how it is wired, kept current). Keeping the jobs separate is what keeps each doc trustworthy — a fact filed in the wrong kind of doc is never found again. The `guard-context-edit` PreToolUse hook enforces the ownership: edits to any of the three doc kinds are denied until this skill is loaded, and the prescriptive files (`CLAUDE.md`, `README.md`, the design docs) belong to `curate-context` the same way.
 
 ## File structure
 

@@ -75,7 +75,7 @@ Section semantics:
 
 ## Confirm once, ship, stop
 
-**Pre-flight: flush session capture candidates first.** Before showing the confirm, surface anything this session earned that would otherwise become a post-ship straggler — a `/codify` convention candidate, a `/capture-task` aside, a shape-doc fact — as part of the same confirm message, so the user can fold them into the branch now or decline them now. Once the PR is open the branch should be mergeable without follow-up commits; a suggestion that arrives after the push forces exactly the lingering-commit churn this skill exists to prevent. Declined candidates are dropped, not re-raised.
+**Pre-flight: flush session capture candidates first.** Before showing the confirm, surface anything this session earned that would otherwise become a post-ship straggler — a `/curate-context` convention candidate, a `/capture-task` aside, a shape-doc fact — as part of the same confirm message, so the user can fold them into the branch now or decline them now. Once the PR is open the branch should be mergeable without follow-up commits; a suggestion that arrives after the push forces exactly the lingering-commit churn this skill exists to prevent. Declined candidates are dropped, not re-raised.
 
 Title: imperative mood, 72 characters or fewer, from the task file title or the branch's dominant commit subject. Show the exact title and body and ask one confirm — this is the last moment before the remote. On yes:
 
