@@ -9,5 +9,7 @@ out
 pnpm-lock.yaml
 .ai/worktrees
 .ai/implementations
+.turbo
+.playwright
 .env*
 *ignore

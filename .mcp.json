@@ -1,1 +1,48 @@
-{}
+{
+  "mcpServers": {
+    "supabase-local": {
+      "type": "http",
+      "url": "http://127.0.0.1:54321/mcp"
+    },
+    "playwright-local": {
+      "command": "pnpm",
+      "args": [
+        "dlx",
+        "@playwright/mcp@0.0.78",
+        "--user-data-dir",
+        ".playwright/mcp-profile",
+        "--headless",
+        "--browser=chromium"
+      ]
+    },
+    "firefox-devtools": {
+      "command": "pnpm",
+      "args": [
+        "dlx",
+        "@mozilla/firefox-devtools-mcp@0.9.12",
+        "--headless",
+        "--viewport",
+        "1280x720"
+      ],
+      "env": {
+        "START_URL": "about:blank"
+      }
+    },
+    "clerk-[project]": {
+      "type": "http",
+      "url": "https://mcp.clerk.com/mcp"
+    },
+    "cloudflare-[project]": {
+      "type": "http",
+      "url": "https://mcp.cloudflare.com/mcp"
+    },
+    "stripe-[project]-[environment]": {
+      "type": "http",
+      "url": "https://mcp.stripe.com"
+    },
+    "posthog-[project]": {
+      "type": "http",
+      "url": "https://mcp.posthog.com/mcp?project_id=[id]"
+    }
+  }
+}

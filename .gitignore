@@ -1,6 +1,9 @@
 .ai/worktrees
 .ai/implementations
 .claude/settings.local.json
+CLAUDE.local.md
+.turbo
+.playwright
 .env*
 node_modules
 .DS_Store
