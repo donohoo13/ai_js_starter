@@ -21,6 +21,8 @@ gh repo create <your-project> --template donohoo13/ai_starter --private --clone
 
 Then run `/project-init` in a Claude Code session there: a one-shot onboarding audit that tailors the suite to the project's platform, stack, and tracker, clears template residue (this README included), stamps the template lineage, and removes itself when done. For an existing repo, copy the payload in by hand (`.claude/` and the sibling context files, scripts, and configs) and run `/project-init` the same way — it detects partial copies and degrades gracefully. This is a starting point, not a framework: add your own apps and packages on top; the AI configuration works regardless of what you build.
 
+First-run network note: the initial `pnpm install` may download the pinned Node runtime (`useNodeVersion` in `pnpm-workspace.yaml`), the browser MCP servers resolve their packages through `pnpm dlx` on first session start, and Playwright fetches its Chromium binary (~100MB) on its first launch — one-time, cache-warmed costs after that. Restricted networks need access to the npm registry, `nodejs.org`, and Playwright's browser CDN.
+
 ## Receiving Template Updates
 
 Instances share no git history with the template, so updates are pulled, never pushed. Each release is a `CHANGELOG.md` entry (what, why, adaptation notes) plus a matching `vX.Y.Z` tag; the shipped `sync-template` skill reads the `Template lineage:` stamp `project-init` left in `CLAUDE.md`, fetches the template remote, and walks unapplied releases as an itemized adaptation interview — landing working-tree changes for your review and logging outcomes to `docs/template-sync-log.md`. Run `/sync-template` whenever you want to catch up; skipping releases you don't want is a recorded, first-class outcome.

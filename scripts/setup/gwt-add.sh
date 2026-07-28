@@ -43,11 +43,20 @@ else
   git worktree add "$target" -b "$branch" "$@"
 fi
 
-echo "Copying env files..."
+echo "Copying local files..."
 if [[ -f "$main_root/.env.local" ]]; then
   cp "$main_root/.env.local" "$target/.env.local"
 else
   echo "  Skipped .env.local (not present at repo root)"
+fi
+
+# settings.local.json is gitignored, so a fresh worktree never inherits it —
+# without this copy, locally-disabled MCP servers auto-start in every worktree.
+if [[ -f "$main_root/.claude/settings.local.json" ]]; then
+  mkdir -p "$target/.claude"
+  cp "$main_root/.claude/settings.local.json" "$target/.claude/settings.local.json"
+else
+  echo "  Skipped .claude/settings.local.json (not present at repo root)"
 fi
 
 if [[ "$no_open" -eq 1 ]]; then

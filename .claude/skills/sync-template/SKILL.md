@@ -15,7 +15,7 @@ Refuse in one line when this repo is the template itself — `.claude/rules/temp
 
 - Read the stamp from `CLAUDE.md`: `Template lineage: <owner>/<repo>, vX.Y.Z`.
 - Stamp missing but this is clearly an instance: run first-run onboarding instead of failing — confirm the template repo with the user (`donohoo13/ai_starter` is the default), establish the baseline version together (the newest release whose content this project already carries; when unknown, diff candidate releases against the working tree and recommend), and stamp it before syncing.
-- Ensure the remote and fetch with namespaced tags so template tags never collide with the project's own: `git remote get-url template 2>/dev/null || git remote add template git@github.com:<owner>/<repo>.git`, then `git fetch template '+refs/tags/v*:refs/remotes/template/tags/v*'` and `git fetch template main`.
+- Ensure the remote and fetch with namespaced tags so template tags never land in or collide with the project's own tag namespace: `git remote get-url template 2>/dev/null || git remote add template git@github.com:<owner>/<repo>.git`, then `git fetch --no-tags template '+refs/tags/v*:refs/remotes/template/tags/v*'` and `git fetch --no-tags template main` — `--no-tags` matters on both, because git's default tag auto-following would copy template tags into plain `refs/tags/` and defeat the namespacing.
 
 ## Phase 1 — Delta
 

@@ -10,7 +10,7 @@
   },
   "scripts": {
     "preinstall": "node scripts/setup/check-install.mjs",
-    "prepare": "husky; bash scripts/setup/doctor.sh",
+    "prepare": "husky; bash scripts/setup/doctor.sh || true",
     "build": "turbo build",
     "dev": "turbo dev",
     "lint": "turbo lint",
