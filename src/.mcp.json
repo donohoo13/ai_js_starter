@@ -1,5 +1,9 @@
 {
   "mcpServers": {
+    "supabase-local": {
+      "type": "http",
+      "url": "http://127.0.0.1:54321/mcp"
+    },
     "playwright-local": {
       "command": "npx",
       "args": [
@@ -30,6 +34,10 @@
     "cloudflare-[project]": {
       "type": "http",
       "url": "https://mcp.cloudflare.com/mcp"
+    },
+    "stripe-[project]-[environment]": {
+      "type": "http",
+      "url": "https://mcp.stripe.com"
     }
   }
 }

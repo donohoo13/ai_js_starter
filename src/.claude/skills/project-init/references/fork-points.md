@@ -44,6 +44,7 @@ Each entry: what the artifact assumes today → the tailoring lever when the pro
 - `CLAUDE.md` (shipped) — Python and Javascript/Typescript sections, pnpm/Turborepo guidance, Company Overview/`[project standards]`/Architecture/Deployment placeholders. → prune sections for absent stacks, add the real stack's conventions, resolve every placeholder; `implement-task` discovers validate commands from this file, so its accuracy is load-bearing.
 - `docs/company/company-overview.md` — bracketed narrative skeleton (company, customers & users, product, project fit) that the shipped `CLAUDE.md` Company Overview section points at; descriptive only, no rules live in it. → fill the brackets with the user during init — they know the company, never invent content; a project with no company framing deletes the doc and rewrites the `CLAUDE.md` Company Overview section into a plain project overview.
 - `scripts/setup/doctor.sh` — warn-only LSP binary checks gated on TS and Python manifests; its comment block maps other languages to official plugins and binaries. → retarget the checks to the detected stack and wire into the manifest's install lifecycle (`package.json` `prepare`, or the stack's equivalent).
+- `scripts/setup/check-node-version.mjs` — preinstall guard that hard-fails installs on the wrong Node major; assumes a repo-root `.nvmrc` (resolved two levels up from the script's own location), `package.json` `preinstall` wiring, and passes silently under pnpm's `useNodeVersion` (pnpm already runs the pinned Node), earning its keep against stray `npm install`/`yarn install`. → project-init writes the `.nvmrc` pin from the destination's actual Node version and wires the `preinstall` script; a destination that declines the guard deletes the file.
 - `.claude/settings.json` `enabledPlugins` — `typescript-lsp` and `pyright-lsp` enabled. → enable the detected languages' LSP plugins, disable dead ones.
 
 ## MCP servers, plugins, and agents
@@ -80,7 +81,7 @@ Each entry: what the artifact assumes today → the tailoring lever when the pro
 
 ## Drift greps
 
-Run over `.claude/skills`, `.claude/agents`, `.claude/settings.json`, `.claude/hooks`, and the shipped `CLAUDE.md`; anything matching outside the entries above is drift — treat it as an unmanifested fork point and handle it like any other finding.
+Run over `.claude/skills`, `.claude/agents`, `.claude/settings.json`, `.claude/hooks`, `scripts/`, and the shipped `CLAUDE.md`; anything matching outside the entries above is drift — treat it as an unmanifested fork point and handle it like any other finding.
 
 - Platform: `grep -rniE 'github|gitlab|\bgh\b|\bglab\b|pull_request|merge_request'`
 - Tracker: `grep -rniE 'linear|jira|docs/tasks|docs/briefs|docs/designs'`

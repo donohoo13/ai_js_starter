@@ -45,7 +45,7 @@ Every surface is composed from its user task, never from its data payload — an
 
 ### Spacing & Whitespace
 
-- **Constrained scale**: every spacing value comes from the project's spacing scale on an 8px base with 4px half-steps; arbitrary one-off values never appear (Material, Carbon, and Atlassian all constrain spacing to base-unit multiples).
+- **Constrained scale**: every spacing value comes from the spacing scale on an 8px base with 4px half-steps (Tailwind's spacing utilities); arbitrary one-off values never appear. (Material, Carbon, and Atlassian all constrain spacing to base-unit multiples).
 - **Proximity is grouping**: space within a group is smaller than space between groups; two unrelated elements sitting closer than two related ones means the spacing is wrong (Gestalt proximity, NN/g). Uniform spacing everywhere destroys grouping as surely as crowding does.
 - **Borders are the last grouping tool**: reach for spacing and a background tone step before a border; excessive borders read as clutter (Refactoring UI). A deliberately line-led brand documents that choice in `BRAND_DESIGN.md`, which wins.
 - **Tiered separation**: 0–8px inside components and groups, 12–24px between distinct elements, 32px and up between sections (Atlassian's documented tiering as the directional shape).

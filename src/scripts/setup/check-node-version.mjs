@@ -1,7 +1,7 @@
 // Preinstall guard: hard-fail an install running on the wrong Node major.
 //
-// The repo pins Node 22.x (LTS "Jod"); see .nvmrc, engines.node, and the
-// useNodeVersion setting in pnpm-workspace.yaml. useNodeVersion makes pnpm run
+// The repo's Node major is pinned by the root .nvmrc, mirrored in engines.node
+// and the useNodeVersion setting in pnpm-workspace.yaml. useNodeVersion makes pnpm run
 // its own commands under the pinned Node automatically, so under pnpm this guard
 // sees the pinned version and passes silently. It earns its keep for the paths
 // pnpm's runtime management does NOT cover: an accidental `npm install` /
@@ -15,7 +15,7 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
 const here = dirname(fileURLToPath(import.meta.url));
-const nvmrcPath = join(here, '..', '.nvmrc');
+const nvmrcPath = join(here, '..', '..', '.nvmrc');
 
 const required = readFileSync(nvmrcPath, 'utf8').trim().replace(/^v/, '');
 const [reqMajor, reqMinor = 0, reqPatch = 0] = required.split('.').map(Number);
