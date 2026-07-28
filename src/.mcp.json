@@ -38,6 +38,10 @@
     "stripe-[project]-[environment]": {
       "type": "http",
       "url": "https://mcp.stripe.com"
+    },
+    "posthog-[project]": {
+      "type": "http",
+      "url": "https://mcp.posthog.com/mcp?project_id=[id]"
     }
   }
 }

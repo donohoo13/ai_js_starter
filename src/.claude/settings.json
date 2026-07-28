@@ -20,6 +20,10 @@
           {
             "type": "command",
             "command": "input=$(cat); case \"$input\" in *git*) printf '%s' \"$input\" | node \"$CLAUDE_PROJECT_DIR/.claude/hooks/guard-main.mjs\";; esac"
+          },
+          {
+            "type": "command",
+            "command": "input=$(cat); case \"$input\" in *.env*|*.vars*|*secret*|*.ssh*|*.claude.json*|*.config/gh*|*.docker*|*.kube*) printf '%s' \"$input\" | node \"$CLAUDE_PROJECT_DIR/.claude/hooks/guard-secret-read.mjs\";; esac"
           }
         ]
       },
@@ -90,10 +94,17 @@
       "WebFetch"
     ],
     "deny": [
-      "Read(**/.env.{local,development,production,staging})",
+      "Read(**/.env)",
+      "Read(**/.env.{local,development,production,staging,test})",
+      "Read(**/.env.*.local)",
       "Read(**/.*.vars)",
+      "Read(**/.*.vars.*)",
       "Read(**/secrets/**)",
-      "Read(**/.ssh/**)",
+      "Read(//**/.ssh/**)",
+      "Read(//**/.claude.json)",
+      "Read(//**/.config/gh/**)",
+      "Read(//**/.docker/config.json)",
+      "Read(//**/.kube/config)",
       "Bash(git push* main)",
       "Bash(git push* main *)",
       "Bash(git push*:main)",
