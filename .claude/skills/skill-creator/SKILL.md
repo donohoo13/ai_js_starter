@@ -1,15 +1,14 @@
 ---
 name: skill-creator
-description: Author, edit, and review Claude Code skills with the discipline that makes them reliable — lean imperative SKILL.md bodies, trigger-accurate third-person descriptions, progressive disclosure into references, and a gut-check handoff of test prompts the user runs in a fresh session. Use before creating, editing, renaming, or deleting anything under `.claude/skills/` or `src/.claude/skills/`, including one-line SKILL.md tweaks landed mid-session by a grilling exit or another skill, and when a skill misfires, undertriggers, or needs its description sharpened. Also owns the landing checklist for every skill change — project/template dual-layer sync, README blurb updates, and fork-points coupling checks.
+description: Author, edit, and review Claude Code skills with the discipline that makes them reliable — lean imperative SKILL.md bodies, trigger-accurate third-person descriptions, progressive disclosure into references, and a gut-check handoff of test prompts the user runs in a fresh session. Use before creating, editing, renaming, or deleting anything under `.claude/skills/`, including one-line SKILL.md tweaks landed mid-session by a grilling exit or another skill, and when a skill misfires, undertriggers, or needs its description sharpened. Also owns the landing checklist for every skill change — README blurb updates and fork-points coupling checks.
 ---
 
 # Skill Creator
 
-The authoring discipline for skills. Load it before touching any file under `.claude/skills/` (or `src/.claude/skills/`), whatever brought the change — a direct ask, a grilling exit, another skill's follow-through, a one-line description tweak. The `guard-skill-edit` PreToolUse hook denies skill-file edits until this skill is loaded, so loading it first is the fast path, not ceremony. A SKILL.md is a prompt that will run in many future sessions that know nothing about the conversation that shaped it; that is why every edit gets the same discipline whether it rewrites a skill or touches one line.
+The authoring discipline for skills. Load it before touching any file under `.claude/skills/`, whatever brought the change — a direct ask, a grilling exit, another skill's follow-through, a one-line description tweak. The `guard-skill-edit` PreToolUse hook denies skill-file edits until this skill is loaded, so loading it first is the fast path, not ceremony. A SKILL.md is a prompt that will run in many future sessions that know nothing about the conversation that shaped it; that is why every edit gets the same discipline whether it rewrites a skill or touches one line.
 
 ## Scope first
 
-- Confirm the layer when a `src/.claude/skills/` twin exists (the template meta-repo): project (`.claude/skills/`) and template (`src/.claude/skills/`) are separate products, and changes usually land in both, kept byte-identical, with the call the user's when only one layer is in play. In single-layer repos this bullet is inert.
 - Mine the session before interviewing: the conversation that triggered the change usually already contains the workflow, the correction, or the gap. Extract what the skill should enable, when it should trigger, and what it should produce; put only the real gaps to the user.
 - A new skill or a structural rewrite means reading `references/skill-quality.md` in full first. For a small edit, the rules below are the floor either way.
 
@@ -37,7 +36,6 @@ The user's verdicts drive the next edit. Trivial edits (typo, link fix) skip the
 
 A skill change is not done when the SKILL.md reads well; it is done when the suite is coherent. Every change lands with:
 
-- **Dual-layer sync** — when `src/.claude/skills/` exists (the template meta-repo), mirror the change byte-identical into the twin; in single-layer repos this line is inert.
-- **README blurb** — a change to behavior, triggering, or interface updates the skill's entry in `.claude/skills/README.md` (both layers) in the same change.
+- **README blurb** — a change to behavior, triggering, or interface updates the skill's entry in `.claude/skills/README.md` in the same change.
 - **Fork points** — in repos shipping `project-init`, a change to a skill's coupling (platform CLI, tracker path, branch model, plugin dependency) updates `project-init/references/fork-points.md`.
 - **Gut-check prompts** — handed to the user per the section above.

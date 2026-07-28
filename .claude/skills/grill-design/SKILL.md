@@ -39,7 +39,7 @@ Write `docs/designs/YYYY-MM-DD-<surface-slug>.md`; read `references/example-desi
 
 ## Skeletal docs
 
-Skeletal or placeholder design docs mean nothing is governed — and this session does not fill them: brand decisions made as side effects of one surface (a palette picked for a dashboard, a type scale picked for a landing page) are exactly the drift `BRAND_DESIGN.md` exists to prevent. State the finding plainly, name `/brand-init` once as the session that derives the brand — in the template meta-repo, where the scaffold is the product and no brand exists to derive, brand-doc edits are `/curate-context` work instead — and stop, or park the surface ask via `/capture-task` so it seeds a session after the docs govern. Brand derivation and surface composition are separate processes; this lens resumes when the docs can carry its grammar check.
+Skeletal or placeholder design docs mean nothing is governed — and this session does not fill them: brand decisions made as side effects of one surface (a palette picked for a dashboard, a type scale picked for a landing page) are exactly the drift `BRAND_DESIGN.md` exists to prevent. State the finding plainly, name `/brand-init` once as the session that derives the brand — in the `ai_starter` template repo itself, where the scaffold is the product and no brand exists to derive, brand-doc edits are `/curate-context` work instead — and stop, or park the surface ask via `/capture-task` so it seeds a session after the docs govern. Brand derivation and surface composition are separate processes; this lens resumes when the docs can carry its grammar check.
 
 ## Exits — offer only what crystallised
 

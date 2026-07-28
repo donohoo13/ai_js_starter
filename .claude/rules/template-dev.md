@@ -1,0 +1,12 @@
+# Template development rules (ai_starter only)
+
+These rules govern AI sessions developing the `ai_starter` template repository itself. In an instantiated project this file is template residue with no authority: `project-init`'s tailoring manifest deletes it; delete it by hand if init never ran.
+
+- This repo IS the template: the whole tracked tree is the payload GitHub copies into new projects ("Use this template" / `gh repo create --template donohoo13/ai_starter`). There is no inner payload directory; editing any file is editing the product.
+- Bracketed placeholders (the Company Overview line, `[project standards]`, Deployment, the `[project]` MCP stanzas) and stack sections for stacks absent here are shipped product content: leave them bracketed and intact — `project-init` resolves them in the destination, never a session here.
+- This repo contains no application code and no UI: validation is `pnpm format:check` plus config parses (the `turbo` tasks no-op on the empty workspace), and the design docs (`UI_UX.md`, `BRAND_DESIGN.md`) are edited as shipped content under the context-file rules, not followed as this repo's own design system.
+- Never run `project-init` or `sync-template` here: init tailors instances and deletes template residue (this file included), and sync pulls from this repo — it has no parent to pull from.
+- Every payload-affecting change lands with a `CHANGELOG.md` entry in the same change — what, why, and adaptation notes for diverged instances — and a release is a git tag (`vX.Y.Z`) on `main` matching the entry; instances consume both through `sync-template`, so an untagged or unlogged payload change is invisible to them.
+- The template's own working artifacts (`docs/tasks/`, `docs/adr/`, `docs/designs/`, `docs/briefs/`, `CONTEXT.md`, `ARCHITECTURE.md`, `CHANGELOG.md`, this rules file) accrue here as normal project history; `project-init`'s manifest clears them in instances, so develop freely rather than self-censoring to keep the payload clean.
+- Downstream propagation is pull-only: instances run their own `sync-template` sessions against this repo's changelog and tags; never push, PR, or hand-apply template changes into a child from a session here.
+- `.claude/settings.local.json` on this machine disables every shipped `.mcp.json` server via `disabledMcpjsonServers` — template-dev sessions need none of them; keep that list in step when adding shipped server stanzas. Machine-personal quirks go in `CLAUDE.local.md` (gitignored, unversioned); rules that belong to the repo's process live in this file.
