@@ -24,7 +24,10 @@ shift
 # The main checkout is always the first entry in `git worktree list`;
 # rev-parse --show-toplevel would return the linked worktree's own path when
 # invoked from inside one, mis-deriving <project> below.
-main_root=$(git worktree list --porcelain 2>/dev/null | head -1 | sed 's/^worktree //')
+# `|| true` is load-bearing: outside a repo, git fails and `pipefail` propagates
+# that through the whole pipeline, so `set -e` would kill the script with a bare
+# exit 128 and the friendly branch below would never run. Do not remove it.
+main_root=$(git worktree list --porcelain 2>/dev/null | head -1 | sed 's/^worktree //') || true
 if [[ -z "$main_root" ]]; then
   echo "Error: not inside a git repository" >&2
   exit 1
@@ -35,12 +38,26 @@ project=$(basename "$main_root")
 # user/eng-123) yields one predictable directory level under the base.
 target="$HOME/Code/.worktrees/$project/${branch//\//-}"
 
-echo "Creating worktree at $target for branch $branch"
-if git rev-parse --verify --quiet "refs/heads/$branch" >/dev/null; then
-  echo "Branch $branch already exists — attaching worktree to it."
-  git worktree add "$target" "$branch" "$@"
+# Re-running this script is the documented recovery from a failed dependency
+# install, so creation is idempotent: a worktree already at $target is adopted
+# and the run falls through to the install rather than dying on git's
+# "'<target>' already exists". Without this, the retry the failure message asks
+# for exits 128 and the half-built worktree can only be cleaned up by hand.
+if git worktree list --porcelain | grep -qxF "worktree $target"; then
+  echo "Worktree already exists at $target — reusing it."
+  echo "  (re-running the dependency install; nothing is recreated)"
+elif [[ -e "$target" ]]; then
+  echo "Error: $target exists but is not a registered git worktree." >&2
+  echo "  Remove it, or pick another branch name." >&2
+  exit 1
 else
-  git worktree add "$target" -b "$branch" "$@"
+  echo "Creating worktree at $target for branch $branch"
+  if git rev-parse --verify --quiet "refs/heads/$branch" >/dev/null; then
+    echo "Branch $branch already exists — attaching worktree to it."
+    git worktree add "$target" "$branch" "$@"
+  else
+    git worktree add "$target" -b "$branch" "$@"
+  fi
 fi
 
 echo "Copying local files..."
@@ -69,9 +86,31 @@ else
 fi
 
 echo "Installing dependencies..."
+# A worktree without node_modules cannot build or test, so a failed install is a
+# failed worktree — not a warning to print under a success banner. Callers
+# (implement-task, CI) branch on this exit code; reporting 0 here sends them off
+# to run tests in an empty tree and blame their own changes for the failures.
 if ! (cd "$target" && pnpm install); then
-  echo "Warning: pnpm install failed — worktree is ready but dependencies are missing." >&2
-  echo "  Retry with: (cd $target && pnpm install)" >&2
+  # %q-quote every interpolated value: git accepts shell metacharacters in
+  # branch names (`feature/a;id` passes check-ref-format), and these lines are
+  # printed for the reader to copy and run.
+  echo "" >&2
+  echo "── Worktree UNUSABLE ─────────────────────────" >&2
+  echo "  $target" >&2
+  echo "" >&2
+  echo "  The worktree exists, but pnpm install failed, so dependencies are" >&2
+  echo "  missing: it cannot build or test in this state." >&2
+  echo "" >&2
+  echo "  Fix the install, then re-run this script — it reuses the worktree" >&2
+  echo "  and retries the install:" >&2
+  printf '    %s %q\n' "$0" "$branch" >&2
+  echo "" >&2
+  echo "  Or discard it, from the main checkout:" >&2
+  printf '    (cd %q && scripts/setup/gwt-remove.sh %q)\n' "$main_root" "$branch" >&2
+  echo "    Note: gwt-remove.sh deletes the branch too (git branch -d, so" >&2
+  echo "    unmerged work is refused rather than lost)." >&2
+  echo "──────────────────────────────────────────────" >&2
+  exit 1
 fi
 
 echo ""
