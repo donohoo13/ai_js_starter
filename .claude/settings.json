@@ -33,14 +33,6 @@
           {
             "type": "command",
             "command": "input=$(cat); case \"$input\" in *.claude/skills/*) printf '%s' \"$input\" | node \"$CLAUDE_PROJECT_DIR/.claude/hooks/guard-skill-edit.mjs\";; esac"
-          },
-          {
-            "type": "command",
-            "command": "input=$(cat); case \"$input\" in *docs/adr/*) printf '%s' \"$input\" | node \"$CLAUDE_PROJECT_DIR/.claude/hooks/guard-adr-links.mjs\";; esac"
-          },
-          {
-            "type": "command",
-            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/guard-context-edit.mjs\""
           }
         ]
       }
