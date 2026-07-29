@@ -1,59 +1,58 @@
 // Preinstall guard: hard-fail an install not run through pnpm, and any install
-// running on the wrong Node major.
+// running on the wrong Node version. Dependency-free on purpose — this runs
+// before node_modules exists, so built-ins only. Every failure path prints an
+// actionable message and exits 1; a raw stack trace from here is a bug in here.
 //
-// pnpm-only: the repo's tooling (workspace protocol, devEngines runtime pin,
-// lockfile) assumes pnpm; an accidental `npm install` / `yarn install`
-// half-installs and corrupts the lockfile story. The package-manager check reads
-// the installer's own user agent, so it needs no downloader and no dependencies.
+// pnpm-only, because the workspace protocol, the runtime pin, and the lockfile
+// all assume pnpm; a stray `npm install` half-installs and corrupts the lockfile
+// story. Read from the installer's own user agent, so it needs no dependencies.
 //
-// Node: the pin lives in three sites that this file checks against each other
-// before it checks anything about the machine, because a partial retarget is
-// otherwise indistinguishable from a broken environment:
-//   .nvmrc                        the exact version, and what nvm reads
-//   engines.node                  the range it implies, ">=<version> <<major+1>"
-//   devEngines.runtime.version    the same exact version, and what pnpm downloads
-// devEngines.runtime with onFail: "download" makes pnpm fetch that Node and run
-// lifecycle scripts under it, so on a healthy setup this guard sees the pinned
-// version and passes silently.
+// ── The Node pin: four sites, one version ───────────────────────────────────
+//   .nvmrc                      exact version. The source of truth, and what nvm reads.
+//   engines.node                ">=<version> <<major+1>". The range this file enforces.
+//   devEngines.runtime.version  exact version. What pnpm downloads and runs scripts under.
+//   pnpm-lock.yaml              regenerate and commit; stale fails --frozen-lockfile, CI's default.
+// This file cross-checks the first three on every install BEFORE it checks the
+// machine, because a partial retarget is otherwise indistinguishable from a
+// broken environment and sends the reader hunting through their Node installs
+// for a repo bug.
 //
-// devEngines.runtime.version MUST be an exact version, never a range. Given a
-// range, pnpm stops using its runtime resolution entirely and installs the
-// third-party `node` package from the npm registry instead: its bin creation
-// fails (ENOENT), its setup script is blocked by the build-script allowlist, and
-// lifecycle scripts silently run on the AMBIENT Node — the exact failure this
-// pin exists to prevent, verified by running a lifecycle probe under both
-// spellings. The exact pin also gives the lockfile per-platform nodejs.org URLs
-// with integrity hashes; the range spelling records none.
+// ── Why these defaults, so a project can diverge deliberately ───────────────
+// Each was measured on pnpm 10.32.1 and 11.15.1 with a lifecycle probe, not
+// assumed. Change one only with equivalent evidence.
 //
-// What that mechanism does NOT guarantee, and why this guard is not decorative:
-// it engages only when the pnpm actually running the install honors devEngines.
-// A pnpm predating devEngines support (pnpm 9 also defaults
-// manage-package-manager-versions to false, so it does not self-switch to the
-// packageManager pin), a non-pnpm installer, or a sandbox with no network all
-// land here on the ambient Node instead. This class of failure is why the pin
-// lives in devEngines rather than pnpm-workspace.yaml's useNodeVersion: pnpm 11
-// removed useNodeVersion and ignores the leftover key SILENTLY — no warning,
-// `pnpm config get use-node-version` still echoes the value back — so a pnpm
-// major bump used to disarm the Node pin with no visible signal. Never restore
-// useNodeVersion as the pinning mechanism, and never assume a runtime setting
-// engaged because it reads back.
+// devEngines.runtime, NOT pnpm-workspace.yaml's useNodeVersion.
+//   useNodeVersion worked correctly through pnpm 10 and was REMOVED in pnpm 11,
+//   which ignores the leftover key silently: no warning, and `pnpm config get
+//   use-node-version` still echoes the value back. So a pnpm major bump used to
+//   disarm the pin with no visible signal. The general claim "useNodeVersion
+//   does not work" is false and misleads the next debugger — it is specifically
+//   gone in 11. Never assume a runtime setting engaged because it reads back.
 //
-// Two behaviors of devEngines that are not pnpm's and cannot be fixed here:
-// npm reads devEngines BEFORE preinstall and treats onFail "download" as
-// "error", so `npm install` on any Node but the pinned one dies with
-// EBADDEVENGINES and never reaches the pnpm-only message below. That is an
-// accepted trade: the install is still stopped, which is this guard's actual
-// job, just diagnosed as a Node problem rather than a package-manager one —
-// and the alternative spelling that would fix it (a range) breaks the pin
-// outright, per above. And nodejs.org publishes no musl build, so on Alpine
-// pnpm resolves the glibc tarball and the install dies at exec time with a
-// "not found" naming a binary that plainly exists; musl-based projects drop
-// the devEngines block and keep .nvmrc plus engines.node as the contract.
+// An exact version, NEVER a range.
+//   Given a range, pnpm abandons its runtime resolution and installs the
+//   third-party `node` package from the npm registry instead: bin creation
+//   fails with ENOENT, the build-script allowlist blocks its setup script, and
+//   lifecycle scripts silently run on the AMBIENT Node — reintroducing the exact
+//   bug this pin exists to prevent. The exact spelling also earns the lockfile
+//   per-platform nodejs.org URLs with integrity hashes; a range records none.
 //
-// Every failure path prints an actionable message and exits 1 — a raw stack
-// trace from this file is a bug in this file.
+// Accepted cost: npm reads devEngines before preinstall and treats onFail
+//   "download" as "error", so `npm install` on any other Node dies with
+//   EBADDEVENGINES rather than reaching the pnpm-only message below. The install
+//   still stops, which is this guard's actual job; only the diagnosis degrades.
+//   The change that would fix it (a range) breaks the pin outright, per above.
 //
-// Dependency-free on purpose: this runs before node_modules exists. Built-ins only.
+// Known limit — musl: nodejs.org publishes no musl build, so on Alpine pnpm
+//   resolves the glibc tarball and the install dies at exec time with a "not
+//   found" naming a binary that plainly exists. musl projects DELETE the
+//   devEngines block and keep .nvmrc plus engines.node as the contract; this
+//   guard treats an absent block as that deliberate posture, not as drift.
+//
+// This guard is not decorative: devEngines engages only when the pnpm running
+// the install honors it. pnpm 9 (which also defaults manage-package-manager-
+// versions to false, so it ignores the packageManager pin), a non-pnpm
+// installer, or a sandbox with no network all land here on the ambient Node.
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
