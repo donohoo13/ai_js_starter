@@ -21,7 +21,17 @@ Refuse in one line when this repo is the template itself — `.claude/rules/temp
 
 - Read the template changelog without touching the working tree: `git show template/main:CHANGELOG.md`.
 - Unapplied releases are the entries newer than the lineage version, minus anything the sync log (below) records as rejected. None → report up to date and stop.
-- Per release, get the concrete diff from the template's own history: `git diff refs/remotes/template/tags/v<from> refs/remotes/template/tags/v<to>`, scoped by the user's path argument when one was given. Unrelated histories are irrelevant here — both endpoints live in the fetched template history.
+- Per release, get the concrete diff from the template's own history, excluding the template's own residue — what `project-init` clears from an instance, which no instance should ever be offered back — and swapping the leading `.` for the user's path argument when one was given, the exclusions still applying:
+
+```bash
+git diff refs/remotes/template/tags/v<from> refs/remotes/template/tags/v<to> -- . \
+  ':(exclude)CHANGELOG.md' ':(exclude).claude/rules/template-dev.md' ':(exclude).claude/skills/project-init' \
+  ':(exclude)docs/tasks' ':(exclude)docs/adr' ':(exclude)docs/designs' ':(exclude)docs/briefs' \
+  ':(exclude)CONTEXT.md' ':(exclude)ARCHITECTURE.md' ':(exclude)CONTEXT-MAP.md'
+```
+
+- `docs/company/` is deliberately absent from that set: it is payload skeleton that stays in instances, so it syncs like any other payload file. The set mirrors the residue plan item in `project-init/SKILL.md`, and the two move together — a path added to one belongs in the other in the same change. The exclusion scopes this diff only; the `git show template/main:CHANGELOG.md` read above is a separate operation that must keep working, since the changelog is how releases are discovered at all.
+- Unrelated histories are irrelevant here — both endpoints live in the fetched template history.
 
 ## Phase 2 — Adaptation interview
 

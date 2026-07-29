@@ -10,6 +10,7 @@ Each entry: what the artifact assumes today → the tailoring lever when the pro
 - `review-board/SKILL.md` — PR-number scoping uses `gh pr diff <n>` / `gh pr view <n>`. → swap for the platform CLI equivalents.
 - `CLAUDE.md` (shipped) Git Control section — "CLI tools (like `gh` for GitHub)". → name the real platform and CLI.
 - `.claude/settings.json` — `deny` entries hardcode pushes to `main`. → rename if the default branch differs; drop if the team commits to main by design.
+- `template-feedback/SKILL.md` — **the inverted case: leave its `gh` calls alone.** Every other entry in this section couples to the _instance's_ platform; this skill's `gh issue list` / `gh issue create` target the _template's_ repo, which stays on GitHub no matter where the instance lives. Retargeting it to a GitLab project's own `glab` severs the feedback channel silently — issues would file against the instance instead of the template, and nobody notices until the template's queue is inexplicably empty. → tailor only if the template itself moves platforms or is forked to a new home, in which case the repo reference changes in lockstep with `sync-template`'s remote; a project that wants no feedback channel deletes the skill, its README section, and its stage-map row together.
 
 ## Task tracker (shipped assumption: the file is the tracker)
 
@@ -90,7 +91,7 @@ Each entry: what the artifact assumes today → the tailoring lever when the pro
 
 ## Template lineage and updates
 
-- `sync-template/SKILL.md` — assumes the template at `donohoo13/ai_starter` on GitHub (SSH remote URL), a `Template lineage:` stamp in the destination `CLAUDE.md` (written by init from the shipped `CHANGELOG.md` before that copy is deleted), the template changelog's what/why/adaptation-notes release format with matching `vX.Y.Z` tags, and a sync log at `docs/template-sync-log.md`. → a forked or relocated template retargets the default repo; projects whose docs live elsewhere relocate the sync log; a project cutting the update channel deletes the skill, its README section and stage-map row, and the lineage stamp together.
+- `sync-template/SKILL.md` — assumes the template at `donohoo13/ai_starter` on GitHub (SSH remote URL), a `Template lineage:` stamp in the destination `CLAUDE.md` (written by init from the shipped `CHANGELOG.md` before that copy is deleted), the template changelog's what/why/adaptation-notes release format with matching `vX.Y.Z` tags, and a sync log at `docs/template-sync-log.md`. → a forked or relocated template retargets the default repo; projects whose docs live elsewhere relocate the sync log; a project cutting the update channel deletes the skill, its README section and stage-map row, and the lineage stamp together. Its Phase 1 release diff carries a pathspec exclusion mirroring the residue set that `project-init`'s Phase 4 clears, so the two lists move together — a path added to the residue plan item belongs in the exclusion in the same change, or instances start being offered the template's own working artifacts back.
 - `CHANGELOG.md`, `.claude/rules/template-dev.md`, and the template's own `docs/` working artifacts — template residue in any instance; init's residue plan item clears them after the lineage stamp lands. → nothing to fork; a residue file found in an already-inited project is leftover to delete on sight.
 
 ## Drift greps
