@@ -17,7 +17,10 @@ shift
 # The main checkout is always the first entry in `git worktree list`;
 # rev-parse --show-toplevel would return the linked worktree's own path when
 # invoked from inside one, mis-deriving <project> below.
-main_root=$(git worktree list --porcelain 2>/dev/null | head -1 | sed 's/^worktree //')
+# `|| true` is load-bearing: outside a repo, git fails and `pipefail` propagates
+# that through the whole pipeline, so `set -e` would kill the script with a bare
+# exit 128 and the friendly branch below would never run. Do not remove it.
+main_root=$(git worktree list --porcelain 2>/dev/null | head -1 | sed 's/^worktree //') || true
 if [[ -z "$main_root" ]]; then
   echo "Error: not inside a git repository" >&2
   exit 1
