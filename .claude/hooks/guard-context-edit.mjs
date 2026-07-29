@@ -69,11 +69,16 @@ const lowerPath = filePath.toLowerCase();
 // territory; gating them here too would demand two skills for one edit.
 if (lowerPath.includes('.claude/skills/')) process.exit(0);
 
-// A dependency's README.md sits inside the project root but is vendored
-// content, not this project's context. node_modules is the only vendored path
-// carved out; a project that commits generated docs under dist/ or a vendor/
-// directory extends this check.
-if (lowerPath.includes('/node_modules/')) process.exit(0);
+// Vendored content sits inside a governed root without being this project's
+// context: a dependency's README.md under node_modules, and the marketplace
+// and plugin-cache trees under ~/.claude/plugins/ that the ~/.claude root
+// would otherwise sweep in — 1,883 README.md files and 6 CLAUDE.md files on
+// the development machine, none of them written by the project that would be
+// asked to curate them. A project that commits generated docs under dist/ or a
+// vendor/ directory extends this list.
+if (lowerPath.includes('/node_modules/') || lowerPath.includes('/.claude/plugins/')) {
+  process.exit(0);
+}
 
 // Path family → skills whose load marker opens it. Basename matching makes the
 // guard monorepo-wide (nested per-package CLAUDE.md/README.md) and reaches the
@@ -207,24 +212,80 @@ for (const candidate of transcriptsToSearch(transcriptPath)) {
 }
 if (sources.length === 0 || unreadable) process.exit(0);
 
-// Markers cover both load paths: a Skill tool call ({"skill":"<name>"},
-// optionally src:-scoped) and a user-typed /<name> command (<command-name> in
-// the transcript). Each source is tested separately rather than concatenated:
-// a transcript is an append-only JSONL that grows without bound, and joining
-// two of them allocates a second full copy to no purpose.
+// Markers cover both load paths, and both are matched as structured records
+// rather than as substrings. A Skill tool call is an assistant record carrying
+// a tool_use block named Skill whose input.skill is the skill (optionally
+// src:-scoped). A user-typed /<name> has two recorded shapes and both must be
+// accepted: built-in CLI commands arrive as a system record with subtype
+// local_command carrying a top-level content string, while skill and custom
+// commands arrive as a user record whose message.content is a plain string —
+// checking only the first shape misses every slash-command load and blocks the
+// sessions that used one. Both shapes put the command tags at the head of that
+// string, and requiring them there is what separates a real invocation from a
+// user who merely pasted the tag text. A string message.content also excludes
+// tool results, which are always content arrays.
 //
-// Marker detection is textual, so a transcript that merely *mentions* a name
-// can false-pass — JSON escaping defeats the "skill" spelling in quoted file
-// content, but nothing protects the command-name spelling. Reading the root
-// session's transcript widens that from one agent to every agent of a session.
-// This is a guardrail against forgetting rather than an access control, and
-// tightening it means matching the structured tool-call record instead of a
-// substring, which is a larger change than this guard has needed so far.
-const loaded = required.some((name) => {
-  const skillCall = new RegExp(`"skill"\\s*:\\s*"(src:)?${name}"`);
-  const slashCommand = new RegExp(`command-name>\\/?(src:)?${name}<`);
-  return sources.some((text) => skillCall.test(text) || slashCommand.test(text));
-});
+// Substring matching cannot tell a load from a mention, and the mention case is
+// not hypothetical: writing this guard's own test fixture — a file whose text
+// contains <command-name>/curate-context</command-name> — put that string in
+// the session transcript and switched the guard off for the rest of the
+// session. Reading the root session's transcript would widen every such
+// false-pass from one agent to every agent of that session, so the two changes
+// belong together. Requiring the enclosing record to be the right kind rejects
+// file content, tool results, and quoted examples, because all of them ride
+// inside records of some other shape.
+function markerInRecord(line, name) {
+  let record;
+  try {
+    record = JSON.parse(line);
+  } catch {
+    return false; // a partial trailing write, or not a record at all
+  }
+  if (record?.type === 'assistant' && Array.isArray(record.message?.content)) {
+    for (const block of record.message.content) {
+      if (block?.type !== 'tool_use' || block.name !== 'Skill') continue;
+      const skill = block.input?.skill;
+      if (skill === name || skill === `src:${name}`) return true;
+    }
+  }
+  let commandText = null;
+  if (
+    record?.type === 'system' &&
+    record.subtype === 'local_command' &&
+    typeof record.content === 'string'
+  ) {
+    commandText = record.content;
+  } else if (record?.type === 'user' && typeof record.message?.content === 'string') {
+    commandText = record.message.content;
+  }
+  if (commandText === null) return false;
+  if (!/^\s*<command-(message|name|args)>/.test(commandText)) return false;
+  return new RegExp(`<command-name>\\/?(src:)?${name}<\\/command-name>`).test(commandText);
+}
+
+// Parse only the lines that could possibly match. A transcript is an
+// append-only JSONL that grows without bound, so parsing every line — or
+// splitting the whole file into an array of them — costs far more than seeking
+// to each occurrence of the name and parsing just the record around it. Each
+// source is scanned separately rather than concatenated, for the same reason.
+function loadedIn(text, name) {
+  let from = 0;
+  let lastStart = -1;
+  for (;;) {
+    const hit = text.indexOf(name, from);
+    if (hit === -1) return false;
+    const start = text.lastIndexOf('\n', hit) + 1;
+    const end = text.indexOf('\n', hit);
+    if (start !== lastStart) {
+      lastStart = start;
+      if (markerInRecord(text.slice(start, end === -1 ? undefined : end), name)) return true;
+    }
+    if (end === -1) return false;
+    from = end + 1;
+  }
+}
+
+const loaded = required.some((name) => sources.some((text) => loadedIn(text, name)));
 if (loaded) process.exit(0);
 
 console.error(
