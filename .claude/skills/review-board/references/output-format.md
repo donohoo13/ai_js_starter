@@ -43,7 +43,9 @@ Applies to every seat, whatever the category. When the `LSP` tool is active (it 
 
 ## Part B: Consolidated report format (chair)
 
-The chair presents exactly this structure to the human. Findings appear grouped by verdict, and within each group ordered by severity. The verdict is the chair's context-based judgment, not the result of deep-verifying every finding: **Confirmed** means it matches the chair's understanding of the change, **Plausible** means credible but unsettled from context, **Rejected** means it contradicts what the chair knows or is off-task. The "Chair's read" line carries that judgment; deep confirmation of a finding happens later, in Step 5, only for the findings the user chooses to address.
+The chair presents exactly this structure to the human. It is ordered by what the human has to do with it rather than by where the information came from: the decisions the board is asking for come first, in plain language, each one ending in a question with the chair's recommendation attached, and the evidence backing them is appended below for the reader who wants to check the reasoning. **The human answers the closing question from the first screen, without reading a code excerpt** — that is the property the whole layout exists to hold, and every judgment about what goes above the evidence is made against it.
+
+The verdict is the chair's context-based judgment, not the result of deep-verifying every finding: **Confirmed** means it matches the chair's understanding of the change, **Plausible** means credible but unsettled from context, **Rejected** means it contradicts what the chair knows or is off-task. Deep confirmation happens later, in Step 5, only for the findings the user chooses to address.
 
 ```markdown
 # Review Board Report
@@ -59,31 +61,40 @@ The chair presents exactly this structure to the human. Findings appear grouped 
 | SEC-1 | critical | Confirmed | SQL built by string interpolation | `src/db/users.ts:47` |
 | ...   |          |           |                                   |                      |
 
-## Confirmed
+## Your call
 
-### [SEC-1] <title> — critical
+<One line naming the order you would take these in, when order matters. Omit when it does not.>
 
-<Evidence, failure scenario, and suggested fix from the finding.>
-**Chair's read**: <your judgment in 1-2 lines — why it matches your understanding of the change. If multiple agents independently flagged it, say so; if a finding alarmed you and you spot-checked the code, say what you found.>
+- **[SEC-1] critical** — <what is wrong and what it costs, in plain language, no code.> I recommend <the action> because <one-line reason>. <Direct question naming the alternative>?
+- **[REL-2] medium, plausible** — <what the reviewer believes is wrong, and what you could not settle from context.> I recommend <verifying it in Step 5 / shipping as-is> because <one-line reason>. <Direct question naming the alternative>?
 
-## Plausible
+## Noted, no decision needed
 
-### [REL-2] <title> — medium
-
-<Finding content.>
-**Chair's read**: <why you cannot settle it from context, and what would settle it.>
-
-## Rejected
-
-- **[MNT-3] <title>** — <one-line reason it does not hold, e.g. "the null case is guarded at the call site, `api/routes.ts:12`".>
+- **[MNT-3]** Rejected — <one-line reason it does not hold, e.g. "the null case is guarded at the call site, `api/routes.ts:12`">.
+- **[PRF-2]** Confirmed, low — <one line: what it is, and why it does not need the human's attention now>.
 
 ## Process notes
 
 <Only if applicable: mixed unrelated changes, missing tests as a pattern, scope oddities. Omit the section when empty.>
 
-## Board recommendation
+## Evidence
 
-<Your ordered take: fix these before merge, defer those, here is why. 3-6 lines.>
+<One block per "Your call" finding, same order. A "Noted" finding gets no block.>
+
+### [SEC-1] <title>
+
+- **Location**: `src/db/users.ts:47`
+- **Evidence**: <the code excerpt from the finding>
+- **Failure scenario**: <from the finding>
+- **Suggested fix**: <from the finding>
+- **Chair's read**: <how you judged it — what matches your understanding of the change, whether agents converged on it independently, what a spot-check found if the finding alarmed you. For a Plausible finding, what would settle it.>
 ```
+
+Four rules keep the shape honest while you fill it in:
+
+- **Every "Your call" bullet ends in a question mark**, and carries a recommendation with its reason. A finding the human can neither answer nor act on belongs in "Noted" as a one-liner instead; the Step 6 record commit carries the full set either way, so leaving a finding out of the report loses nothing.
+- **Plain language above the evidence.** No code excerpts, `file:line` pointers, or stack traces in "Your call" — the ID and the verdict table already carry the pointer, and the appendix carries the proof.
+- **Order by what to do first**, and by severity where no fix order applies. That holds within each section; the verdict table stays the place to scan the whole set at once.
+- **Length lives below the fold.** Header, table, and decision bullets stay inside roughly one screen; everything that grows with finding count grows in the evidence appendix.
 
 Close the report by asking the human what to address, and then stop: "Which findings should I address? Reply with IDs (e.g. `SEC-1 REL-2`), `all confirmed`, or `none`."
