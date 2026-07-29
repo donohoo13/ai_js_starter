@@ -131,10 +131,18 @@ const PUSH_ESCALATIONS = new Set([
 ]);
 
 function isTagOnlyPush(args) {
+  // Stop at the first redirection: `git push origin v1.0.1 2>&1 | tail` reaches
+  // here as tokens ending in `2>&1`, which would otherwise be read as a refspec,
+  // fail the tag lookup, and block a legitimate publish. Git forbids `<` and `>`
+  // in ref names, so nothing after one can be a ref. Pipes and `&&` are already
+  // segment separators upstream.
+  const redirect = args.findIndex((token) => /[<>]/.test(token) || token === '&');
+  const effective = redirect === -1 ? args : args.slice(0, redirect);
+
   const positionals = [];
   let sawTagsFlag = false;
 
-  for (const token of args) {
+  for (const token of effective) {
     if (token.startsWith('-')) {
       if (token === '--tags') sawTagsFlag = true;
       else if (PUSH_ESCALATIONS.has(token)) return false;
