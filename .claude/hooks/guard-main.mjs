@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 // PreToolUse guard: blocks Claude from running `git commit` or `git push` while
-// on the repo's default branch. Complements the static permissions.deny push
-// patterns in settings.json, which cannot see runtime state like the current
-// branch. Exit 2 blocks the tool call and surfaces stderr to Claude; exit 0
+// on the repo's default branch, with one narrow exemption for publishing an
+// existing tag (see isTagOnlyPush below) so the release process stays reachable.
+// Complements the static permissions.deny push patterns in settings.json, which
+// cannot see runtime state like the current branch. Exit 2 blocks the tool call and surfaces stderr to Claude; exit 0
 // allows it. If the hook itself fails to launch (node missing, bad
 // $CLAUDE_PROJECT_DIR), Claude Code treats the non-0/non-2 exit as a
 // non-blocking error and the command proceeds: fail-open by design, because a
@@ -62,15 +63,15 @@ for (const segment of blankQuotes(command).split(/&&|\|\||[;|\n\r]/)) {
         if (FLAGS_WITH_VALUE.has(token)) j++;
         continue;
       }
-      subcommands.push(token);
+      subcommands.push({ name: token, args: tokens.slice(j + 1) });
       i = j;
       break;
     }
   }
 }
 
-const hit = subcommands.find((s) => s === 'commit' || s === 'push');
-if (!hit) process.exit(0);
+const hits = subcommands.filter((s) => s.name === 'commit' || s.name === 'push');
+if (hits.length === 0) process.exit(0);
 
 const cwd = input.cwd || process.cwd();
 const git = (args) =>
@@ -108,7 +109,69 @@ if (!onDefault) {
   process.exit(0);
 }
 
+// Publishing a release tag is the one push that belongs on the default branch:
+// the repo's release process puts vX.Y.Z on the default branch's tip, and a tag
+// ref moves no commits onto it, so blocking it would forbid a workflow this repo
+// mandates while protecting nothing. The exemption is deliberately narrow — the
+// ref must resolve to a tag that already exists locally and must not also name a
+// branch, so an ambiguous or invented name falls through to the block. Anything
+// that could move a branch or rewrite a published tag (force, --mirror, --all,
+// --follow-tags, deletes, src:dst refspecs) stays blocked.
+const PUSH_ESCALATIONS = new Set([
+  '--force',
+  '-f',
+  '--force-with-lease',
+  '--force-if-includes',
+  '--mirror',
+  '--all',
+  '--follow-tags',
+  '--delete',
+  '-d',
+  '--prune',
+]);
+
+function isTagOnlyPush(args) {
+  const positionals = [];
+  let sawTagsFlag = false;
+
+  for (const token of args) {
+    if (token.startsWith('-')) {
+      if (token === '--tags') sawTagsFlag = true;
+      else if (PUSH_ESCALATIONS.has(token)) return false;
+      continue;
+    }
+    positionals.push(token);
+  }
+
+  // First positional is the remote; everything after it is a refspec.
+  const refs = positionals.slice(1);
+  if (refs.some((ref) => ref.includes(':'))) return false; // deletes and src:dst
+  if (refs.length === 0) return sawTagsFlag; // `git push origin --tags`
+
+  return refs.every((ref) => {
+    const name = ref.replace(/^refs\/tags\//, '');
+    try {
+      git(['rev-parse', '--verify', '--quiet', `refs/tags/${name}`]);
+    } catch {
+      return false; // not an existing tag
+    }
+    try {
+      git(['rev-parse', '--verify', '--quiet', `refs/heads/${name}`]);
+      return false; // also a branch name: ambiguous, refuse
+    } catch {
+      return true;
+    }
+  });
+}
+
+const blocked = hits.find((h) => h.name === 'commit' || !isTagOnlyPush(h.args));
+if (!blocked) process.exit(0);
+
+const detail =
+  blocked.name === 'push'
+    ? ' Only publishing an existing tag (`git push <remote> <tag>` or `--tags`) is exempt here.'
+    : '';
 console.error(
-  `Blocked by guard-main hook: \`git ${hit}\` on ${current}. CLAUDE.md: never commit to main; create or switch to a feature branch, or hand the commit to the user via stage-for-commit.`,
+  `Blocked by guard-main hook: \`git ${blocked.name}\` on ${current}. CLAUDE.md: never commit to main; create or switch to a feature branch, or hand the commit to the user via stage-for-commit.${detail}`,
 );
 process.exit(2);
