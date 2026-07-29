@@ -58,10 +58,21 @@ function canonical(target) {
 // the session's cwd rather than wherever the hook happened to launch.
 // Backslashes become slashes so a Windows-style path cannot silently no-op the
 // guard; matching is lowercased because macOS APFS is case-insensitive — a
-// write to claude.md or Readme.md lands on the governed inode. (The
-// settings.json prefilter covers the common case variants only; arbitrary mixed
-// case reaches this hook solely when the prefilter happens to match, which is
-// acceptable for a guardrail.)
+// write to claude.md or Readme.md lands on the governed inode.
+//
+// This lowercasing is the ONLY case handling in the chain, which is why the
+// settings.json entry invokes this file unconditionally rather than behind a
+// shell `case` prefilter. The prefilter it replaced enumerated literal case
+// variants and forwarded only those, so every spelling outside the list — six
+// of them, Context.md, Ui_Ux.md, Context-Map.md, Brand_Design.md,
+// Claude.local.md, and docs/ADR/ — never reached this file and was silently
+// ungated on any case-insensitive filesystem. Adding a governed basename here
+// therefore needs no second edit anywhere, which is the point: two lists of the
+// same names in two languages drift, and this one drifted toward not guarding.
+// The cost of deciding here every time is one Node spawn per Edit and Write,
+// measured at 27-29ms against an early exit; that is the whole price, and it
+// buys back a correctness hole a prefilter cannot close (see the dispatch
+// below for why a pattern over the payload cannot separate path from content).
 const filePath = canonical(resolve(cwd, rawPath.replaceAll('\\', '/')));
 const lowerPath = filePath.toLowerCase();
 
@@ -91,9 +102,13 @@ if (lowerPath.includes('/node_modules/') || lowerPath.includes('/.claude/plugins
 // write them mid-session. Descriptive docs accept only domain-modeling —
 // deliberately not curate-context — so the hook enforces the handoff at the
 // descriptive/imperative seam. This dispatch runs before the containment test
-// below because it is pure string work and rejects the common case cheaply:
-// the settings.json prefilter matches the whole payload, so it forwards every
-// edit whose *content* merely mentions a governed basename.
+// below because it is pure string work and rejects the common case cheaply,
+// and every Edit and Write in the session now arrives here: a shell pattern
+// upstream could not do this job, because it matches the whole hook payload and
+// so cannot tell "the path is CLAUDE.md" from "the new file content mentions
+// CLAUDE.md". Only this file sees `tool_input.file_path` by itself, so only
+// this file can decide. Reject on the path here, and touch the filesystem
+// below only for a payload already known to be a governed doc.
 const basenameOf = lowerPath.split('/').pop();
 let required = null;
 if (lowerPath.includes('docs/adr/')) {

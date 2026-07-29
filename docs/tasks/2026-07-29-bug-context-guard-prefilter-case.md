@@ -1,10 +1,24 @@
 ---
 type: bug
-status: captured
+status: done
 created: 2026-07-29
 ---
 
 # Close the guard-context-edit prefilter's case-variant hole
+
+## Outcome
+
+Closed in template release v1.0.6 by deleting the `case` prefilter from the `guard-context-edit` entry in `.claude/settings.json` outright, so the command is just `node "$CLAUDE_PROJECT_DIR/.claude/hooks/guard-context-edit.mjs"`; the `input=$(cat); printf` wrapper went with it, since the hook reads stdin directly. The hook's own matching logic is unchanged — it already lowercases, so every hole closed at once.
+
+The measurement collapsed the decision, exactly as the first open question predicted: a spawn costs 29.1ms in the instance where this was found and 26.7ms in this repo, hook exiting early on a non-governed path, against a correctness hole no prefilter can close. Cost after the change is one Node spawn per Edit and Write, measured at 32.5ms through the shipped command string; before, it was one spawn per payload matching the literal list, which included every payload whose _content_ merely mentioned a governed basename.
+
+Scope was worse than this file recorded. It named three ungated spellings; running every governed spelling through the real `settings.json` command found six: `Context.md`, `Ui_Ux.md`, `docs/ADR/`, plus `Context-Map.md`, `Brand_Design.md`, and `Claude.local.md`.
+
+Rejected alternatives, with the reasons worth keeping: bracket classes per character are complete but unreadable across ten names; broadening to `*.md*` still misses `.MD` and fires on nearly every payload anyway, since `case` matches file content as well as path; and the hook entry's `if` field — the runner _can_ filter on `file_path`, answering the second open question — takes one permission-rule string, which cannot express a case-insensitive union of ten basenames, so it reinstates the same silent-miss failure mode.
+
+Follow-ons resolved: the reasoning lives in the hook's header, because `settings.json` is strict JSON and carries no comment, and the header sentence that described the prefilter was rewritten rather than left to go stale. `guard-skill-edit` and `guard-adr-links` keep prefilters of the same shape and are deliberately untouched — they match case-sensitively internally, so prefilter and hook agree and nothing is dropped between the layers. `guard-secret-read` is left for a separate decision: a missed spelling there fails toward exposure rather than an ungated doc edit, and it is `Bash`-matched, so dropping its prefilter costs a spawn on every shell command rather than every file edit.
+
+Surfaced while closing this and left uncaptured: `guard-adr-links` matches `/docs/adr/` case-sensitively in its own body, so a file under `docs/ADR/` is now gated by `guard-context-edit` and skipped by `guard-adr-links`. Its prefilter is not the defect — the hook body is — so it is a different bug from this one and wants its own decision alongside the `guard-secret-read` pass.
 
 ## Context
 
@@ -38,10 +52,10 @@ Root constraint that makes this non-trivial: the `case` statement matches agains
 
 ## Acceptance criteria
 
-- [ ] An Edit to `Context.md`, `Ui_Ux.md`, and a file under `docs/ADR/` is blocked when the owning skill has not been loaded, verified by executing the hook through the prefilter rather than by calling the hook directly.
-- [ ] The spellings already covered today stay covered, verified by re-running the guard battery.
-- [ ] The chosen approach's cost is measured, not assumed: how many additional Node spawns it causes across a representative session.
-- [ ] The reasoning behind the chosen approach is recorded where the next reader will find it, and the v1.0.3 CHANGELOG's "unchanged in this release" note is updated to reflect the closure.
+- [x] An Edit to `Context.md`, `Ui_Ux.md`, and a file under `docs/ADR/` is blocked when the owning skill has not been loaded, verified by executing the hook through the prefilter rather than by calling the hook directly — the command string is read out of `.claude/settings.json` at run time, so the battery cannot drift from what ships.
+- [x] The spellings already covered today stay covered, verified by re-running the guard battery: nineteen previously-gated spellings stay gated, four non-governed paths stay ungated, and the allow, wrong-skill, fail-open, and out-of-repo arms all still behave.
+- [x] The chosen approach's cost is measured, not assumed: one Node spawn per Edit and Write, at 32.5ms through the shipped command string.
+- [x] The reasoning behind the chosen approach is recorded where the next reader will find it, and the v1.0.3 CHANGELOG's "unchanged in this release" note is updated to reflect the closure.
 
 ## Dependencies
 
