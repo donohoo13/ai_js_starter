@@ -8,6 +8,13 @@
   "engines": {
     "node": ">=26.5.0 <27"
   },
+  "devEngines": {
+    "runtime": {
+      "name": "node",
+      "version": "26.5.0",
+      "onFail": "download"
+    }
+  },
   "scripts": {
     "preinstall": "node scripts/setup/check-install.mjs",
     "prepare": "husky; bash scripts/setup/doctor.sh || true",

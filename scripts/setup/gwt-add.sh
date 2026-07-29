@@ -69,9 +69,25 @@ else
 fi
 
 echo "Installing dependencies..."
+# A worktree without node_modules cannot build or test, so a failed install is a
+# failed worktree — not a warning to print under a success banner. Callers
+# (implement-task, CI) branch on this exit code; reporting 0 here sends them off
+# to run tests in an empty tree and blame their own changes for the failures.
 if ! (cd "$target" && pnpm install); then
-  echo "Warning: pnpm install failed — worktree is ready but dependencies are missing." >&2
-  echo "  Retry with: (cd $target && pnpm install)" >&2
+  echo "" >&2
+  echo "── Worktree UNUSABLE ─────────────────────────" >&2
+  echo "  $target" >&2
+  echo "" >&2
+  echo "  The worktree was created, but pnpm install failed, so dependencies" >&2
+  echo "  are missing: it cannot build or test in this state." >&2
+  echo "" >&2
+  echo "  Fix the install, then retry:" >&2
+  echo "    (cd $target && pnpm install)" >&2
+  echo "" >&2
+  echo "  Or discard it:" >&2
+  echo "    $(dirname "$0")/gwt-remove.sh $branch" >&2
+  echo "──────────────────────────────────────────────" >&2
+  exit 1
 fi
 
 echo ""

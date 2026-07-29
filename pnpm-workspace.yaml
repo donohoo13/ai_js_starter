@@ -1,4 +1,3 @@
 packages:
   - "apps/*"
   - "packages/*"
-useNodeVersion: 26.5.0
