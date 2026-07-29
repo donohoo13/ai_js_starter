@@ -29,6 +29,15 @@
 //   does not work" is false and misleads the next debugger — it is specifically
 //   gone in 11. Never assume a runtime setting engaged because it reads back.
 //
+// engineStrict OFF wherever devEngines is present.
+//   pnpm's own settings docs recommend pairing engineStrict with nodeVersion,
+//   so a project that followed them carries it. Alongside devEngines the pair
+//   deadlocks: the engines check runs against the AMBIENT Node before pnpm
+//   switches to the pinned runtime, so every pnpm command fails on any other
+//   Node — including the install that would have downloaded it. The guard below
+//   hard-fails on the pairing; read it for the measurement, for the one state
+//   it cannot fire in, and for what turning engineStrict off costs.
+//
 // An exact version, NEVER a range.
 //   Given a range, pnpm abandons its runtime resolution and installs the
 //   third-party `node` package from the npm registry instead: bin creation
@@ -157,6 +166,89 @@ if (drifted.length > 0) {
     '                                     build is published.',
     '      • pnpm-lock.yaml             → run `pnpm install` and commit the result,',
     '                                     or CI fails on --frozen-lockfile',
+  ]);
+}
+
+// engineStrict × devEngines deadlock, also before the machine check and for the
+// same reason: it is a repo bug that presents as a broken machine.
+//
+// pnpm's settings docs recommend pairing engineStrict with nodeVersion to stop
+// contributors adding dependencies that declare an incompatible engine, so a
+// project that followed them carries engineStrict: true. With nodeVersion also
+// set the engines check runs against the version pnpm PRETENDS, so it passes;
+// delete nodeVersion for the devEngines pin — which is exactly what this repo's
+// changelog instructs — and the check falls through to the AMBIENT Node, and it
+// runs BEFORE pnpm switches to the devEngines runtime. So the guard blocks the
+// very install that would have provisioned the pinned Node.
+//
+// Measured on pnpm 10.34.1, engines.node ">=22.22.3 <23", ambient Node 24.17.0:
+// engineStrict true failed every pnpm command with ERR_PNPM_UNSUPPORTED_ENGINE,
+// install and typecheck alike, and provisioning the runtime first did not help
+// — the check precedes the switch every time. engineStrict false installed,
+// fetched Node 22.22.3, and ran scripts on it while the shell stayed on 24.17.0.
+// pnpm's settings page claims a project's own engines field fails the install
+// "regardless of this configuration"; that is not the observed behavior on
+// 10.34.1. Why the check passes with engineStrict off is unknown — the
+// measurement is what this guard encodes, not the doc line.
+//
+// Known limit: this check cannot fire in the bricked state, because pnpm refuses
+// at command startup and preinstall never runs — that developer gets pnpm's own
+// message blaming their Node. It fires on the machine of whoever introduces the
+// pairing while already on the pinned Node, which is the one place the
+// configuration is silently latent and the cheapest place it will ever be fixed.
+function readIfPresent(path) {
+  try {
+    return readFileSync(path, 'utf8');
+  } catch {
+    return null;
+  }
+}
+
+function engineStrictSite() {
+  const workspace = readIfPresent(join(here, '..', '..', 'pnpm-workspace.yaml'));
+  if (
+    workspace !== null &&
+    /^engineStrict[ \t]*:[ \t]*(true|'true'|"true")[ \t]*(#.*)?$/m.test(workspace)
+  ) {
+    return { file: 'pnpm-workspace.yaml', found: 'engineStrict: true', fix: 'engineStrict: false' };
+  }
+  // The .npmrc spelling predates pnpm's move of settings into pnpm-workspace.yaml
+  // and is still honored, so a project carrying it deadlocks identically.
+  const npmrc = readIfPresent(join(here, '..', '..', '.npmrc'));
+  if (npmrc !== null && /^[ \t]*engine-strict[ \t]*=[ \t]*true[ \t]*$/m.test(npmrc)) {
+    return { file: '.npmrc', found: 'engine-strict=true', fix: 'engine-strict=false' };
+  }
+  return null;
+}
+
+// Absent devEngines is the deliberate musl posture, where engineStrict is the
+// only Node enforcement the project has and must stay on. Only the pairing fails.
+const engineStrict = pkg.devEngines?.runtime === undefined ? null : engineStrictSite();
+
+if (engineStrict) {
+  fail([
+    '  ✖ engineStrict and devEngines cannot coexist. As configured, this repo is',
+    `    uninstallable by anyone whose ambient Node is not already ${required}.`,
+    `    Found ${engineStrict.found} in ${engineStrict.file}, alongside`,
+    '    devEngines.runtime in package.json.',
+    '',
+    '    pnpm checks engines against the ambient Node BEFORE it switches to the',
+    '    devEngines runtime, so the check blocks the very install that would have',
+    `    downloaded Node ${required}. Every pnpm command fails that way, not just`,
+    '    install. You are reading this instead of ERR_PNPM_UNSUPPORTED_ENGINE only',
+    `    because your own Node (v${process.versions.node}) happens to satisfy the range.`,
+    '',
+    '    Fix it — pick one:',
+    `      • Keep the pin: set ${engineStrict.fix} in ${engineStrict.file}. The`,
+    '        runtime download then works and contributors need no Node of their own.',
+    '      • Keep engineStrict: delete the devEngines block from package.json and',
+    `        require every contributor to install Node ${required} themselves.`,
+    '',
+    '    What turning engineStrict off gives up: pnpm no longer hard-blocks a',
+    '    DEPENDENCY that declares an incompatible engine. That capability is not',
+    '    recoverable alongside devEngines on pnpm 10.x — getting it back means',
+    '    engineStrict: true, which reinstates the deadlock. This guard still',
+    '    enforces the Node the repo actually runs on, which is unaffected.',
   ]);
 }
 
