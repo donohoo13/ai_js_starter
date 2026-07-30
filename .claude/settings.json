@@ -20,7 +20,6 @@
       "mcp__playwright-local__*",
       "mcp__firefox-devtools__*",
       "mcp__chrome-devtools__*",
-      "mcp__plugin_linear_linear__*",
       "mcp__plugin_cloudflare_cloudflare-docs__search_cloudflare_documentation"
     ],
     "deny": [
@@ -119,7 +118,6 @@
     "typescript-lsp@claude-plugins-official": true,
     "pyright-lsp@claude-plugins-official": true,
     "chrome-devtools-mcp@claude-plugins-official": true,
-    "linear@claude-plugins-official": true,
     "superpowers@claude-plugins-official": false
   },
   "claudeMdExcludes": []

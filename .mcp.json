@@ -44,6 +44,10 @@
       "type": "http",
       "url": "https://mcp.cloudflare.com/mcp"
     },
+    "linear-[project]": {
+      "type": "http",
+      "url": "https://mcp.linear.app/mcp"
+    },
     "stripe-[project]-[environment]": {
       "type": "http",
       "url": "https://mcp.stripe.com"
