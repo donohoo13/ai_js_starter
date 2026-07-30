@@ -29,10 +29,20 @@ Instances share no git history with the template, so updates are pulled, never p
 
 ## Maintaining This Repo
 
+The only prerequisite is pnpm; it provisions the pinned Node itself, so you never install a specific Node by hand.
+
+- **macOS / Linux (Homebrew):** `brew install node pnpm` — Homebrew's pnpm needs a Node present to run.
+- **Apple Silicon with no Node yet:** `curl -fsSL https://get.pnpm.io/install.sh | sh -` installs a self-contained pnpm that needs no prior Node (Intel Macs use the Homebrew path above).
+
 ```bash
-pnpm install      # dev tooling + husky pre-commit hook (Prettier auto-format) + doctor.sh
+pnpm install      # downloads the pinned Node (devEngines.runtime), dev tooling, husky pre-commit, doctor.sh
 pnpm format:check # Prettier check across the repo
 ```
+
+`pnpm install` downloads the exact Node pinned in `package.json`'s `devEngines.runtime` and runs every `pnpm` command — scripts and `pnpm exec` alike — under it, regardless of the Node on your shell; run one-off Node through `pnpm exec node`, not bare `node`, to stay on the pinned version.
+
+> [!NOTE]
+> While the Node pin stays on 24, `corepack enable` is an equivalent way to activate the pinned pnpm from the `packageManager` field. Node 25+ removes Corepack, so a bump off Node 24 must migrate pnpm activation off it — to a direct pnpm install or pnpm's native package-manager management. See the Node-pin rules in [CLAUDE.md](./CLAUDE.md).
 
 Template development rules — payload semantics, the changelog/tag release discipline, what never runs here — live in [.claude/rules/template-dev.md](./.claude/rules/template-dev.md). There is no build or test step: the workspace ships empty by design.
 

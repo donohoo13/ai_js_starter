@@ -22,7 +22,7 @@ One front door for interview sessions, four lenses behind it, and a task file th
 
 /capture-task — park anything, any time; the captured file seeds a later grill-engineer session
 /diagnose — the bug front door: feedback loop → repro+minimize → ranked hypotheses → fix via /tdd + human QA gate; no-seam and prevention findings → /capture-task
-/curate-context — the gate on prescriptive context files (CLAUDE.md, README.md, design docs): hook-enforced on every edit, distillation of a session's lessons is one entry path; vocabulary, shape facts, and ADRs hand off to domain-modeling
+/curate-context — the gate on prescriptive context files (CLAUDE.md, README.md, design docs): loaded on every edit by the skill description and the CLAUDE.md rule, distillation of a session's lessons is one entry path; vocabulary, shape facts, and ADRs hand off to domain-modeling
 /ship-pr — the work chain's one door to the remote: push the branch and open a PR documenting QA and the review-board outcome; offered by implement-task and review-board, run only on the user's word
 primitives under the hood: grilling, domain-modeling, tdd, skill-creator
 ```
@@ -127,23 +127,23 @@ Distillation — "codify", "capture this convention", "add this to CLAUDE.md" �
 
 ## stage map
 
-| Stage                                | Skill                                                                               | You type it?                                                                   |
-| ------------------------------------ | ----------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
-| First-run tailoring                  | `project-init`                                                                      | Yes — once, right after instantiating (or copying) the template                |
-| Pull template updates                | `sync-template`                                                                     | Yes — when adopting a new template release                                     |
-| Report a template problem            | `template-feedback`                                                                 | Yes — always; never offered by the AI                                          |
-| Derive the brand                     | `brand-init`                                                                        | Yes — when `BRAND_DESIGN.md` is skeletal, or to refresh it                     |
-| Interview (any lens)                 | `grill-me` → `grill-engineer` / `grill-product` / `grill-design` / `grill-research` | Yes — the front door                                                           |
-| Park for later                       | `capture-task`                                                                      | Yes, or suggested once mid-flow                                                |
-| Ground a multi-workstream brief      | `ground-brief`                                                                      | Rarely — chained from grill-product's brief exit, or point it at a draft brief |
-| Diagnose a bug                       | `diagnose`                                                                          | Yes — "diagnose"/"debug this", fix-it-now bug reports                          |
-| Build scoped work                    | `implement-task`                                                                    | Yes — the resume door                                                          |
-| Test-first discipline                | `tdd`                                                                               | Rarely — invoked under the hood                                                |
-| Compose a surface                    | `grill-design`                                                                      | Yes, or chained from grill-product / grill-engineer on surface work            |
-| Skill authoring                      | `skill-creator`                                                                     | Rarely — loads on any skill-file edit (hook-enforced)                          |
-| Interview mechanics                  | `grilling`                                                                          | Rarely — lens skills run it                                                    |
-| Context docs (glossary, shape, ADRs) | `domain-modeling`                                                                   | Rarely — lens sessions, or "document the architecture"                         |
-| Pre-merge review                     | `review-board`                                                                      | Yes, or offered by implement-task                                              |
-| Hand back a commit                   | `stage-for-commit`                                                                  | Yes, or the build-now landing (after human QA)                                 |
-| Ship a PR                            | `ship-pr`                                                                           | Yes, or offered once by implement-task / review-board                          |
-| Curate context files                 | `curate-context`                                                                    | Yes ("codify"), or loads on any governed doc edit (hook-enforced)              |
+| Stage                                | Skill                                                                               | You type it?                                                                    |
+| ------------------------------------ | ----------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| First-run tailoring                  | `project-init`                                                                      | Yes — once, right after instantiating (or copying) the template                 |
+| Pull template updates                | `sync-template`                                                                     | Yes — when adopting a new template release                                      |
+| Report a template problem            | `template-feedback`                                                                 | Yes — always; never offered by the AI                                           |
+| Derive the brand                     | `brand-init`                                                                        | Yes — when `BRAND_DESIGN.md` is skeletal, or to refresh it                      |
+| Interview (any lens)                 | `grill-me` → `grill-engineer` / `grill-product` / `grill-design` / `grill-research` | Yes — the front door                                                            |
+| Park for later                       | `capture-task`                                                                      | Yes, or suggested once mid-flow                                                 |
+| Ground a multi-workstream brief      | `ground-brief`                                                                      | Rarely — chained from grill-product's brief exit, or point it at a draft brief  |
+| Diagnose a bug                       | `diagnose`                                                                          | Yes — "diagnose"/"debug this", fix-it-now bug reports                           |
+| Build scoped work                    | `implement-task`                                                                    | Yes — the resume door                                                           |
+| Test-first discipline                | `tdd`                                                                               | Rarely — invoked under the hood                                                 |
+| Compose a surface                    | `grill-design`                                                                      | Yes, or chained from grill-product / grill-engineer on surface work             |
+| Skill authoring                      | `skill-creator`                                                                     | Rarely — loads on any skill-file edit (hook-enforced)                           |
+| Interview mechanics                  | `grilling`                                                                          | Rarely — lens skills run it                                                     |
+| Context docs (glossary, shape, ADRs) | `domain-modeling`                                                                   | Rarely — lens sessions, or "document the architecture"                          |
+| Pre-merge review                     | `review-board`                                                                      | Yes, or offered by implement-task                                               |
+| Hand back a commit                   | `stage-for-commit`                                                                  | Yes, or the build-now landing (after human QA)                                  |
+| Ship a PR                            | `ship-pr`                                                                           | Yes, or offered once by implement-task / review-board                           |
+| Curate context files                 | `curate-context`                                                                    | Yes ("codify"), or loads on any governed doc edit (description + rule, no hook) |

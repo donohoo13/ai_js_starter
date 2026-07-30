@@ -40,9 +40,9 @@ Current behavior: the template pins pnpm `10.32.1` and Node `26.5.0`; every `pnp
 - [x] On pnpm 11.7.0, `pnpm install` succeeds and `pnpm format:check` runs with no `Unsupported engine` warning in the captured output.
 - [x] `check-install.mjs`: the `engineStrict`×`devEngines` block does not hard-fail on pnpm >=11 and still hard-fails on pnpm <=10; the exact-vs-range rationale names the measured `ERR_PNPM_IGNORED_BUILDS` cause; the header comment marks its pnpm-10 measurements as pnpm-<=10-scoped and notes the wrong-Node check is advisory on pnpm 11.
 - [x] The guard verification battery passes across pnpm major (<=10 / >=11) x `engineStrict` (on/off) x `devEngines` (present/absent) x pin (exact/range/drift), each case asserting exit code and branch.
-- [ ] `CLAUDE.md` carries the `pnpm exec node` convention bullet and the corepack-migration bullet (approved wording), and reframes the `.nvmrc` role; `fork-points.md` records that pnpm 11+ instances may keep `engineStrict: true` alongside `devEngines`.
-- [ ] `README.md` has a Mac/Linux quickstart (Homebrew `node`+`pnpm` or Apple-Silicon standalone script, `corepack enable`, `pnpm install`) with the Node-25 corepack caveat at point of use.
-- [ ] `.claude/skills/README.md` lines 25 and 149 no longer describe `curate-context` as hook-enforced; line 143 (`skill-creator`) is unchanged (#14 closed).
+- [x] `CLAUDE.md` carries the `pnpm exec node` convention bullet and the corepack-migration bullet (approved wording), and reframes the `.nvmrc` role; `fork-points.md` records that pnpm 11+ instances may keep `engineStrict: true` alongside `devEngines`.
+- [x] `README.md` has a Mac/Linux quickstart (Homebrew `node`+`pnpm` or Apple-Silicon standalone script, `corepack enable`, `pnpm install`) with the Node-25 corepack caveat at point of use.
+- [x] `.claude/skills/README.md` lines 25 and 149 no longer describe `curate-context` as hook-enforced; line 143 (`skill-creator`) is unchanged (#14 closed).
 - [ ] Docker matrix: cell (a) mismatched-major and cell (b) no-Node both assert `pnpm exec node -v` == `v24.18.1` and bare `node -v` != the pin; cell (c) Alpine/musl is captured as an expected failure, not a regression. A `.github/workflows/` job runs the matrix.
 - [ ] A single `v1.2.0` CHANGELOG entry (what / why / adaptation notes) absorbs the residue strip, `template-dev` rule, #14, #15, the pins, the guard rework, the conventions, the README quickstart, and the Docker matrix.
 - [ ] GitHub issues #14 and #15 are closed referencing v1.2.0.
@@ -81,6 +81,6 @@ Current behavior: the template pins pnpm `10.32.1` and Node `26.5.0`; every `pnp
 
 - [x] Version pins + real-repo validation: retarget the four Node sites to `24.18.1`, bump `packageManager` to `pnpm@11.7.0` and `version` to `1.2.0`, regenerate `pnpm-lock.yaml` under 11.7.0, and prove `pnpm install` + `pnpm format:check` run warning-free on 11.7.0. The tracer bullet that confirms the whole thesis on the real repo.
 - [x] `check-install.mjs` pnpm-11 pass + guard battery: add the pnpm-major branch, scope the `engineStrict` block, correct the range rationale, re-scope the header, update `fork-points.md`, and land the verification battery green.
-- [ ] Conventions + docs: the `pnpm exec node` bullet, the corepack-migration bullet, and the `.nvmrc` reframe in `CLAUDE.md`; the Mac/Linux README quickstart with the Node-25 caveat; and the #14 fix in `.claude/skills/README.md`.
+- [x] Conventions + docs: the `pnpm exec node` bullet, the corepack-migration bullet, and the `.nvmrc` reframe in `CLAUDE.md`; the Mac/Linux README quickstart with the Node-25 caveat; and the #14 fix in `.claude/skills/README.md`.
 - [ ] Docker env matrix + first CI workflow: the bash-3.2 driver, the fixture project, the three cells with their assertions, and the `.github/workflows/` matrix job.
 - [ ] CHANGELOG `v1.2.0`: fold the interim `v1.1.1` entry and the whole session's work into one entry; confirm `package.json` `version` matches; leave tagging and issue-closing (#14, #15) as the owner's post-merge step.
