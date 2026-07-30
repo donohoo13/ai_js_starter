@@ -16,7 +16,7 @@ Current behavior: any Claude Code session launched from a shell whose ambient No
 
 ## Scope
 
-- In scope (must-have): `context7` remote-HTTP stanza in `.mcp.json` plus plugin removal; `chrome-devtools` same-named `pnpm dlx` stanza shadowing the plugin's server while the plugin stays for its six skills; tool-prefix updates in `.claude/settings.json` permissions, `CLAUDE.md` MCP Tools, and `.claude/agents/research-analyst.md`; `doctor.sh` ambient-vs-`.nvmrc` warning; `check-install.mjs` header accepted-cost sentence; `template-dev.md` disable-list sentence amendment; local (untracked) `.claude/settings.local.json` adjustments; `CHANGELOG.md` entry.
+- In scope (must-have): `context7` remote-HTTP stanza in `.mcp.json` plus plugin removal; `chrome-devtools` same-named `pnpm dlx` stanza shadowing the plugin's server while the plugin stays for its six skills; tool-prefix updates in `.claude/settings.json` permissions, `CLAUDE.md` MCP Tools, and `.claude/agents/research-analyst.md`; `doctor.sh` ambient-vs-`.nvmrc` warning; `check-install.mjs` header accepted-cost sentence; `template-dev.md` disable-list sentence amendment; local (untracked) `.claude/settings.local.json` adjustments; `CHANGELOG.md` entry. Folded in mid-PR by user direction: the env matrix musl cell flip (upstream drift turned the expected Alpine failure into a pass while the PR was open) plus the musl posture rewrite across the payload docs.
 - Out of scope (non-goals, named so the task does not expand silently): the remote-HTTP plugins (cloudflare, posthog) which never touch Node; the LSP plugins; the PostHog `Unauthorized` seen in older logs (separate auth issue); wiring a Context7 API key (documented as escalation only); any change to the Node pin mechanism itself.
 
 ## Requirements
@@ -38,6 +38,7 @@ Current behavior: any Claude Code session launched from a shell whose ambient No
 - [x] `scripts/setup/doctor.sh` warns on a drifted shell naming both versions, prints nothing extra on a matching shell, and exits 0 in both cases — verified via Node shims at v24.17.0 and v24.18.1.
 - [x] `grep -r "mcp__plugin_context7\|mcp__plugin_chrome-devtools-mcp"` across the payload returns nothing — remaining hits sit only in this task file and `CHANGELOG.md`, both dated history records `project-init` strips from instances.
 - [x] `pnpm format:check` passes and the `CHANGELOG.md` entry is present — format green repo-wide, `check-install.battery.mjs` 10/10 alongside.
+- [ ] The full env matrix passes with the Alpine cell asserting pass mode, locally and in the PR's `checks` workflow.
 
 ## Dependencies
 
@@ -69,3 +70,4 @@ This repo ships no application code, so validation is `pnpm format:check`, JSON 
 - [x] Shadow `chrome-devtools`: dlx stanza, permissions/CLAUDE.md retargets, local `settings.local.json` update, `template-dev.md` amendment — demoable as a single connected server in `/mcp` with plugin skills intact; carries the shadowing QA check.
 - [x] Drift detection: `doctor.sh` ambient-vs-`.nvmrc` warning plus the `check-install.mjs` header sentence — demoable by running `doctor.sh` under a mismatched shell (verified: warning fires under a v24.17.0 shim, silent under v24.18.1, exit 0 both ways).
 - [x] Close out: payload-wide grep for stale plugin prefixes, `pnpm format:check`, `CHANGELOG.md` entry — demoable as the green checks themselves.
+- [x] Flip the env matrix Alpine cell to pass mode and retire `musl-fail`: pnpm's variant manifest now serves working musl runtimes from `unofficial-builds.nodejs.org` (verified in `node:22-alpine`: pass assertions hold, provisioned binary musl-native per `process.report`); musl posture rewritten in `check-install.mjs`, the battery label, `README.md`, and `fork-points.md` — demoable as the full matrix passing.

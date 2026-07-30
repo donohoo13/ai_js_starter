@@ -60,11 +60,12 @@
 //   .mcp.json spells local servers as `pnpm dlx` (pnpm downloads the pinned
 //   runtime instead of erroring) and doctor.sh warns on ambient drift.
 //
-// Known limit — musl: nodejs.org publishes no musl build, so on Alpine pnpm
-//   resolves the glibc tarball and the install dies at exec time with a "not
-//   found" naming a binary that plainly exists. musl projects DELETE the
-//   devEngines block and keep .nvmrc plus engines.node as the contract; this
-//   guard treats an absent block as that deliberate posture, not as drift.
+// musl (Alpine): pnpm's runtime resolution serves working musl variants,
+//   hosted on unofficial-builds.nodejs.org and pinned by lockfile integrity,
+//   so the pin provisions there like everywhere else (measured; see the
+//   CHANGELOG). Projects that deleted the devEngines block under the earlier
+//   no-musl-build limit can re-adopt the pin; the guard still treats an
+//   absent block as a deliberate opt-out, not as drift.
 //
 // This guard is not decorative: devEngines engages only when the pnpm running
 // the install honors it. pnpm 9 (which also defaults manage-package-manager-
@@ -157,8 +158,8 @@ const drifted = [];
 if (enginesNode !== expectedRange) {
   drifted.push(`engines.node is "${enginesNode ?? '(missing)'}", expected "${expectedRange}"`);
 }
-// devEngines is optional: musl-based projects delete the block deliberately
-// (nodejs.org ships no musl build). Present-but-wrong is drift; absent is a choice.
+// devEngines is optional: a project may opt out of the runtime pin deliberately
+// (e.g. the base image supplies Node). Present-but-wrong is drift; absent is a choice.
 if (devEnginesVersion !== undefined && devEnginesVersion !== required) {
   drifted.push(`devEngines.runtime.version is "${devEnginesVersion}", expected "${required}"`);
 }
@@ -174,9 +175,7 @@ if (drifted.length > 0) {
     `      • engines.node               → "${expectedRange}"`,
     `      • devEngines.runtime.version → "${required}" — exact, never a range; a`,
     '                                     range makes pnpm install a registry stub',
-    '                                     and silently use the ambient Node. Omit',
-    '                                     the block on musl/Alpine, where no Node',
-    '                                     build is published.',
+    '                                     and silently use the ambient Node.',
     '      • pnpm-lock.yaml             → run `pnpm install` and commit the result,',
     '                                     or CI fails on --frozen-lockfile',
   ]);
@@ -204,7 +203,7 @@ if (drifted.length > 0) {
 // the one place it is silently latent. Separately, on pnpm 11 the wrong-Node
 // check below is advisory: preinstall runs under the provisioned runtime, so
 // process.versions.node equals the pin regardless of ambient, and the check is
-// load-bearing only on pnpm <=10 and the musl no-devEngines posture.
+// load-bearing only on pnpm <=10 and the no-devEngines opt-out posture.
 function readIfPresent(path) {
   try {
     return readFileSync(path, 'utf8');
@@ -230,7 +229,7 @@ function engineStrictSite() {
   return null;
 }
 
-// Absent devEngines is the deliberate musl posture, where engineStrict is the
+// Absent devEngines is a deliberate opt-out posture, where engineStrict is the
 // only Node enforcement the project has and must stay on. Only the pairing fails.
 const engineStrict = pkg.devEngines?.runtime === undefined ? null : engineStrictSite();
 

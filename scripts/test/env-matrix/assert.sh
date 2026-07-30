@@ -4,13 +4,12 @@
 # uses the Node pinned in devEngines.runtime for every pnpm-routed command,
 # while bare `node` keeps whatever the image ships.
 #
-# Env in: PIN_NODE (e.g. 24.18.1), PIN_PNPM (e.g. 11.7.0), MODE (pass|musl-fail).
+# Env in: PIN_NODE (e.g. 24.18.1), PIN_PNPM (e.g. 11.7.0).
 # Driven by run.sh locally and by .github/workflows/checks.yml in CI.
 set -u
 
 PIN_NODE="${PIN_NODE:?PIN_NODE required}"
 PIN_PNPM="${PIN_PNPM:?PIN_PNPM required}"
-MODE="${MODE:-pass}"
 
 echo "  ambient node: $(node -v 2>/dev/null || echo none)"
 
@@ -42,21 +41,6 @@ JSON
 
 # --no-frozen-lockfile because the fixture ships no lockfile and CI sets CI=true,
 # which would otherwise make pnpm default to a frozen install and refuse.
-if [ "$MODE" = "musl-fail" ]; then
-  if pnpm install --no-frozen-lockfile >/tmp/cell.log 2>&1; then
-    echo "  FAIL: expected the musl runtime download to fail, but install succeeded"
-    exit 1
-  fi
-  musl_signal="$(grep -iE 'ERR_PNPM_NO_RESOLUTION_MATCHED|ENOENT|not found|musl' /tmp/cell.log | head -1 | sed 's/^ *//')"
-  if [ -z "$musl_signal" ]; then
-    echo "  FAIL: install failed, but not for the expected musl reason:"
-    tail -5 /tmp/cell.log
-    exit 1
-  fi
-  echo "  ok (expected musl failure): $musl_signal"
-  exit 0
-fi
-
 if ! pnpm install --no-frozen-lockfile >/tmp/cell.log 2>&1; then
   echo "  FAIL: pnpm install failed"; tail -5 /tmp/cell.log; exit 1
 fi

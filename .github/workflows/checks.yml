@@ -44,7 +44,7 @@ jobs:
         run: node scripts/test/check-install.battery.mjs
 
       # Proves pnpm provisions and uses the pinned Node across a mismatched
-      # ambient Node, a no-Node image, and a musl image (expected failure).
+      # ambient Node, a no-Node image, and a musl image.
       # Uses the runner's Docker; the driver loops the cells itself rather than
       # a job matrix, because the no-Node and musl images cannot run
       # actions/checkout (a Node action) to become job containers.
