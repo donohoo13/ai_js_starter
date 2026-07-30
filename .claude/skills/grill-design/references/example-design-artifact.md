@@ -19,6 +19,17 @@ created: 2026-07-24
 Answer "am I going to blow through my plan this month, and what is causing
 it?" — a monthly-cadence check-in, not a monitoring dashboard.
 
+## Experience intent
+
+- The verdict reads in one glance: projected spend, days left, and the named
+  driver land without scrolling, expanding, or cross-referencing anything.
+- Reads as a monthly check-in, not a monitoring wall: one screen, a handful
+  of figures, nothing live-updating or exhaustively enumerated.
+- Every region earns its space at rest — no region is a lone figure adrift
+  in whitespace, and none is a wall of undifferentiated rows.
+- Why look: it answers the money question in seconds and names the culprit
+  in words, which no raw usage table does.
+
 ## Hierarchy
 
 - Verdict tier: projected month-end spend vs plan allowance (the one number),
@@ -77,8 +88,35 @@ stays above the fold.
 
 ---
 
+When the session ran the Supplied path (the user brought a mockup, wireframe, or reference), the artifact additionally carries the stored source and its fidelity inventory — frontmatter and one section, alongside everything above. In this variant the source shows six features where the interview-derived wireframe above drew three: on the Supplied path the inventory governs quantities, so the wireframe is redrawn to the inventory's counts during the contract's cumulative re-examination — a disagreement between an artifact's own sections is resolved at design time, never left for the build to arbitrate:
+
+```text
+---
+surface: usage-billing-breakdown
+created: 2026-07-24
+source:
+  - docs/designs/assets/2026-07-24-usage-billing-breakdown/desktop.png # desktop breakpoint
+  - docs/designs/assets/2026-07-24-usage-billing-breakdown/mobile.png # mobile breakpoint
+---
+
+## Source fidelity
+
+- Verdict block: three figures plus one sentence in the source — never a
+  lone number in space.
+- Per-feature split: six rows visible at rest in the source; the surface
+  ships six, not a trimmed three.
+- Each bar row carries an inline delta (value plus trend) at desktop scale.
+- Fill: the split spans the full content width; no region reads emptier
+  than its source counterpart.
+```
+
+---
+
 Notes on altitude, using the example above:
 
 - Every section answers a question the build would otherwise answer by accident. Nothing in the file constrains implementation choices the build owns (component library, exact spacing values, colors).
+- An intent statement earns its place only if a plausible wrong render would violate it — the same admission bar context-file curation applies to rules, transposed to feel. "Feels premium" fails nothing; every assertion in the example above would fail a real, plausible bad render.
+- On the Supplied path the two sections divide one contract: Experience intent names the effect the source achieves, Source fidelity names the quantities that achieve it — both transcribed or derived from the source, never filled by reference to an incumbent implementation of the surface.
+- The `source:` entries are repo-root paths like `design:`, each labeled with what it covers, so a build session diffs its mobile render against the mobile export instead of reporting phantom drift against the desktop one. Entries resolve only inside `docs/designs/assets/`; an entry escaping that directory is refused, not read.
 - The wireframe is a ranking device, not a spec — it fixes what sits above what and what shares a row, and the build styles it with the token system.
 - The Rejected section is short but load-bearing: it carries the interview residue the artifact would otherwise compress away, so the build does not re-propose a rejected shape.

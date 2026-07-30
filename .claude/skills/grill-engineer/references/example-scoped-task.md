@@ -59,6 +59,7 @@ None external; reuses the existing cache layer, identity resolver, and record ac
 - API: `POST /records/:id/presence/heartbeat` — empty body, viewer derived from session; responds `{ viewers: [{ id, name, avatarUrl }] }` excluding the caller; 403 unauthorized, 404 unknown record; store-unavailable degrades to an empty list by design.
 - No schema changes — presence is intentionally non-durable.
 - Reference implementation: the existing record-lock hook + service pairing, which already models "open-record-scoped client polling against per-record server state"; the web side is a `useRecordPresence(recordId)` hook that polls while the record is open, clears on unmount, and feeds a small presence avatar cluster.
+- Surface governed-verdict: the presence avatar cluster rides the record header's existing composition (`UI_UX.md` Surface Composition); layout already determined, no design artifact. Recorded feel, since the grammar carries none: presence registers at a glance without competing with the record's own content.
 
 ## Test strategy
 
@@ -69,4 +70,4 @@ Integration tests at the heartbeat endpoint seam: a second viewer appears; a vie
 - [ ] `PresenceStore` with TTL semantics — the infrastructure under criteria 1–2.
 - [ ] Heartbeat endpoint with auth + identity resolution — criteria 1, 3, 4.
 - [ ] `useRecordPresence` hook with clear-on-unmount — criterion 2.
-- [ ] Presence avatar cluster on the open record — the user-visible payoff; worth a quick design look against `UI_UX.md` before its commit.
+- [ ] Presence avatar cluster on the open record — the user-visible payoff, built to the governed-verdict recorded in Design decisions.
