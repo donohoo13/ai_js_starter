@@ -38,7 +38,7 @@ Current behavior: any Claude Code session launched from a shell whose ambient No
 - [x] `scripts/setup/doctor.sh` warns on a drifted shell naming both versions, prints nothing extra on a matching shell, and exits 0 in both cases — verified via Node shims at v24.17.0 and v24.18.1.
 - [x] `grep -r "mcp__plugin_context7\|mcp__plugin_chrome-devtools-mcp"` across the payload returns nothing — remaining hits sit only in this task file and `CHANGELOG.md`, both dated history records `project-init` strips from instances.
 - [x] `pnpm format:check` passes and the `CHANGELOG.md` entry is present — format green repo-wide, `check-install.battery.mjs` 10/10 alongside.
-- [ ] The full env matrix passes with the Alpine cell asserting pass mode, locally and in the PR's `checks` workflow.
+- [x] The full env matrix passes with the Alpine cell asserting pass mode, locally and in the PR's `checks` workflow.
 
 ## Dependencies
 
