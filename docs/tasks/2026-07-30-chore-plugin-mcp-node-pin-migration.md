@@ -34,10 +34,10 @@ Current behavior: any Claude Code session launched from a shell whose ambient No
 
 - [ ] From a shell whose ambient Node deliberately differs from `.nvmrc`, a fresh session connects both `context7` and `chrome-devtools` MCP servers (the failure class this task removes).
 - [ ] `/mcp` shows exactly one `chrome-devtools` server, launched via the `pnpm dlx` command, and `/plugin` still lists the chrome-devtools plugin's skills.
-- [ ] A Context7 docs query succeeds through the HTTP stanza from a template-dev session (`settings.local.json` deliberately keeps `context7` enabled).
-- [ ] `scripts/setup/doctor.sh` warns on a drifted shell naming both versions, prints nothing extra on a matching shell, and exits 0 in both cases.
-- [ ] `grep -r "mcp__plugin_context7\|mcp__plugin_chrome-devtools-mcp"` across the payload returns nothing.
-- [ ] `pnpm format:check` passes and the `CHANGELOG.md` entry is present.
+- [x] A Context7 docs query succeeds through the HTTP stanza from a template-dev session (`settings.local.json` deliberately keeps `context7` enabled) — proven live in the build session, which was itself drifted (24.17.0 ambient).
+- [x] `scripts/setup/doctor.sh` warns on a drifted shell naming both versions, prints nothing extra on a matching shell, and exits 0 in both cases — verified via Node shims at v24.17.0 and v24.18.1.
+- [x] `grep -r "mcp__plugin_context7\|mcp__plugin_chrome-devtools-mcp"` across the payload returns nothing — remaining hits sit only in this task file and `CHANGELOG.md`, both dated history records `project-init` strips from instances.
+- [x] `pnpm format:check` passes and the `CHANGELOG.md` entry is present — format green repo-wide, `check-install.battery.mjs` 10/10 alongside.
 
 ## Dependencies
 
@@ -68,4 +68,4 @@ This repo ships no application code, so validation is `pnpm format:check`, JSON 
 - [x] Migrate `context7`: HTTP stanza, drop the plugin from `enabledPlugins`, retarget permissions/CLAUDE.md/research-analyst references to verified tool names (`resolve-library-id`, `query-docs`, confirmed against the live endpoint, server v3.2.5) — demoable as a successful Context7 query from a drifted shell.
 - [x] Shadow `chrome-devtools`: dlx stanza, permissions/CLAUDE.md retargets, local `settings.local.json` update, `template-dev.md` amendment — demoable as a single connected server in `/mcp` with plugin skills intact; carries the shadowing QA check.
 - [x] Drift detection: `doctor.sh` ambient-vs-`.nvmrc` warning plus the `check-install.mjs` header sentence — demoable by running `doctor.sh` under a mismatched shell (verified: warning fires under a v24.17.0 shim, silent under v24.18.1, exit 0 both ways).
-- [ ] Close out: payload-wide grep for stale plugin prefixes, `pnpm format:check`, `CHANGELOG.md` entry — demoable as the green checks themselves.
+- [x] Close out: payload-wide grep for stale plugin prefixes, `pnpm format:check`, `CHANGELOG.md` entry — demoable as the green checks themselves.
