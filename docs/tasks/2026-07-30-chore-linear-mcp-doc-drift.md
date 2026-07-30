@@ -1,6 +1,6 @@
 ---
 type: chore
-status: captured
+status: done
 created: 2026-07-30
 ---
 
@@ -28,9 +28,9 @@ The v1.2.1 review board (three seats converging independently) surfaced this whi
 
 ## Acceptance criteria
 
-- [ ] Exactly one Linear provider exists and the CLAUDE.md bullet names it and its real tool prefix.
-- [ ] `permissions.allow` carries only the prefix that provider actually serves.
-- [ ] If payload behavior changed, the CHANGELOG entry records what and why.
+- [x] Exactly one Linear provider exists and the CLAUDE.md bullet names it and its real tool prefix — the `linear-[project]` stanza is the provider; the bullet names it, its URL, and the account-bound rationale.
+- [x] `permissions.allow` carries only the prefix that provider actually serves — the dead plugin prefix is removed; `[project]` servers are never pre-allowed, matching the clerk/stripe/posthog pattern.
+- [x] If payload behavior changed, the CHANGELOG entry records what and why — v1.2.2.
 
 ## Dependencies
 
@@ -38,6 +38,12 @@ None; the decision is internal to the template.
 
 ## Risks / open questions
 
-- [ ] Which wiring is intended: the `linear` plugin (works today, but a fixed-name OAuth server shares one token machine-wide, colliding with the template's own account-bound rule) or a project-scoped `linear-[project]` `.mcp.json` boilerplate stanza consistent with the Stripe/PostHog/Cloudflare pattern?
-- [ ] Does anything beyond CLAUDE.md reference Linear tooling (skills, agents) that the retarget must also touch?
-- [ ] Was the Linear MCP's OAuth actually in use on this machine or in any instance — is there a live token whose server-name change would force a re-auth worth warning about?
+- [x] Which wiring is intended — resolved: the `linear-[project]` `.mcp.json` boilerplate stanza, because the fixed-name plugin shares one OAuth token machine-wide against the template's own account-bound rule, and `project-init`'s OAuth-isolation step already offers exactly this shape for Linear detections.
+- [x] Does anything beyond CLAUDE.md reference Linear tooling — no: a payload-wide grep found only the two `settings.json` entries and the CLAUDE.md bullet as wiring; every other mention is Linear-the-product prose (brand anchors, `project-init` tracker detection) and stands.
+- [x] Live-token re-auth risk — real but small: a machine that OAuth'd the plugin's fixed-name server re-authenticates once per project via `/mcp` against the new name; recorded in the v1.2.2 adaptation notes.
+
+## Design decisions
+
+- Provider is the `linear-[project]` HTTP stanza at `https://mcp.linear.app/mcp` (endpoint verified live: it answers the MCP OAuth 401 challenge with resource metadata that the `/mcp` flow consumes); the plugin leaves `enabledPlugins` and its allow-list prefix goes with it.
+- No pre-allowed tool entries for the new server: `[project]`-placeholder names cannot be meaningfully allow-listed in the template, matching the shipped posture for clerk/stripe/posthog.
+- The one-account-everywhere posture remains available to instances by keeping the plugin and rewriting the bullet truthfully; the defect fixed here is doc-vs-wiring disagreement, not the plugin's existence.
