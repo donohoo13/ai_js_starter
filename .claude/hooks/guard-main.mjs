@@ -131,7 +131,7 @@ const PUSH_ESCALATIONS = new Set([
 ]);
 
 function isTagOnlyPush(args) {
-  // Stop at the first redirection: `git push origin v1.0.1 2>&1 | tail` reaches
+  // Stop at the first redirection: `git push origin vX.Y.Z 2>&1 | tail` reaches
   // here as tokens ending in `2>&1`, which would otherwise be read as a refspec,
   // fail the tag lookup, and block a legitimate publish. Git forbids `<` and `>`
   // in ref names, so nothing after one can be a ref. Pipes and `&&` are already

@@ -1,0 +1,52 @@
+name: checks
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "package.json"
+      - ".nvmrc"
+      - "pnpm-lock.yaml"
+      - "scripts/setup/check-install.mjs"
+      - "scripts/test/**"
+      - ".github/workflows/checks.yml"
+  pull_request:
+    paths:
+      - "package.json"
+      - ".nvmrc"
+      - "pnpm-lock.yaml"
+      - "scripts/setup/check-install.mjs"
+      - "scripts/test/**"
+      - ".github/workflows/checks.yml"
+  workflow_dispatch:
+
+# Least privilege: these checks read the repo and nothing else.
+permissions:
+  contents: read
+
+# One in-flight run per ref; a new push cancels the stale run.
+concurrency:
+  group: checks-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    # Every step is network-bound (image pulls, a Node runtime download); fail
+    # fast on a stalled registry instead of burning the 360-minute default.
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      # Dependency-free Node; asserts the preinstall guard across pnpm major,
+      # engineStrict, devEngines, and pin drift. Runs on the runner's own Node.
+      - name: Preinstall guard battery
+        run: node scripts/test/check-install.battery.mjs
+
+      # Proves pnpm provisions and uses the pinned Node across a mismatched
+      # ambient Node, a no-Node image, and a musl image (expected failure).
+      # Uses the runner's Docker; the driver loops the cells itself rather than
+      # a job matrix, because the no-Node and musl images cannot run
+      # actions/checkout (a Node action) to become job containers.
+      - name: Node/pnpm environment matrix
+        run: bash scripts/test/env-matrix/run.sh
