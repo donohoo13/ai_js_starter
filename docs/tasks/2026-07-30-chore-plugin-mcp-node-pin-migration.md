@@ -1,6 +1,6 @@
 ---
 type: chore
-status: in-progress
+status: done
 created: 2026-07-30
 ---
 
@@ -32,8 +32,8 @@ Current behavior: any Claude Code session launched from a shell whose ambient No
 
 ## Acceptance criteria
 
-- [ ] From a shell whose ambient Node deliberately differs from `.nvmrc`, a fresh session connects both `context7` and `chrome-devtools` MCP servers (the failure class this task removes).
-- [ ] `/mcp` shows exactly one `chrome-devtools` server, launched via the `pnpm dlx` command, and `/plugin` still lists the chrome-devtools plugin's skills.
+- [x] From a shell whose ambient Node deliberately differs from `.nvmrc`, a fresh session connects both `context7` and `chrome-devtools` MCP servers (the failure class this task removes) — human QA confirmed.
+- [x] `/mcp` shows exactly one `chrome-devtools` server, launched via the `pnpm dlx` command, and `/plugin` still lists the chrome-devtools plugin's skills — human QA confirmed the shadowing.
 - [x] A Context7 docs query succeeds through the HTTP stanza from a template-dev session (`settings.local.json` deliberately keeps `context7` enabled) — proven live in the build session, which was itself drifted (24.17.0 ambient).
 - [x] `scripts/setup/doctor.sh` warns on a drifted shell naming both versions, prints nothing extra on a matching shell, and exits 0 in both cases — verified via Node shims at v24.17.0 and v24.18.1.
 - [x] `grep -r "mcp__plugin_context7\|mcp__plugin_chrome-devtools-mcp"` across the payload returns nothing — remaining hits sit only in this task file and `CHANGELOG.md`, both dated history records `project-init` strips from instances.
