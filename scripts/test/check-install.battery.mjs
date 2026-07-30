@@ -126,7 +126,7 @@ const cases = [
     match: /engineStrict/,
   },
   {
-    name: 'musl posture: no devEngines + engineStrict -> pairing check skipped, passes',
+    name: 'opt-out posture: no devEngines + engineStrict -> pairing check skipped, passes',
     agent: AGENT10,
     files: { '.nvmrc': REQ, 'package.json': pkgNoDevEngines, '.npmrc': 'engine-strict=true\n' },
     expect: 0,

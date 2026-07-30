@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 # Environment matrix: proves pnpm provisions and uses the pinned Node across a
 # mismatched-ambient-Node container, a container with NO Node, and a musl
-# container (expected failure — nodejs.org publishes no musl build). Needs
+# container — pnpm's runtime resolution serves working musl variants (from
+# unofficial-builds.nodejs.org), so Alpine runs the same pass assertions as
+# the glibc cells and a provisioning regression there surfaces here. Needs
 # Docker. Reads the pins from the repo so the test tracks them, and pipes
 # assert.sh into each container via `sh -s` so it runs on ash and bash alike.
 #
@@ -20,17 +22,15 @@ if [ -z "$PIN_NODE" ] || [ -z "$PIN_PNPM" ]; then
 fi
 echo "Pins: node $PIN_NODE, pnpm $PIN_PNPM"
 
-# Each cell is "<image>|<mode>"; mode is pass or musl-fail.
-cells="node:22|pass ghcr.io/pnpm/pnpm|pass node:22-alpine|musl-fail"
+# One cell per image; every cell runs the same assertions.
+cells="node:22 ghcr.io/pnpm/pnpm node:22-alpine"
 
 overall=0
-for cell in $cells; do
-  image="${cell%%|*}"
-  mode="${cell##*|}"
+for image in $cells; do
   echo ""
-  echo "=== $image ($mode) ==="
+  echo "=== $image ==="
   if docker run --rm -i \
-      -e PIN_NODE="$PIN_NODE" -e PIN_PNPM="$PIN_PNPM" -e MODE="$mode" \
+      -e PIN_NODE="$PIN_NODE" -e PIN_PNPM="$PIN_PNPM" \
       --entrypoint sh "$image" -s < "$assert"; then
     echo "  PASS"
   else

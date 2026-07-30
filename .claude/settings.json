@@ -1,44 +1,8 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
-  "enabledPlugins": {
-    "typescript-lsp@claude-plugins-official": true,
-    "pyright-lsp@claude-plugins-official": true,
-    "chrome-devtools-mcp@claude-plugins-official": true,
-    "linear@claude-plugins-official": true,
-    "context7@claude-plugins-official": true,
-    "superpowers@claude-plugins-official": false
-  },
-  "enableAllProjectMcpServers": true,
   "env": {
     "ENABLE_LSP_TOOL": "1"
   },
-  "hooks": {
-    "PreToolUse": [
-      {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "input=$(cat); case \"$input\" in *git*) printf '%s' \"$input\" | node \"$CLAUDE_PROJECT_DIR/.claude/hooks/guard-main.mjs\";; esac"
-          },
-          {
-            "type": "command",
-            "command": "input=$(cat); case \"$input\" in *.env*|*.vars*|*secret*|*.ssh*|*.claude.json*|*.config/gh*|*.docker*|*.kube*) printf '%s' \"$input\" | node \"$CLAUDE_PROJECT_DIR/.claude/hooks/guard-secret-read.mjs\";; esac"
-          }
-        ]
-      },
-      {
-        "matcher": "Edit|Write",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "input=$(cat); case \"$input\" in *.claude/skills/*) printf '%s' \"$input\" | node \"$CLAUDE_PROJECT_DIR/.claude/hooks/guard-skill-edit.mjs\";; esac"
-          }
-        ]
-      }
-    ]
-  },
-  "claudeMdExcludes": [],
   "permissions": {
     "allow": [
       "Bash",
@@ -51,39 +15,13 @@
       "WebFetch(domain:code.claude.com)",
       "WebFetch(domain:github.com)",
       "WebFetch(domain:raw.githubusercontent.com)",
-      "mcp__plugin_context7_context7__*",
+      "mcp__context7__resolve-library-id",
+      "mcp__context7__query-docs",
       "mcp__playwright-local__*",
       "mcp__firefox-devtools__*",
-      "mcp__plugin_chrome-devtools-mcp_chrome-devtools__*",
+      "mcp__chrome-devtools__*",
       "mcp__plugin_linear_linear__*",
       "mcp__plugin_cloudflare_cloudflare-docs__search_cloudflare_documentation"
-    ],
-    "ask": [
-      "Bash(git*--force)",
-      "Bash(git reset --hard*)",
-      "Bash(docker run*)",
-      "Bash(docker exec*)",
-      "Bash(docker build*)",
-      "Bash(docker buildx*)",
-      "Bash(docker create*)",
-      "Bash(docker cp*)",
-      "Bash(docker push*)",
-      "Bash(docker rm*)",
-      "Bash(docker stop*)",
-      "Bash(docker kill*)",
-      "Bash(docker * run*)",
-      "Bash(docker * exec*)",
-      "Bash(docker * build*)",
-      "Bash(docker * create*)",
-      "Bash(docker * cp*)",
-      "Bash(docker * push*)",
-      "Bash(docker * rm*)",
-      "Bash(docker * prune*)",
-      "Bash(docker * stop*)",
-      "Bash(docker * kill*)",
-      "Bash(docker compose up*)",
-      "Bash(docker compose down*)",
-      "WebFetch"
     ],
     "deny": [
       "Read(//**/.env)",
@@ -121,6 +59,68 @@
       "Bash(*wrangler*)",
       "Bash(*deploy*)"
     ],
+    "ask": [
+      "Bash(git*--force)",
+      "Bash(git reset --hard*)",
+      "Bash(docker run*)",
+      "Bash(docker exec*)",
+      "Bash(docker build*)",
+      "Bash(docker buildx*)",
+      "Bash(docker create*)",
+      "Bash(docker cp*)",
+      "Bash(docker push*)",
+      "Bash(docker rm*)",
+      "Bash(docker stop*)",
+      "Bash(docker kill*)",
+      "Bash(docker * run*)",
+      "Bash(docker * exec*)",
+      "Bash(docker * build*)",
+      "Bash(docker * create*)",
+      "Bash(docker * cp*)",
+      "Bash(docker * push*)",
+      "Bash(docker * rm*)",
+      "Bash(docker * prune*)",
+      "Bash(docker * stop*)",
+      "Bash(docker * kill*)",
+      "Bash(docker compose up*)",
+      "Bash(docker compose down*)",
+      "WebFetch"
+    ],
     "defaultMode": "default"
-  }
+  },
+  "enableAllProjectMcpServers": true,
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "input=$(cat); case \"$input\" in *git*) printf '%s' \"$input\" | node \"$CLAUDE_PROJECT_DIR/.claude/hooks/guard-main.mjs\";; esac"
+          },
+          {
+            "type": "command",
+            "command": "input=$(cat); case \"$input\" in *.env*|*.vars*|*secret*|*.ssh*|*.claude.json*|*.config/gh*|*.docker*|*.kube*) printf '%s' \"$input\" | node \"$CLAUDE_PROJECT_DIR/.claude/hooks/guard-secret-read.mjs\";; esac"
+          }
+        ]
+      },
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "input=$(cat); case \"$input\" in *.claude/skills/*) printf '%s' \"$input\" | node \"$CLAUDE_PROJECT_DIR/.claude/hooks/guard-skill-edit.mjs\";; esac"
+          }
+        ]
+      }
+    ]
+  },
+  "enabledPlugins": {
+    "typescript-lsp@claude-plugins-official": true,
+    "pyright-lsp@claude-plugins-official": true,
+    "chrome-devtools-mcp@claude-plugins-official": true,
+    "linear@claude-plugins-official": true,
+    "superpowers@claude-plugins-official": false
+  },
+  "claudeMdExcludes": []
 }
