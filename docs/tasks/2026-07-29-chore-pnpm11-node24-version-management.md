@@ -44,7 +44,7 @@ Current behavior: the template pins pnpm `10.32.1` and Node `26.5.0`; every `pnp
 - [x] `README.md` has a Mac/Linux quickstart (Homebrew `node`+`pnpm` or Apple-Silicon standalone script, `corepack enable`, `pnpm install`) with the Node-25 corepack caveat at point of use.
 - [x] `.claude/skills/README.md` lines 25 and 149 no longer describe `curate-context` as hook-enforced; line 143 (`skill-creator`) is unchanged (#14 closed).
 - [x] Docker matrix: cell (a) mismatched-major and cell (b) no-Node both assert `pnpm exec node -v` == `v24.18.1` and bare `node -v` != the pin; cell (c) Alpine/musl is captured as an expected failure, not a regression. A `.github/workflows/` job runs the matrix.
-- [ ] A single `v1.2.0` CHANGELOG entry (what / why / adaptation notes) absorbs the residue strip, `template-dev` rule, #14, #15, the pins, the guard rework, the conventions, the README quickstart, and the Docker matrix.
+- [x] A single `v1.2.0` CHANGELOG entry (what / why / adaptation notes) absorbs the residue strip, `template-dev` rule, #14, #15, the pins, the guard rework, the conventions, the README quickstart, and the Docker matrix.
 - [ ] GitHub issues #14 and #15 are closed referencing v1.2.0.
 
 ## Dependencies
@@ -83,4 +83,4 @@ Current behavior: the template pins pnpm `10.32.1` and Node `26.5.0`; every `pnp
 - [x] `check-install.mjs` pnpm-11 pass + guard battery: add the pnpm-major branch, scope the `engineStrict` block, correct the range rationale, re-scope the header, update `fork-points.md`, and land the verification battery green.
 - [x] Conventions + docs: the `pnpm exec node` bullet, the corepack-migration bullet, and the `.nvmrc` reframe in `CLAUDE.md`; the Mac/Linux README quickstart with the Node-25 caveat; and the #14 fix in `.claude/skills/README.md`.
 - [x] Docker env matrix + first CI workflow: the bash-3.2 driver, the fixture project, the three cells with their assertions, and the `.github/workflows/` matrix job.
-- [ ] CHANGELOG `v1.2.0`: fold the interim `v1.1.1` entry and the whole session's work into one entry; confirm `package.json` `version` matches; leave tagging and issue-closing (#14, #15) as the owner's post-merge step.
+- [x] CHANGELOG `v1.2.0`: fold the interim `v1.1.1` entry and the whole session's work into one entry; confirm `package.json` `version` matches; leave tagging and issue-closing (#14, #15) as the owner's post-merge step.
