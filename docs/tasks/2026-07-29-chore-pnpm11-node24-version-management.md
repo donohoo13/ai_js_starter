@@ -1,6 +1,6 @@
 ---
 type: chore
-status: in-progress
+status: done
 created: 2026-07-29
 ---
 
