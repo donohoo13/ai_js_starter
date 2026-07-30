@@ -14,6 +14,22 @@ warn() {
   printf '! %s\n  fix: %s\n' "$1" "$2" >&2
 }
 
+# Node pin drift. npm enforces package.json devEngines against the running
+# Node for any npx/npm invocation with this project as cwd and treats onFail
+# "download" as an error, so a shell whose ambient Node differs from the pin
+# loses every npx-launched tool here — including Claude Code plugin MCP
+# servers, which fail with an opaque -32000. pnpm-routed commands are immune
+# (pnpm downloads the pinned runtime); this warning exists to name the cause.
+if [[ -f .nvmrc ]] && have node; then
+  pinned=$(tr -d 'v[:space:]' <.nvmrc)
+  ambient=$(node --version)
+  if [[ "${ambient#v}" != "$pinned" ]]; then
+    warn \
+      "shell Node is $ambient but the project pins $pinned: npx run from this project fails the devEngines check (EBADDEVENGINES), which also kills npx-launched Claude Code plugin MCP servers" \
+      "nvm install $pinned && nvm use $pinned, then relaunch this shell (and Claude Code, if running) so PATH picks it up"
+  fi
+fi
+
 # TypeScript / JavaScript
 if [[ -f package.json || -f tsconfig.json ]]; then
   have typescript-language-server || warn \

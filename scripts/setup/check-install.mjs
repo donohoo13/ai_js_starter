@@ -54,6 +54,11 @@
 //   EBADDEVENGINES rather than reaching the pnpm-only message below. The install
 //   still stops, which is this guard's actual job; only the diagnosis degrades.
 //   The change that would fix it (a range) breaks the pin outright, per above.
+//   The same npm check kills ANY `npx` spawned with this project as cwd on a
+//   drifted ambient Node — including npx-launched Claude Code plugin MCP
+//   servers, which die with an opaque -32000. That is why the shipped
+//   .mcp.json spells local servers as `pnpm dlx` (pnpm downloads the pinned
+//   runtime instead of erroring) and doctor.sh warns on ambient drift.
 //
 // Known limit — musl: nodejs.org publishes no musl build, so on Alpine pnpm
 //   resolves the glibc tarball and the install dies at exec time with a "not
