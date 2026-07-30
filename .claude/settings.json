@@ -18,7 +18,7 @@
       "mcp__context7__*",
       "mcp__playwright-local__*",
       "mcp__firefox-devtools__*",
-      "mcp__plugin_chrome-devtools-mcp_chrome-devtools__*",
+      "mcp__chrome-devtools__*",
       "mcp__plugin_linear_linear__*",
       "mcp__plugin_cloudflare_cloudflare-docs__search_cloudflare_documentation"
     ],

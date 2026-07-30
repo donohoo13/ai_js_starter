@@ -66,6 +66,6 @@ This repo ships no application code, so validation is `pnpm format:check`, JSON 
 ## Slices
 
 - [x] Migrate `context7`: HTTP stanza, drop the plugin from `enabledPlugins`, retarget permissions/CLAUDE.md/research-analyst references to verified tool names (`resolve-library-id`, `query-docs`, confirmed against the live endpoint, server v3.2.5) — demoable as a successful Context7 query from a drifted shell.
-- [ ] Shadow `chrome-devtools`: dlx stanza, permissions/CLAUDE.md retargets, local `settings.local.json` update, `template-dev.md` amendment — demoable as a single connected server in `/mcp` with plugin skills intact; carries the shadowing QA check.
+- [x] Shadow `chrome-devtools`: dlx stanza, permissions/CLAUDE.md retargets, local `settings.local.json` update, `template-dev.md` amendment — demoable as a single connected server in `/mcp` with plugin skills intact; carries the shadowing QA check.
 - [ ] Drift detection: `doctor.sh` ambient-vs-`.nvmrc` warning plus the `check-install.mjs` header sentence — demoable by running `doctor.sh` under a mismatched shell.
 - [ ] Close out: payload-wide grep for stale plugin prefixes, `pnpm format:check`, `CHANGELOG.md` entry — demoable as the green checks themselves.
