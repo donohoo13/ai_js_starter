@@ -47,7 +47,13 @@ if [ "$MODE" = "musl-fail" ]; then
     echo "  FAIL: expected the musl runtime download to fail, but install succeeded"
     exit 1
   fi
-  echo "  ok (expected musl failure): $(grep -iE 'ENOENT|not found|musl|ERR_' /tmp/cell.log | head -1 | sed 's/^ *//')"
+  musl_signal="$(grep -iE 'ERR_PNPM_NO_RESOLUTION_MATCHED|ENOENT|not found|musl' /tmp/cell.log | head -1 | sed 's/^ *//')"
+  if [ -z "$musl_signal" ]; then
+    echo "  FAIL: install failed, but not for the expected musl reason:"
+    tail -5 /tmp/cell.log
+    exit 1
+  fi
+  echo "  ok (expected musl failure): $musl_signal"
   exit 0
 fi
 

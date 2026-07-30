@@ -29,27 +29,33 @@ const guardSrc = join(here, '..', 'setup', 'check-install.mjs');
 const runningMajor = Number(process.versions.node.split('.')[0]);
 const REQ = `${runningMajor}.0.0`;
 const RANGE = `>=${REQ} <${runningMajor + 1}`;
+// A major guaranteed distinct from the runner's own, for the wrong-major case
+// below — hardcoding one collides when the runner's own Node is that major.
+const wrongMajor = runningMajor - 1;
 const nodeTok = `node/v${process.versions.node}`;
 
 function run({ files, agent }) {
   const dir = mkdtempSync(join(tmpdir(), 'ci-battery-'));
-  mkdirSync(join(dir, 'scripts', 'setup'), { recursive: true });
-  copyFileSync(guardSrc, join(dir, 'scripts', 'setup', 'check-install.mjs'));
-  for (const [name, content] of Object.entries(files)) {
-    writeFileSync(join(dir, name), content);
-  }
   let code = 0;
   let stderr = '';
   try {
-    execFileSync(process.execPath, [join(dir, 'scripts', 'setup', 'check-install.mjs')], {
-      env: { ...process.env, npm_config_user_agent: agent },
-      stdio: ['ignore', 'ignore', 'pipe'],
-    });
-  } catch (error) {
-    code = typeof error.status === 'number' ? error.status : 1;
-    stderr = (error.stderr || '').toString();
+    mkdirSync(join(dir, 'scripts', 'setup'), { recursive: true });
+    copyFileSync(guardSrc, join(dir, 'scripts', 'setup', 'check-install.mjs'));
+    for (const [name, content] of Object.entries(files)) {
+      writeFileSync(join(dir, name), content);
+    }
+    try {
+      execFileSync(process.execPath, [join(dir, 'scripts', 'setup', 'check-install.mjs')], {
+        env: { ...process.env, npm_config_user_agent: agent },
+        stdio: ['ignore', 'ignore', 'pipe'],
+      });
+    } catch (error) {
+      code = typeof error.status === 'number' ? error.status : 1;
+      stderr = (error.stderr || '').toString();
+    }
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
   }
-  rmSync(dir, { recursive: true, force: true });
   return { code, stderr };
 }
 
@@ -71,8 +77,8 @@ const pkgRangeRuntime = JSON.stringify({
 const pkgWrongMajor = JSON.stringify({
   name: 'fix',
   version: '1.0.0',
-  engines: { node: '>=20.0.0 <21' },
-  devEngines: { runtime: { name: 'node', version: '20.0.0', onFail: 'download' } },
+  engines: { node: `>=${wrongMajor}.0.0 <${wrongMajor + 1}` },
+  devEngines: { runtime: { name: 'node', version: `${wrongMajor}.0.0`, onFail: 'download' } },
 });
 
 const AGENT11 = `pnpm/11.7.0 npm/? ${nodeTok} darwin arm64`;
@@ -121,7 +127,7 @@ const cases = [
   },
   {
     name: 'musl posture: no devEngines + engineStrict -> pairing check skipped, passes',
-    agent: AGENT11,
+    agent: AGENT10,
     files: { '.nvmrc': REQ, 'package.json': pkgNoDevEngines, '.npmrc': 'engine-strict=true\n' },
     expect: 0,
   },
@@ -142,7 +148,7 @@ const cases = [
   {
     name: 'wrong node major, blocks',
     agent: AGENT11,
-    files: { '.nvmrc': '20.0.0', 'package.json': pkgWrongMajor },
+    files: { '.nvmrc': `${wrongMajor}.0.0`, 'package.json': pkgWrongMajor },
     expect: 1,
     match: /Wrong Node/,
   },
@@ -151,7 +157,15 @@ const cases = [
 let passed = 0;
 let failed = 0;
 for (const c of cases) {
-  const { code, stderr } = run(c);
+  let result;
+  try {
+    result = run(c);
+  } catch (error) {
+    failed += 1;
+    console.log(`  FAIL ${c.name}: harness error — ${error.message}`);
+    continue;
+  }
+  const { code, stderr } = result;
   const okCode = code === c.expect;
   const okMatch = !c.match || c.match.test(stderr);
   if (okCode && okMatch) {
