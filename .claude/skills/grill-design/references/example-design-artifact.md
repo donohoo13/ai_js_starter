@@ -95,8 +95,8 @@ When the session ran the Supplied path (the user brought a mockup, wireframe, or
 surface: usage-billing-breakdown
 created: 2026-07-24
 source:
-  - docs/designs/assets/2026-07-24-usage-billing-breakdown/desktop.png # desktop breakpoint
-  - docs/designs/assets/2026-07-24-usage-billing-breakdown/mobile.png # mobile breakpoint
+  - docs/assets/2026-07-24-usage-billing-breakdown/desktop.png # desktop breakpoint
+  - docs/assets/2026-07-24-usage-billing-breakdown/mobile.png # mobile breakpoint
 ---
 
 ## Source fidelity
@@ -117,6 +117,6 @@ Notes on altitude, using the example above:
 - Every section answers a question the build would otherwise answer by accident. Nothing in the file constrains implementation choices the build owns (component library, exact spacing values, colors).
 - An intent statement earns its place only if a plausible wrong render would violate it — the same admission bar context-file curation applies to rules, transposed to feel. "Feels premium" fails nothing; every assertion in the example above would fail a real, plausible bad render.
 - On the Supplied path the two sections divide one contract: Experience intent names the effect the source achieves, Source fidelity names the quantities that achieve it — both transcribed or derived from the source, never filled by reference to an incumbent implementation of the surface.
-- The `source:` entries are repo-root paths like `design:`, each labeled with what it covers, so a build session diffs its mobile render against the mobile export instead of reporting phantom drift against the desktop one. Entries resolve only inside `docs/designs/assets/`; an entry escaping that directory is refused, not read.
+- The `source:` entries are repo-root paths like `design:`, each labeled with what it covers, so a build session diffs its mobile render against the mobile export instead of reporting phantom drift against the desktop one. Entries resolve only inside `docs/assets/`; an entry escaping that directory is refused, not read.
 - The wireframe is a ranking device, not a spec — it fixes what sits above what and what shares a row, and the build styles it with the token system.
 - The Rejected section is short but load-bearing: it carries the interview residue the artifact would otherwise compress away, so the build does not re-propose a rejected shape.

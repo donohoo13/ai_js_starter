@@ -4,7 +4,9 @@ A worked brief for "real-time presence indicators showing which teammates are vi
 
 The sections below are a spine, not a form to fill: the grilling session shapes them. A brief about a visual refresh might swap User stories for before/after design principles; a positioning brief might lean entirely on Evidence and Out of scope. Keep what sharpens the position, drop what pads it. What never flexes: the problem is stated from the user's side, claims are grounded in named evidence rather than invented UX concepts, and open questions stay explicit.
 
-Briefs live at `docs/briefs/YYYY-MM-DD-<slug>.md` and open with two frontmatter lines: `status` (`draft` when the product session writes it; only the `ground-brief` pass ever flips it to `grounded`) and `created`. Progress never lives in the frontmatter — it is read from the task files the workstream entries link.
+Briefs live at `docs/briefs/YYYY-MM-DD-<slug>.md` and open with two frontmatter lines: `status` (`draft` when the product session writes it; only the `ground-brief` pass ever flips it to `grounded`) and `created`. A brief spawned from an initiative's portfolio adds `initiative:` with the initiative doc's path — the up-link that lets a cold session walk task → brief → initiative to the Direction section; omit the key on a one-off brief. Progress never lives in the frontmatter — it is read from the task files the workstream entries link.
+
+An optional `## Context` section is available to any brief, one-off or initiative-spawned, whenever material worth preserving exists: links to the parent initiative and its portfolio row, to source material stored verbatim under `docs/assets/<slug>/` (classified before storage per the data-handling rules — transcripts and real examples carry PII), and to prior discussion. The doctrine is position compact, context linked: inlined context charges rent on every future read and drifts from the position sections, while linked source material stays in its purest form and costs nothing until a session needs it.
 
 The Workstreams section appears only when the session's fan-out detection fired — the position decomposes into two or more outcomes that could ship independently. Split on UI/UX seams, never engineering seams (reconciling the split with engineering reality is `ground-brief`'s job), and split with restraint: the fewest workstreams that make product sense. Each entry is one outcome-altitude line carrying its own settledness call — a settled workstream links the task file captured for it; an unsettled one names what its future grilling must resolve. The `## Engineering grounding` section that appears after the pass is `ground-brief`'s to write; a product session never adds engineering context to a brief.
 
@@ -20,6 +22,10 @@ created: YYYY-MM-DD
 ```
 
 # Product brief: Record presence
+
+## Context
+
+- [Support retro notes](../assets/2026-07-18-record-presence/retro-notes.md) — the double-contact incidents that triggered this brief, verbatim.
 
 ## Problem
 
