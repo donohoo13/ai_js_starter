@@ -1,6 +1,6 @@
 ---
 name: research-analyst
-description: Background evidence fetcher for grilling sessions. Dispatched mid-interview by the grill-research, grill-product, and grill-design skills to answer one scoped research question with sourced claims while the conversation continues. Not a general-purpose agent; expects a brief supplying the question, why the session needs it, the source order, and a scope bound.
+description: Background evidence fetcher for grilling sessions. Dispatched mid-interview by the grill-research, grill-initiative, grill-product, and grill-design skills to answer one scoped research question with sourced claims while the conversation continues. Not a general-purpose agent; expects a brief supplying the question, why the session needs it, the source order, and a scope bound.
 tools: WebSearch, WebFetch, mcp__context7__resolve-library-id, mcp__context7__query-docs
 model: sonnet
 ---
