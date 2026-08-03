@@ -10,6 +10,8 @@ An optional `## Context` section is available to any brief, one-off or initiativ
 
 The Workstreams section appears only when the session's fan-out detection fired — the position decomposes into two or more outcomes that could ship independently. Split on UI/UX seams, never engineering seams (reconciling the split with engineering reality is `ground-brief`'s job), and split with restraint: the fewest workstreams that make product sense. Each entry is one outcome-altitude line carrying its own settledness call — a settled workstream links the task file captured for it; an unsettled one names what its future grilling must resolve. The `## Engineering grounding` section that appears after the pass is `ground-brief`'s to write; a product session never adds engineering context to a brief.
 
+A brief carries the product position, never the delivery machinery: which artifacts exist, where they live, and which skill runs next belong to the skills, and the hand-off is the router's call — a single-workstream brief seeds its feasibility session via `/grill-me @<brief path>` (surface-bearing positions route through `/grill-design` first, the rest to `/grill-engineer`), while a multi-workstream brief runs `/ground-brief` and each workstream is then grilled in its own fresh session in the recommended order. No Hand-off or process section is written into the brief itself, because process prose ratified into an artifact ages independently of the skills that own the flow and binds only the sessions that happen to read it.
+
 ---
 
 The brief file opens with frontmatter:
@@ -66,7 +68,3 @@ Presence on the open record (stories 1–4) is the core value — that is where 
 
 - How fresh does "now" need to feel to be useful — is a short lag acceptable, or does collision-avoidance require it to feel instantaneous? (Has engineering cost implications; the engineering session answers what freshness actually costs.)
 - Should presence ever surface at the record-list level later, or is the open record the permanent boundary?
-
-## Hand-off
-
-A draft brief carries no engineering context by design. A single-workstream brief goes straight to `/grill-me engineer:` seeded by the brief — feasibility, trade-offs, and design happen there against the real codebase, landing as a scoped task file in `docs/tasks/`. A multi-workstream brief like this one goes through `/ground-brief` first: the pass audits the split against the code, writes cross-workstream contracts and a grilling order into `## Engineering grounding`, and flips the status to `grounded`; each workstream is then grilled in its own fresh session, in the recommended order.

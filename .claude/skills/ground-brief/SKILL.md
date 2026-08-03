@@ -1,6 +1,6 @@
 ---
 name: ground-brief
-description: Engineering grounding pass over a multi-workstream product brief in docs/briefs/ — audits each workstream's feasibility against the real code, writes the cross-workstream contracts that keep each workstream grillable in isolation, recommends a grilling order, and flips the brief from draft to grounded. Use immediately after a grill-product session writes a decomposed brief (chained in the same session), or standalone when the user points at a draft brief with a Workstreams section — "ground this brief", "run the grounding pass", "is this split actually buildable". Declines single-workstream briefs; those seed a grill-engineer session directly, which owns feasibility for one position.
+description: Engineering grounding pass over a multi-workstream product brief in docs/briefs/ — audits each workstream's feasibility against the real code, writes the cross-workstream contracts that keep each workstream grillable in isolation, recommends a grilling order, and flips the brief from draft to grounded. Use immediately after a grill-product session writes a decomposed brief (chained in the same session), or standalone when the user points at a draft brief with a Workstreams section — "ground this brief", "run the grounding pass", "is this split actually buildable". Declines single-workstream briefs; those seed their feasibility session through the grill-me router (grill-design first when surface-bearing, else grill-engineer), which owns feasibility for one position.
 argument-hint: '[path to a draft brief in docs/briefs/]'
 ---
 
@@ -10,7 +10,7 @@ The engineering reconciliation step between a product-pure brief and the isolate
 
 ## Preconditions
 
-- The subject is a brief at `docs/briefs/` with `status: draft` and two or more workstreams. On a single-workstream brief, decline and point at `/grill-me engineer:` seeded by the brief — feasibility for one position is that session's job, and a pass here would duplicate it.
+- The subject is a brief at `docs/briefs/` with `status: draft` and two or more workstreams. On a single-workstream brief, decline and point at `/grill-me @<brief path>` — the router runs feasibility for one position `grill-design`-first when it is surface-bearing, else through `grill-engineer` — because feasibility for one position is that session's job, and a pass here would duplicate it.
 - When chained from the `grill-product` session that wrote the brief, the conversation residue (why the seams fell where they did, rejected splits) is live — use it when judging re-splits. Standalone invocation works from the brief alone; the pass reads harder instead.
 
 ## The pass
@@ -35,4 +35,4 @@ Present the full grounding — per-workstream feasibility, contracts, order, any
 
 ## Close — hard stop
 
-The grounded brief now carries everything the workstream sessions need; this session's residue is spent capital. Close by handing the user the pickup instructions and stopping: each workstream is grilled in a **fresh session** — `/grill-me @<brief path>` picks up the next workstream in the recommended order, or `/grill-me engineer: <workstream> from <brief path>` names one — one at a time. Do not continue into a workstream grilling here: stacking grillings onto this session is the context blowout the pass exists to prevent, and a pass that leaves the workstream sessions needing this window's warmth has failed its one job.
+The grounded brief now carries everything the workstream sessions need; this session's residue is spent capital. Close by handing the user the pickup instructions and stopping: each workstream is grilled in a **fresh session** — `/grill-me @<brief path>` picks up the next workstream in the recommended order, or `/grill-me <workstream> from <brief path>` names one (the router sends a surface-bearing workstream through `grill-design` first) — one at a time. Do not continue into a workstream grilling here: stacking grillings onto this session is the context blowout the pass exists to prevent, and a pass that leaves the workstream sessions needing this window's warmth has failed its one job.
