@@ -62,7 +62,7 @@ Frontmatter carries the relation; the note carries the scope. Splitting them thi
 
 ## Before writing a new ADR, check what it retires
 
-The hook verifies links that were declared; noticing what to declare is the author's job, and it is the whole job — a relation nobody spots is a relation nobody enforces.
+Noticing what to declare is the author's job, and it is the whole job — a relation nobody spots is a relation nobody enforces.
 
 Before writing, grep `docs/adr/` for the decision area — the table, the boundary, the technology, the surface this ADR touches — read every hit, and name in the new ADR every existing ADR it changes, whether the change is total (`supersedes`) or partial (`amends`). An ADR that changes nothing says so implicitly by declaring no relations; an ADR that deliberately builds on neighbors without retiring them is worth one sentence saying which ones and why they still hold, because the next author will wonder. When a grep hit is ambiguous — the old ADR might or might not still hold under the new decision — put it to the user rather than guessing; a wrong `superseded` erases a live decision.
 

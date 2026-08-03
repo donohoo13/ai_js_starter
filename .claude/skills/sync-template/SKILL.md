@@ -27,7 +27,7 @@ Refuse in one line when this repo is the template itself — `.claude/rules/temp
 git diff refs/remotes/template/tags/v<from> refs/remotes/template/tags/v<to> -- . \
   ':(exclude)CHANGELOG.md' ':(exclude).claude/rules/template-dev.md' ':(exclude).claude/skills/project-init' \
   ':(exclude)docs/tasks' ':(exclude)docs/adr' ':(exclude)docs/designs' ':(exclude)docs/briefs' \
-  ':(exclude)docs/initiatives' ':(exclude)docs/assets' \
+  ':(exclude)docs/initiatives' ':(exclude)docs/assets' ':(exclude)docs/notes' \
   ':(exclude)CONTEXT.md' ':(exclude)ARCHITECTURE.md' ':(exclude)CONTEXT-MAP.md'
 ```
 

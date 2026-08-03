@@ -1,6 +1,6 @@
 # UI/UX Design Principles
 
-Brand-agnostic usability and implementation standards. Brand identity (palette, typography, density, emphasis, voice) lives in `BRAND_DESIGN.md`, which takes precedence wherever the two overlap. Surface-level composition (the hierarchy, layout, controls, and disclosure of a specific screen) is authored per surface by the `grill-design` skill against this file; this file holds the floors every surface meets, with each rule carrying the source that grounds it.
+Brand-agnostic usability and implementation standards. Brand identity (palette, typography, density, emphasis, voice) lives in `BRAND_DESIGN.md`, which takes precedence wherever the two overlap. Surface-level composition (the hierarchy, layout, controls, and disclosure of a specific screen) is authored per surface by the `grill-design` skill against this file; this file holds the floors every surface meets, with each rule carrying the source that grounds it. The `###` surface-family sections under Standards (Surface Composition, Forms, Numeric Entry & Controls, Data Tables, and their siblings) are the surface grammars `grill-design`'s grammar check reads; a grammar codified from a design session lands as a new `###` section there, recording the family's structure and its at-rest feel.
 
 ## Standards
 
