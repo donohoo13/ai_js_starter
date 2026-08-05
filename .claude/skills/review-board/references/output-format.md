@@ -73,7 +73,12 @@ The verdict is the chair's context-based judgment, not the result of deep-verify
 ## Noted, no decision needed
 
 - **[MNT-3]** Rejected — <one-line reason it does not hold, e.g. "the null case is guarded at the call site, `api/routes.ts:12`">.
+- **[ADV-4]** Rejected — <the reviewer's own one-line scenario, quoted> — <your reason it does not hold>. Documentation findings carry both halves, so the rejection is auditable against the reviewer's words.
 - **[PRF-2]** Confirmed, low — <one line: what it is, and why it does not need the human's attention now>.
+
+## Coverage
+
+<One line per seat that returned no findings, carrying its own coverage sentence verbatim — the paths walked, the files read in full, what was attacked and held up. Omit the section only when every seat returned findings. A clean board with no coverage lines is indistinguishable from a board that skimmed, and "nothing found" and "nobody looked" have to be told apart by something.>
 
 ## Process notes
 
@@ -86,7 +91,7 @@ The verdict is the chair's context-based judgment, not the result of deep-verify
 ### [SEC-1] <title>
 
 - **Location**: `src/db/users.ts:47`
-- **Evidence**: <the code excerpt from the finding>
+- **Evidence**: <the excerpt from the finding — code, or the quoted text on a documentation finding>
 - **Failure scenario**: <from the finding>
 - **Suggested fix**: <from the finding>
 - **Chair's read**: <how you judged it — what matches your understanding of the change, whether agents converged on it independently, what a spot-check found if the finding alarmed you. For a Plausible finding, what would settle it.>

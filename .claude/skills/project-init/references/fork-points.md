@@ -67,7 +67,7 @@ Each entry: what the artifact assumes today → the tailoring lever when the pro
 
 ## Compliance posture (shipped assumption: none)
 
-- `review-board/SKILL.md` — seat-skipping allows dropping the security seat when a change has no security surface. → under a compliance regime, make the security seat non-skippable.
+- `review-board/SKILL.md` — seat-skipping allows dropping the security seat when a change has no security surface, and the documentation board carries no security seat at all, so on a prose change the lever has nothing to act on. → under a compliance regime, make the security seat non-skippable on the code board, and decide the documentation case knowingly: either seat security alongside the three documentation reviewers (a runbook telling an operator to paste a credential into a chat window is a real finding no doc seat owns) or record that the documentation board carries no security lens by design.
 - `ship-pr/SKILL.md` — tolerates process gaps ("Not run." is valid; one nudge, then the truth). → under audit requirements the PR body is evidence: tighten the nudge to a hard stop for missing QA/review.
 - `.claude/settings.json` — `ask`/`deny` lists. → tighten per the mined policy documents (e.g. deny reads on broader secret paths, ask on outbound network tools).
 - `CLAUDE.md` — gains the concrete rules mined from real policy docs (secrets handling, data classification, audit expectations), never a bare framework name.
