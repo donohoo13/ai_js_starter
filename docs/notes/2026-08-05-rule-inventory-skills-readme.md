@@ -290,7 +290,7 @@ See `docs/notes/2026-08-05-rule-inventory-implement-task.md` for the full 143-ru
 
 ## review-board
 
-See `docs/notes/2026-08-05-rule-inventory-review-board.md` for the full 117-rule inventory. The README's blurb carries only: scope, the two seat sets and how they are chosen, the doc board's floor and fixed depth, the mode dial, the two gates, the chair's verdicts, dispositions by provenance, the `review:` record commit, and the HITL close.
+See `docs/notes/2026-08-05-rule-inventory-review-board.md` for the full 123-rule inventory. The README's blurb carries only: scope, the two seat sets and how they are chosen, the doc board's floor and fixed depth, the mode dial, the two gates, the chair's verdicts, dispositions by provenance, the `review:` record commit, and the HITL close.
 
 ## capture-task
 

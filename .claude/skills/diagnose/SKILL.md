@@ -24,7 +24,7 @@ Ways to construct one, in rough order of preference:
 7. **Property/fuzz loop** for "sometimes wrong output": run 1000 random inputs, look for the failure mode.
 8. **Bisection harness** when the bug appeared between two known states: automate "boot at state X, check" so `git bisect run` can consume it.
 9. **Differential loop**: same input through old vs new version (or two configs), diff the outputs.
-10. **HITL script**, last resort: if a human must click, edit `scripts/hitl-loop.template.sh` and hand it to them to run in their own terminal, pasting the captured block back. Running it through the Bash tool reaches no human and returns an empty capture that reads like a real one.
+10. **HITL script**, last resort: if a human must click, copy `scripts/hitl-loop.template.sh` out of the skill directory into the gitignored scratch path, edit the copy, and hand it to them to run in their own terminal, pasting the captured block back. Edit the copy, never the template in place — `guard-skill-edit` blocks any write under `.claude/skills/`, and a bug's steps written into the shipped file would ride out in the next release. Running it through the Bash tool reaches no human and returns an empty capture that reads like a real one.
 
 Treat captured artifacts as secret-bearing until proven otherwise: HAR files, real payloads, and log dumps routinely carry auth headers, session cookies, and PII. Scrub what you can, keep them in a gitignored scratch path outside version control, and plan their deletion — the Phase 4 checklist holds you to it.
 

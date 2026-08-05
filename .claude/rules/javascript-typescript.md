@@ -1,6 +1,6 @@
 ---
 paths:
-  - '**/*.{ts,tsx,js,jsx,mjs,cjs}'
+  - '**/*.{ts,tsx,mts,cts,js,jsx,mjs,cjs}'
   - '**/package.json'
   - '**/tsconfig.json'
   - '**/pnpm-workspace.yaml'
@@ -10,7 +10,7 @@ paths:
 
 # JavaScript, TypeScript, and Node conventions
 
-Loads when a session reads a file matching the globs above, which covers every edit — the `Edit` tool requires a prior read of the file. A `Write` creating a new file carries no such precondition, so `CLAUDE.md` names this file directly for that case.
+Loads when a session reads a file matching the globs above, which covers every `Edit` because that tool requires a prior read of the file. Two routes reach a matching path without triggering the load: a `Write` creating a new file, which carries no read precondition, and any Bash write (`sed -i`, a `cat >` heredoc, a formatter run in place), which the load mechanism does not observe. `CLAUDE.md` names this file directly so both routes have somewhere to read it from.
 
 ## Toolchain
 
