@@ -1,6 +1,6 @@
 ---
 name: template-feedback
-description: Files a scrubbed GitHub issue against the ai_starter template from a project instantiated from it, after validating the caller's complaint against the session that produced it. Strictly user-invoked — this skill never detects friction on its own and is never offered by the AI, because the caller is the one who recognized something. Use when the user says "template feedback", "file this against the template", "report this to the template", or "the template caused this". Refuses to run in the template repo itself.
+description: Files a scrubbed GitHub issue against the ai_starter template from a project instantiated from it, after validating the caller's complaint against the session that produced it. Strictly user-invoked — this skill never detects friction on its own and is never offered by the AI, because the caller is the one who recognized something. Reached only by typing `/template-feedback`: `disable-model-invocation` keeps this skill out of the model's context entirely, which is the mechanism behind "strictly user-invoked" above rather than a convention the AI is trusted to honor. Refuses to run in the template repo itself.
 argument-hint: '[what went wrong, and what to look into]'
 disable-model-invocation: true
 ---
