@@ -7,8 +7,7 @@ out
 *.min.js
 *.min.css
 pnpm-lock.yaml
-.ai/worktrees
-.ai/implementations
+.ai/
 .turbo
 .playwright
 .env*
