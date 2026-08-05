@@ -74,7 +74,7 @@ Desired behavior: every harness claim in the payload matches the documented mech
 - [ ] `skill-quality.md:8` — delete the `name` "no XML tags" and "must not contain anthropic or claude" constraints. These are Skills API upload validation and this repo ships project skills. The `≤64` length and lowercase-hyphen charset are spec-confirmed and stay, re-sourced to the spec.
 - [ ] `skill-quality.md:7`/`:9` — `name` and `description` required, and `description ≤1024`, are spec-confirmed; re-source from Claude Code docs to the spec.
 - [ ] `CLAUDE.md:102` — delete the machine-global OAuth token-store claim. No documentation states it. The `.mcp.json` stanza names cost zero context and stay; only the prose explaining them goes.
-- [ ] `.claude/settings.json:4` — decide `ENABLE_LSP_TOOL` by test rather than by argument, since deleting it may disable LSP across every project made from this template.
+- [x] `.claude/settings.json:4` — `ENABLE_LSP_TOOL` deleted. Tested rather than argued: with the key removed and `env` empty, a session loaded the LSP schema and got real hover data back (`probe.py:1:5` → `(function) def probe(value: int) -> str`). Both binaries on PATH, both plugins enabled. Verified on one Claude Code version only, which is stated in the changelog's adaptation notes.
 
 ### Duplication collapses
 
@@ -122,7 +122,7 @@ Desired behavior: every harness claim in the payload matches the documented mech
 ## Dependencies
 
 - [ ] User review of each rule inventory. This is a blocking gate per file, and it is where culling decisions get made.
-- [ ] User decision on `ENABLE_LSP_TOOL`: remove it, restart, and check whether LSP is still reachable.
+- [x] `ENABLE_LSP_TOOL` resolved by live test: LSP loads and answers without it, so the key is dead weight and the `CLAUDE.md` rule now names two activation conditions rather than three. The same test also showed `typescript-language-server` starting but failing to initialize in this repo (no `typescript` dependency), which is a tool error rather than absence — the rule now says to read the error before concluding a language is uncovered.
 - [ ] User decision on the docker gate: complete the list, or narrow the claim in `CLAUDE.md:20`.
 
 ## Risks / open questions
