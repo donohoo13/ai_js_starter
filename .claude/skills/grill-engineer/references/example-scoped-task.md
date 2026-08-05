@@ -4,6 +4,8 @@ A worked example of a task file at `status: scoped` — the artifact grill-engin
 
 The template (`capture-task/assets/task-template.md`) is the spine, not a form to fill: the grilling session shapes each section, sections grow or shrink to fit the work, and a small chore's scoped file might be twenty lines where this one is a full feature. What never flexes: unknowns stay explicit as `TBD (needs grilling)`, acceptance criteria are objectively checkable, and slices are vertical cuts in build order.
 
+`incumbent: none` above is the greenfield case — nothing implements presence today, so there is nothing to demolish. A task reshaping something that already ships records `replace` and gets a demolition pass before its first slice; one built on existing code in place records `extend` and carries its one-line why in Design decisions.
+
 ---
 
 ```
@@ -11,6 +13,7 @@ The template (`capture-task/assets/task-template.md`) is the spine, not a form t
 type: feature
 status: scoped
 created: 2026-07-11
+incumbent: none
 ---
 ```
 
