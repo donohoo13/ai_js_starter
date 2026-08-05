@@ -58,8 +58,8 @@ Current behavior: no artifact records whether work replaces an existing implemen
 - [ ] The record contains no code blocks, names artifacts rather than stating conclusions about the old surface, and does not survive the session.
 - [ ] A boundary contract the design artifact explicitly contradicts is absent from the record; one the design is silent on is present.
 - [ ] After demolition on a TypeScript project the recorded type-error set is non-empty, each slice reduces it, and it reaches zero before the QA gate.
-- [ ] `grep -rn "incumbent:" .claude/skills docs` shows the key in the task template, `grill-engineer`, and the scoped-task example, with no stale genre vocabulary anywhere.
-- [ ] `pnpm format:check` passes, README blurbs and stage map match shipped behavior, `fork-points.md` carries the couplings, and the `CHANGELOG.md` entry is present at `v1.6.0`.
+- [x] `grep -rn "incumbent:" .claude/skills docs` shows the key in the task template, `grill-engineer`, and the scoped-task example, with no stale genre vocabulary anywhere.
+- [x] `pnpm format:check` passes, README blurbs and stage map match shipped behavior, `fork-points.md` carries the couplings, and the `CHANGELOG.md` entry is present at `v1.6.0`.
 - [ ] Gut-check prompts run in fresh sessions confirm each edited skill triggers and behaves as intended.
 
 ## Dependencies
@@ -107,4 +107,4 @@ The branch carries eight commits predating the redesign. Slices 1, 2, 6, and 7 l
 - [x] Rewrite the build wiring: `implement-task` step 3 dispatching run 1, relaying the plan, dispatching run 2, then the named red commit, the connection map recorded in the task file, and the per-slice validate change.
 - [x] The upstream cascade: `grill-design`'s surface verdict and `grill-product`'s brief prose. `grill-initiative` needed no edit.
 - [x] The validation contracts: `tdd`'s execution scope, `project-init`'s typechecker agenda item, the `fork-points.md` entry.
-- [ ] Close out: skills README blurbs, chain diagram, stage map, the narrowed fixed-stops claim, remaining `fork-points.md` couplings, stale-vocabulary greps, `pnpm format:check`, the `v1.6.0` CHANGELOG entry, and the gut-check prompt set.
+- [x] Close out: skills README blurbs, chain diagram, stage map, the narrowed fixed-stops claim, remaining `fork-points.md` couplings, stale-vocabulary greps, `pnpm format:check`, the `v1.6.0` CHANGELOG entry, and the gut-check prompt set.
