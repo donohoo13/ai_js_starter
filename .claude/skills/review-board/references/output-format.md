@@ -23,9 +23,17 @@ Files examined in full: <list>
 
 ### [SEC-2] ...
 
-### No further findings
+### Actions
 
-<If the category is clean, say so explicitly: "No findings. Checked: <the checklist areas you covered>." An empty list with evidence of coverage is a valid, useful result.>
+<Always present, findings or not. **Report what you did, never a verdict about absence.** "I checked X and it is fine" is the exact form that ships a wrong answer behind confident prose: the reader cannot audit it, and neither can you.
+
+For anything mechanically checkable, the entry is the command and its literal output — `` `python3 -c "print(len(open('f').read()))"` → `1112` `` — never a sentence describing the result. Compute rather than reason about a number you could measure; a measurable fact you argued your way to is the single highest-risk line you can write.
+
+For anything not mechanically checkable, the entry is what you attempted and what happened, in enough detail that a reader can judge the attempt: the paths you walked, the files you opened in full, what you tried to break and how it resisted. A reader who thinks you attacked the wrong thing can say so; a reader handed only your conclusion cannot.
+
+Where neither form is available for an area, write nothing about it. Silence is honest and an unbacked assurance is not, so an area you cannot evidence is an area you leave out rather than vouch for.
+
+An empty findings list is a good result when the Actions section shows the work behind it.>
 ```
 
 Severity calibration, so every seat rates on one scale:
@@ -76,9 +84,11 @@ The verdict is the chair's context-based judgment, not the result of deep-verify
 - **[ADV-4]** Rejected — <the reviewer's own one-line scenario, quoted> — <your reason it does not hold>. Documentation findings carry both halves, so the rejection is auditable against the reviewer's words.
 - **[PRF-2]** Confirmed, low — <one line: what it is, and why it does not need the human's attention now>.
 
-## Coverage
+## Actions
 
-<One line per seat that returned no findings, carrying its own coverage sentence verbatim — the paths walked, the files read in full, what was attacked and held up. Omit the section only when every seat returned findings. A clean board with no coverage lines is indistinguishable from a board that skimmed, and "nothing found" and "nobody looked" have to be told apart by something.>
+<Every seat's Actions section, carried through verbatim rather than summarized — the commands and their outputs, the paths walked, what was attacked and how it resisted. Never compress these into a coverage claim of your own; a paraphrase is a fresh verdict about absence, which is the form this section exists to keep out of the report.
+
+This is what tells "nothing found" apart from "nobody looked", and it is the section a reader uses to catch a seat that ran the wrong command and reported its output faithfully — the residual failure the Actions contract does not close.>
 
 ## Process notes
 
