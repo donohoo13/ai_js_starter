@@ -1,5 +1,4 @@
-.ai/worktrees
-.ai/implementations
+.ai/
 .claude/settings.local.json
 CLAUDE.local.md
 .turbo

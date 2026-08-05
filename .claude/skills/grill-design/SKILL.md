@@ -63,6 +63,8 @@ Skeletal or placeholder design docs mean nothing is governed — and this sessio
 
 ## Exits — offer only what crystallised
 
+Both hand-off exits carry one extra fact when the surface already ships: state whether this composition replaces the incumbent surface or extends it. This session is the one holding the new composition against the old, so the judgment is cheapest here, while `grill-engineer` writes it into the task's `incumbent:` key — one writer, downstream, so nothing recorded here can go stale when the artifact is legitimately amended mid-build.
+
 - **Design artifact** — the normal exit: the file above, then hand into `grill-engineer` in-session by default (residue principle: the rejected alternatives and the why behind each ranking are exactly what the artifact compresses away).
 - **Governed-verdict** — the fast exit: one recorded line, straight into `grill-engineer`.
 - **Grammar codification** — when the interview produced a genuinely new grammar (a new register, a new surface family), offer `/curate-context` once to write it into `UI_UX.md`, so the next surface with this shape arrives governed. A codified grammar records the family's at-rest feel alongside its structure — the Governed fast exit skips intent authoring precisely because the grammar carries it, and a grammar that is structurally complete but silent on feel lets a governed surface land experientially wrong with no gate ever noticing. This is the flywheel: every novel surface either fits the doc or grows it, and the design ceremony amortizes toward zero as the doc matures.

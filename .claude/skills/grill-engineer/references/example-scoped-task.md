@@ -4,6 +4,8 @@ A worked example of a task file at `status: scoped` — the artifact grill-engin
 
 The template (`capture-task/assets/task-template.md`) is the spine, not a form to fill: the grilling session shapes each section, sections grow or shrink to fit the work, and a small chore's scoped file might be twenty lines where this one is a full feature. What never flexes: unknowns stay explicit as `TBD (needs grilling)`, acceptance criteria are objectively checkable, and slices are vertical cuts in build order.
 
+The `incumbent: none` in the frontmatter below is the greenfield case — nothing implements presence today, so there is nothing to demolish — and Design decisions carries its one-line why, as `extend` does too: both leave the build with no demolition to run, so both cost the same sentence. A task reshaping something that already ships records `replace`, owes no explanation at all, and adds a **Demolition** section carrying the zone and carve-outs the grilling drew; there is none below because this task has nothing to tear down.
+
 ---
 
 ```
@@ -11,6 +13,7 @@ The template (`capture-task/assets/task-template.md`) is the spine, not a form t
 type: feature
 status: scoped
 created: 2026-07-11
+incumbent: none
 ---
 ```
 
@@ -60,6 +63,7 @@ None external; reuses the existing cache layer, identity resolver, and record ac
 - No schema changes — presence is intentionally non-durable.
 - Reference implementation: the existing record-lock hook + service pairing, which already models "open-record-scoped client polling against per-record server state"; the web side is a `useRecordPresence(recordId)` hook that polls while the record is open, clears on unmount, and feeds a small presence avatar cluster.
 - Surface governed-verdict: the presence avatar cluster rides the record header's existing composition (`UI_UX.md` Surface Composition); layout already determined, no design artifact. Recorded feel, since the grammar carries none: presence registers at a glance without competing with the record's own content.
+- `incumbent: none`: nothing tracks or displays who is viewing a record today, so there is no existing implementation to demolish or build on.
 
 ## Test strategy
 
