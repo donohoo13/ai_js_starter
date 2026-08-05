@@ -48,4 +48,5 @@ When the loop touches an existing test file, appearance-shaped tests found there
 
 - **Red before green.** Write the failing test first, then only enough code to pass it. Don't anticipate future tests or add speculative features.
 - **One slice at a time.** One seam, one test, one minimal implementation per cycle.
+- **Run a bounded neighborhood.** Each cycle runs the tests covering the seam under test plus the tests of its direct consumers, and lints only the files touched; the full suite runs once, at the end of the work, where its job is catching interactions single-file runs cannot see. Bound it by dependency rather than by directory depth — depth means a whole app in one repo layout and a single util in another. Feedback is most useful one edit old, and a full suite per cycle is slow enough that the loop stops getting run at all.
 - **Refactoring is not part of the loop.** Land it as a separate tidy step after green — tests unchanged, proving the behavior held — or in an explicit user-requested cleanup pass; never mid-cycle between red and green.
