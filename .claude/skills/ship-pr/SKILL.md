@@ -70,7 +70,7 @@ Section semantics:
 
 - **Summary** — the what and why; link the task file when one exists.
 - **QA** — who exercised the change and what they verified, from the evidence above, recorded verbatim.
-- **Review board** — `Not run.`, or: mode and date, finding counts by verdict, addressed IDs with their fix commit SHAs, dismissed IDs each with the user's recorded one-line reason, and the record commit SHA. Dismissals are the point of this section: a dismissal with a recorded reason is defensible; a silent one indicts the process. Never invent a reason that wasn't given — "no reason recorded" is the honest fallback.
+- **Review board** — `Not run.`, `Declined.` when the user was offered a board and said no, or: mode and date, seats that sat, finding counts by verdict, addressed IDs with their fix commit SHAs, dismissed IDs each with the user's recorded one-line reason, the record commit SHA, and each seat's Actions evidence carried from that record. Actions is the part that must survive: the record commit is squashed away on merge and this body is what remains, so a PR reporting only "0 findings" preserves an absence indistinguishable from nobody having looked. A zero-finding board with its seats' commands and outputs intact is a real result; the same board without them is a blank. Dismissals are the point of this section: a dismissal with a recorded reason is defensible; a silent one indicts the process. Never invent a reason that wasn't given — "no reason recorded" is the honest fallback.
 - **No AI attribution** — no generated-with footer, no `Co-Authored-By`. The user is the author of record; the Review board section is the disclosure that actually matters.
 
 ## Confirm once, ship, stop

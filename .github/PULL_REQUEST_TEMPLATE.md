@@ -9,7 +9,9 @@
 ## Review board
 
 <!-- Not run. -->
-<!-- or: Ran `balanced` board YYYY-MM-DD: N findings → C confirmed / P plausible / R rejected. -->
+<!-- or: Declined — offered and turned down. -->
+<!-- or: Ran `balanced` board YYYY-MM-DD, seats: correctness, security, reliability. N findings → C confirmed / P plausible / R rejected. -->
 <!-- Addressed: SEC-1, COR-2 (fix commits abc1234, def5678). -->
 <!-- Dismissed: REL-3 — one-line reason as given. -->
 <!-- Record: review commit <sha> on this branch. -->
+<!-- Actions: each seat's commands and outputs, carried from the record commit. This is the part that survives a squash merge, and a board reported without it is indistinguishable from one that never looked. -->

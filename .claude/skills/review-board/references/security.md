@@ -33,6 +33,17 @@ You review the change for exploitable patterns and sensitive-data handling. Trac
 
 - New dependencies introduced by the change: are they necessary, maintained, and free of known vulnerabilities (check the lockfile diff for surprising transitive additions)? A tiny utility dependency replacing three lines of code is also worth a note.
 
+## Documented processes
+
+Live only when the change alters a document a person or model follows — a runbook, an onboarding or contribution guide, an agent or prompt file. Keep this narrow: you are looking for an instruction that moves a secret or a record somewhere it should not go, not building a threat model of prose. Four things, and nothing past them:
+
+- An instruction to read, echo, export, or paste a credential, token, key, or connection string — especially into a transcript, a chat window, an issue, or a log.
+- An instruction to copy customer data, production records, or captured payloads (HAR files, request dumps, screen recordings) anywhere outside the machine, or into a repository.
+- A step that disables a guard, a permission check, or a safety prompt in order to proceed, without stating how it is restored.
+- A worked example whose literal text contains a real-looking secret, hostname, or customer identifier that a reader will copy verbatim.
+
+Cite the instruction and name what escapes and to where. A document that merely mentions credentials is not a finding; one that tells a reader to move one is.
+
 ## Do not flag
 
 - Theoretical weaknesses with no reachable untrusted input in this codebase's threat model; state the entry point or do not file it.
