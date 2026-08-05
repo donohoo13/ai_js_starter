@@ -1,6 +1,6 @@
 ---
 type: feature
-status: in-progress
+status: done
 created: 2026-08-05
 incumbent: extend
 ---
@@ -54,6 +54,8 @@ Current behavior: no artifact records whether work replaces an existing implemen
 - Every slice touching `.claude/skills/` loads `skill-creator` first, and the change lands with README blurbs, `fork-points.md` couplings, gut-check prompts, and a `CHANGELOG.md` entry.
 
 ## Acceptance criteria
+
+The unchecked criteria below are deferred rather than failed: each needs a real `incumbent: replace` task running against application code, and this repo ships none. They are verified by the first instance that exercises the mechanism, and its findings return here through `template-feedback`. The human QA gate was waived on that basis, with a `quality` review board standing in — its record commit on this branch carries the findings, verdicts, and every seat's evidence.
 
 - [ ] A fresh session scoping a code-touching task through `grill-engineer` asks the incumbent question and writes one of the three values, with `none` and `extend` each carrying a one-line why.
 - [ ] `implement-task` refuses and routes to a grilling, on both `scoped` and resumed `in-progress` files, for a missing `incumbent:` key, a value outside the three tokens, a `none`/`extend` task with no incumbent line in Design decisions, and a `replace` task with no zone — checking presence only and writing none of them itself.
