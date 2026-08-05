@@ -1,10 +1,10 @@
 # Review Board Output Formats
 
-Two formats live here: what each reviewer agent returns (Part A), and what the chair presents to the human (Part B). Both are exact templates; consistency is what makes five parallel reports mergeable and lets the human scan any report from any session the same way.
+Two formats live here: what each reviewer agent returns (Part A), and what the chair presents to the human (Part B). Both are exact templates; consistency is what makes parallel reports mergeable across both seat sets and lets the human scan any report from any session the same way.
 
 ## Part A: Reviewer agent findings format
 
-Each reviewer returns its findings as its final message, using this structure. IDs use the agent's category prefix (`COR`, `SEC`, `REL`, `MNT`, `PRF`) numbered from 1.
+Each reviewer returns its findings as its final message, using this structure. IDs use the agent's category prefix — `COR`, `SEC`, `REL`, `MNT`, `PRF` on the code board, `FLW`, `COH`, `ADV` on the documentation board — numbered from 1.
 
 ```markdown
 ## <Category> review
@@ -28,7 +28,7 @@ Files examined in full: <list>
 <If the category is clean, say so explicitly: "No findings. Checked: <the checklist areas you covered>." An empty list with evidence of coverage is a valid, useful result.>
 ```
 
-Severity calibration, so five agents rate on one scale:
+Severity calibration, so every seat rates on one scale:
 
 - **critical**: exploitable security hole, data loss, or a defect that breaks the feature's core purpose in production.
 - **high**: wrong behavior on realistic inputs, a leak or race that will surface under normal load, a missing auth check on a privileged path.
@@ -36,6 +36,8 @@ Severity calibration, so five agents rate on one scale:
 - **low**: worth fixing but harmless today; deferred cleanup, missing test for an unlikely path, minor observability gap.
 
 Confidence is about the finding's validity, not its severity: `high` means the failure scenario is verifiable from the code alone; `medium` means it depends on runtime or config assumptions; `low` means it depends on intent or domain knowledge the agent does not have.
+
+On the documentation board the same scale reads against the process rather than the runtime, since the document is what executes: **critical** is a reader who follows the document and destroys something, or a gate that never fires at all; **high** is a path with no defined next step, a contradiction that sends two readers different ways, or an escape hatch that reaches the outcome the change exists to prevent; **medium** is a gap or stale claim a careful reader recovers from at some cost; **low** is a self-correcting round trip. Confidence carries over unchanged, with "verifiable from the text alone" standing in for "from the code alone".
 
 ## Reviewer toolcraft
 
@@ -52,7 +54,7 @@ The verdict is the chair's context-based judgment, not the result of deep-verify
 
 **Scope**: <base>..<head> (+ uncommitted), N files, +X/-Y lines
 **Intent**: <one-line summary of what the change is supposed to do>
-**Board**: 5 reviewers, N raw findings, M after dedupe → C confirmed / P plausible / R rejected
+**Board**: N reviewers (name the seats), N raw findings, M after dedupe → C confirmed / P plausible / R rejected
 
 ## Verdict summary
 
