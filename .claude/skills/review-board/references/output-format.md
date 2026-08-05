@@ -1,16 +1,19 @@
 # Review Board Output Formats
 
-Two formats live here: what each reviewer agent returns (Part A), and what the chair presents to the human (Part B). Both are exact templates; consistency is what makes five parallel reports mergeable and lets the human scan any report from any session the same way.
+- [Part A: Reviewer agent findings format](#part-a-reviewer-agent-findings-format)
+- [Reviewer toolcraft](#reviewer-toolcraft)
+- [Part B: Consolidated report format (chair)](#part-b-consolidated-report-format-chair)
+
+Two formats live here: what each reviewer agent returns (Part A), and what the chair presents to the human (Part B). Both are exact templates; consistency is what makes parallel reports mergeable across both seat sets and lets the human scan any report from any session the same way.
 
 ## Part A: Reviewer agent findings format
 
-Each reviewer returns its findings as its final message, using this structure. IDs use the agent's category prefix (`COR`, `SEC`, `REL`, `MNT`, `PRF`) numbered from 1.
+Each reviewer returns its findings as its final message, using this structure. IDs use the agent's category prefix — `COR`, `SEC`, `REL`, `MNT`, `PRF` on the code board, `FLW`, `COH`, `ADV` on the documentation board — numbered from 1. The chair adds findings of its own under `CHR`, which is how a defect it spots while reading Actions reaches the report instead of dying in triage; a `CHR` finding fills every slot a seat's finding does, evidence block included.
 
 ```markdown
 ## <Category> review
 
 Scope reviewed: <base ref>..<head>, N files
-Files examined in full: <list>
 
 ### [SEC-1] <Short imperative title, e.g. "SQL built by string interpolation in user search">
 
@@ -23,12 +26,22 @@ Files examined in full: <list>
 
 ### [SEC-2] ...
 
-### No further findings
+### Actions
 
-<If the category is clean, say so explicitly: "No findings. Checked: <the checklist areas you covered>." An empty list with evidence of coverage is a valid, useful result.>
+<Always present, findings or not. **Report what you did, never a verdict about absence.** "I checked X and it is fine" is the exact form that ships a wrong answer behind confident prose: the reader cannot audit it, and neither can you.
+
+For anything mechanically checkable, the entry is the command and its literal output — `` `python3 -c "print(len(open('f').read()))"` → `1112` `` — never a sentence describing the result. Compute rather than reason about a number you could measure; a measurable fact you argued your way to is the single highest-risk line you can write.
+
+A number you could measure is never a narrative entry. If a claim has a command, it takes the command form — reasoning your way to a count you could have run is the single highest-risk line in your report.
+
+For anything genuinely not mechanically checkable, the entry names the artifacts the work touched — the files opened, the exact terms greped, the specific text quoted, what you tried to break and how it resisted — and stops there. **State no conclusion about the area's state.** "I traced every consumed input against its producer, and each had one" is the banned claim in a different mood; "I traced these six inputs, listed, against `SKILL.md` and `output-format.md`" is an entry a reader can disagree with.
+
+**One entry per top-level section of your checklist, always** — a command, an artifact-named attempt, or the literal words `not attempted`. Never omit a section: an omission you declare is auditable, and an omission that looks like brevity is indistinguishable from work nobody did. `not attempted` is a good entry and costs you nothing.
+
+An empty findings list is a good result when the Actions section shows the work behind it.>
 ```
 
-Severity calibration, so five agents rate on one scale:
+Severity calibration, so every seat rates on one scale:
 
 - **critical**: exploitable security hole, data loss, or a defect that breaks the feature's core purpose in production.
 - **high**: wrong behavior on realistic inputs, a leak or race that will surface under normal load, a missing auth check on a privileged path.
@@ -36,6 +49,8 @@ Severity calibration, so five agents rate on one scale:
 - **low**: worth fixing but harmless today; deferred cleanup, missing test for an unlikely path, minor observability gap.
 
 Confidence is about the finding's validity, not its severity: `high` means the failure scenario is verifiable from the code alone; `medium` means it depends on runtime or config assumptions; `low` means it depends on intent or domain knowledge the agent does not have.
+
+On the documentation board the same scale reads against the process rather than the runtime, since the document is what executes: **critical** is a reader who follows the document and destroys something, or a gate that never fires at all; **high** is a path with no defined next step, a contradiction that sends two readers different ways, or an escape hatch that reaches the outcome the change exists to prevent; **medium** is a gap or stale claim a careful reader recovers from at some cost; **low** is a self-correcting round trip. Confidence carries over unchanged, with "verifiable from the text alone" standing in for "from the code alone".
 
 ## Reviewer toolcraft
 
@@ -52,7 +67,7 @@ The verdict is the chair's context-based judgment, not the result of deep-verify
 
 **Scope**: <base>..<head> (+ uncommitted), N files, +X/-Y lines
 **Intent**: <one-line summary of what the change is supposed to do>
-**Board**: 5 reviewers, N raw findings, M after dedupe → C confirmed / P plausible / R rejected
+**Board**: S reviewers (name the seats), N raw findings, M after dedupe → C confirmed / P plausible / R rejected
 
 ## Verdict summary
 
@@ -71,7 +86,16 @@ The verdict is the chair's context-based judgment, not the result of deep-verify
 ## Noted, no decision needed
 
 - **[MNT-3]** Rejected — <one-line reason it does not hold, e.g. "the null case is guarded at the call site, `api/routes.ts:12`">.
+- **[ADV-4]** Rejected — <the reviewer's own one-line scenario, quoted> — <your reason it does not hold>. Documentation findings carry both halves, so the rejection is auditable against the reviewer's words.
 - **[PRF-2]** Confirmed, low — <one line: what it is, and why it does not need the human's attention now>.
+
+## Actions
+
+<Every seat's Actions section, reproduced whole — never abridged, excerpted, reordered, or paraphrased. Dropping the narrative entries and keeping the commands is abridgement too, and it deletes exactly the seats whose work is hardest to fake. A seat that returned no Actions section is named here as having returned none, and its findings are reported as unevidenced.
+
+This section is exempt from the length rule below: it grows with seat count rather than finding count, and compressing it destroys the one thing that tells "nothing found" apart from "nobody looked".
+
+**The chair performs the residual check before writing this section** — reading each command against the conclusion drawn from it, since a seat can run the right command and misread its output. That is the failure the Actions contract does not close, and naming a reader who does not exist would leave it uncaught.>
 
 ## Process notes
 
@@ -84,7 +108,7 @@ The verdict is the chair's context-based judgment, not the result of deep-verify
 ### [SEC-1] <title>
 
 - **Location**: `src/db/users.ts:47`
-- **Evidence**: <the code excerpt from the finding>
+- **Evidence**: <the excerpt from the finding — code, or the quoted text on a documentation finding>
 - **Failure scenario**: <from the finding>
 - **Suggested fix**: <from the finding>
 - **Chair's read**: <how you judged it — what matches your understanding of the change, whether agents converged on it independently, what a spot-check found if the finding alarmed you. For a Plausible finding, what would settle it.>
