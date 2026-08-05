@@ -21,6 +21,7 @@ Snapshots are from invocation time; re-check live state after any pause or user 
 - Path in `$ARGUMENTS` → read it. No path → confirm which of the scoped tasks in the snapshot above to build (in-progress ones are resumable).
 - Gate on readiness, not ceremony: `status: scoped` with concrete acceptance criteria means go. A file still `captured`, or with `TBD (needs grilling)` in load-bearing sections (Requirements, Acceptance criteria, Design decisions), is not buildable — recommend a `/grill-me engineer:` session on the file first and stop. Building on an under-specified file is how requirements get invented silently.
 - The same gate covers composition: a task whose slices render or reshape a user-facing surface is buildable only with a design artifact in `design:` frontmatter or a governed-verdict recorded in Design decisions. Neither present — recommend a `/grill-design` pass on the surface first and stop; an uncomposed surface gets composed from the API payload at build time, not from the user's task.
+- And it covers demolition: a `scoped` task with no `incumbent:` key never decided what happens to the existing implementation, and a missing key is not a quiet `extend` — recommend a `/grill-me engineer:` session on the file first and stop, naming the key. Defaulting to no-demolition hands the call to whatever the existing code suggests, on exactly the tasks nobody examined.
 
 ## 2. Guard the workspace
 
