@@ -158,15 +158,16 @@ There is no test runner for prose. Three checks stand in, at the seam a reader a
 
 ## Slices
 
-- [ ] Config and permission corrections: `.claude/settings.json` (`WebFetch`, docker verbs, `Edit` deny entries) and the nine agent `tools:` lines plus the `implement-task` foreground dispatch. Independent of every rewrite, mechanically verifiable, and it closes the destruction risk first.
-- [ ] Deletions: the four unverifiable claims in `skill-creator` and `skill-quality.md`, and the OAuth token-store prose in `CLAUDE.md`. Each reported to the user before it lands.
-- [ ] Accuracy fixes in files not being rewritten: `curate-context:64`, `CLAUDE.md` LSP and secrets bullets, `README.md:11`, `skill-creator`, the four `disable-model-invocation` descriptions, and `hitl-loop.template.sh`. Closes #27.
-- [ ] Duplication collapses: establish each canonical home and reduce every other copy to a pointer. Runs before the rewrites so a file is not written twice. Closes #17.
-- [ ] Rewrite `.claude/skills/README.md`: rule inventory, user review, blind rewrite, behavioral diff.
-- [ ] Rewrite `implement-task/SKILL.md`: same four steps.
-- [ ] Rewrite `review-board/SKILL.md`: same four steps.
-- [ ] Rewrite `project-init/references/fork-points.md`: same four steps.
-- [ ] `CLAUDE.md`: rule inventory of all ~155 rules, user culling pass, then split the six run-ons. Behavioral diff over the culled result.
-- [ ] Remaining trims: `curate-context`, `grill-design`, `grill-engineer`, `grill-me`, `grill-product`, `project-init`, `template-dev.md`, `BRAND_DESIGN.md`, and the `UI_UX.md` email section.
-- [ ] Promote the Actions contract payload-wide.
-- [ ] `CHANGELOG.md` entry, version bump, and issue closures.
+- [x] Config and permission corrections: `.claude/settings.json` (`WebFetch`, twelve docker verbs, 22 `Edit` deny entries) plus foreground dispatch for `demolition-planner` and the eight review seats. Human-QA'd: unlisted domain prompts, allowed domain does not, write to a registered path denied with the repo root still writable, `docker start` prompts.
+- [x] Deletions: the four unsourced claims in `skill-creator` and `skill-quality.md`, and the OAuth token-store prose in `CLAUDE.md`. Two candidates checked against the Agent Skills spec first and re-sourced rather than cut.
+- [x] Accuracy fixes in files not being rewritten: `curate-context:64` (closes #27), the `CLAUDE.md` LSP, secrets, design-doc, orphan, MCP-shadowing, and hook bullets, `skill-creator`, the two dead `disable-model-invocation` descriptions, and `hitl-loop.template.sh` with its `diagnose` call site.
+- [x] Duplication collapses, the three largest: `implement-task` section 3 into `references/demolition.md` (−874 words), `review-board`'s two triple-statements into one home each, and the `check-install.mjs` entry in `fork-points.md` into its script header (−194 words). Closes #17.
+- [ ] Duplication collapses, the remaining eleven canonical homes named in Requirements: `incumbent:` definition, the why-line asymmetry, the Actions contract's ten copies across the agent files, the opening-line taxonomy rule across four lenses, the `research-analyst` dispatch contract across five, the ADR bar, the residue path set, the Node-pin set, the brand-derivation refusal, and the secret-file registry.
+- [ ] Rewrite `.claude/skills/README.md`: rule inventory, user review, blind rewrite, behavioral diff. **Blocked on the user's review.**
+- [ ] Rewrite `implement-task/SKILL.md`: same four steps. Section 3 already collapsed; what remains is the 536-word `:74` validate step. **Blocked.**
+- [ ] Rewrite `review-board/SKILL.md`: same four steps. Triple-statements already collapsed. **Blocked.**
+- [ ] Rewrite `project-init/references/fork-points.md`: same four steps. `:51` already collapsed. **Blocked.**
+- [ ] `CLAUDE.md`: rule inventory of all ~155 rules, user culling pass, then split the six run-ons. **Blocked on the cull**, which is the single largest reduction available and is the user's call alone.
+- [ ] Remaining trims: `grill-design`, `grill-engineer`, `grill-me`, `grill-product`, `project-init`, `template-dev.md`, `BRAND_DESIGN.md`, and the `UI_UX.md` email section. Splitting run-ons preserves every instruction and adds lines; it buys executability, never size.
+- [x] Promote the Actions contract payload-wide, landed by strengthening `CLAUDE.md`'s existing evidence bullet to reach claims of absence rather than adding a sibling.
+- [x] `CHANGELOG.md` v1.7.0 entry and version bump. #22 closed with a pointer to v1.4.0; #17, #26, #27 close on merge.
