@@ -37,15 +37,17 @@ Declining the confirm is the escape hatch: the user creates or picks a feature b
 
 ## 3. Demolish, where the verdict says so
 
-`incumbent: replace` runs the demolition pass before the first slice; `none` and `extend` go straight to the slice loop. It runs as two dispatches with separate contexts — a planner that reads and an executor that deletes — and neither one is optional or collapsible into the other. Read `references/demolition.md` (sibling of this SKILL.md) in full before dispatching: it carries the zone rule, the one exemption, the record's filter, and why splitting the reading from the deleting is the mechanism rather than a division of labor.
+`incumbent: replace` runs the demolition pass before the first slice; `none` and `extend` go straight to the slice loop.
 
-**Check the marker first: a `demolition: done` line in the task file's Demolition section means the pass already ran.** Skip straight to the slice loop. A resumed task looks identical to a fresh one from step 1's gate, and re-dispatching over a zone that now holds two slices of the replacement deletes this task's own finished work — the executor sees paths, the planner has no way to say "these are new", and the relay is a window nobody is guaranteed to be watching.
+**Check the marker before reading anything else: a `demolition: done` line in the task file's Demolition section means the pass already ran.** Skip straight to the slice loop. A resumed task looks identical to a fresh one from step 1's gate, and re-dispatching over a zone that now holds two slices of the replacement deletes this task's own finished work — the executor sees paths, the planner has no way to say "these are new", and the relay is a window nobody is guaranteed to be watching.
+
+Otherwise read `references/demolition.md` (sibling of this SKILL.md) in full before dispatching: it carries the zone rule, the one exemption, the record's filter, both mandates, and why splitting the reading from the deleting is the mechanism rather than a division of labor. The pass runs as two dispatches with separate contexts — a planner that reads and an executor that deletes — and neither is optional or collapsible into the other.
 
 **Read run 1's record and nothing else.** Opening the code that is about to die is precisely what the split exists to avoid.
 
 **Relay run 1's plan and manifest into this session's stream before dispatching run 2**, in full and per the reference's relay contract. It lands here rather than in a subagent transcript because that is what makes it visible to a human at all, and it is how the dead-code reporting obligation gets met, since the record is never committed.
 
-**Write the returned compiler errors into the task file's Demolition section as the connection map, then add the `demolition: done` marker and the record's path beside it.** That section is where file paths legitimately live; Design decisions bans them precisely because they go stale, and a later grilling session evolving the file would strip the map out of it. The session resuming this task tomorrow has no other copy, and a map living only in this context makes Land's zero-errors condition trivially true for whoever picks it up.
+**Write the returned compiler errors into the task file's Demolition section as the connection map, then add the `demolition: done` marker and the record's path beside it.** That section is where file paths legitimately live; Design decisions bans them precisely because they go stale, and a later grilling session evolving the file would strip the map out of it. The session resuming this task tomorrow has no other copy, and a map living only in this context makes Land's zero-errors condition trivially true for whoever picks it up. **An empty error set, or a report of no typechecker on a stack you know is typed, is a stop rather than a pass** — it means the command never ran, and an absent map satisfies every downstream check while enumerating nothing.
 
 ## 4. The slice loop
 
