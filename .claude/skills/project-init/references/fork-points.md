@@ -114,6 +114,11 @@ Each entry: what the artifact assumes today → the tailoring lever when the pro
 - shipped `CLAUDE.md` Data handling — generic logging, PII, and fixture rules with a self-contained field list. → mine the project's real policy documents and extend the field list, in the same pass that hardens `review-board` and `ship-pr` and revisits the `grill-design` assets entry.
 - `tdd/SKILL.md`, `implement-task/SKILL.md` — untouched by default. → add evidence requirements only on a clear in-project signal.
 
+## Dev-server ban (ships: servers are user-run)
+
+- `.claude/hooks/guard-dev-server.mjs` + its Bash hook entry — denies the common dev-instance, tunnel, and container spellings (`pnpm dev` and kin, `vite`, `storybook`, `ngrok`, `docker compose up`); the inline `case` prefilter lives in the hook's command string in `.claude/settings.json`. → tailor the pattern sets to the instance's real dev commands: add project script names that start servers, and narrow patterns that collide with legitimate non-server scripts (`dev:*` names like `pnpm dev:codegen` ship blocked).
+- shipped `CLAUDE.md` Development servers-are-user-run bullet — states the ban, the hand-the-command mechanic, and the hook's gate-not-seal gap. → keep it in lockstep with the hook; a project that genuinely wants AI-started servers removes the hook, its wiring, and the bullet together, never just one.
+
 ## Secrets protection (ships: env-file conventions)
 
 - `.claude/settings.json` `permissions.deny` — the paired `Read(...)` and `Edit(...)` entries are the single registry, enforced natively and extended to Bash by `guard-secret-read`; example env files stay readable by omission, and vars example files need hyphen spellings because dot spellings match the `.*.vars.*` wildcard, which stays broad since wrangler env names are user-defined. → init's secret sweep appends the project's uncovered files; a project using dot spellings renames them rather than loosening the wildcard.
@@ -147,5 +152,5 @@ Run over `.claude/skills`, `.claude/agents`, `.claude/rules`, `.claude/settings.
 - Tracker: `grep -rniE 'linear|jira|docs/tasks|docs/briefs|docs/designs|docs/initiatives|docs/assets'`
 - Branch model: `grep -rniE '\bmain\b|default branch|guard-main'`
 - Toolchain: `grep -rniE 'pnpm|\buv\b|prettier|eslint|ruff|turbo'`
-- Infra: `grep -rniE 'lsp|context7|playwright|chrome-devtools|doctor|husky|prepare|worktree|gwt|zed|oauth|cloudflare|mcp slug|guard-secret|\.vars'`
+- Infra: `grep -rniE 'lsp|context7|playwright|chrome-devtools|doctor|husky|prepare|worktree|gwt|zed|oauth|cloudflare|mcp slug|guard-secret|guard-dev-server|\.vars'`
 - Lineage: `grep -rniE 'sync-template|lineage|changelog|template-dev|turbo|check-install'`
