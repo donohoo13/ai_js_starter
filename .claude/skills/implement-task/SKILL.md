@@ -147,11 +147,11 @@ For a slice touching anything a user sees:
 
 - Read the `design:` artifact, `UI_UX.md`, `BRAND_DESIGN.md`, and the app's theme CSS before planning.
 - The app's theme CSS is the source of truth for token values.
-- When the build must deviate from the artifact, surface it — `BLOCKED`, or `DONE_WITH_CONCERNS` for minor drift — and never redesign silently, because at build time the payload's shape is louder than the task.
+- When the build must deviate from the artifact, surface it and never redesign silently, because at build time the payload's shape is louder than the task: a deviation that blocks the slice is `BLOCKED`, and a buildable one lands through Step 3's off-plan checkpoint.
 - The artifact's Experience intent and Source fidelity sections are the build's judging contract, and the build session never edits them.
 - When a render cannot satisfy them, surface the conflict; never adjust the contract to fit the render.
 - Record a ratified deviation in the task file and carry it into QA.
-- Judge later render passes against the artifact plus recorded ratifications; only `grill-design` amends the artifact.
+- Judge the land render pass against the artifact plus recorded ratifications; only `grill-design` amends the artifact.
 - A slice changing anything under `.claude/skills/` loads `skill-creator` here.
 
 ### Step 2 — build
@@ -176,22 +176,14 @@ With a connection map still open:
 - A red edge closes by wiring its call site to the new interface, or it stays open and the slice reports `BLOCKED`.
 - Refuse a module at the old path re-exporting old names — that ships the incumbent as a permanent adapter.
 
-Render check:
+Artifact check, on every slice that composes or reshapes a surface:
 
-- Add one on the slice that first makes a surface renderable.
-- Screenshot at mobile and desktop widths with the UI tool named in `CLAUDE.md`.
-- Judge against the artifact's hierarchy, breakpoint plan, and disclosure plan.
-- Judge against Experience intent and the Source fidelity inventory when the artifact records them.
-- Judge intent assertions in a governed-verdict line the same way.
-- Judge against `UI_UX.md`'s floors as well.
-- Fix composition failures before the slice commits: caught at slice 2 it costs one fix, at QA it costs a redesign.
-- When `source:` names a stored export, diff each render against the export covering that breakpoint.
-- Resolve `source:` as repo-root paths under `docs/assets/`; anything outside is refused, not read.
-- The comparison judges density, hierarchy, scale, content, and fill of space — the qualities the inventory names.
-- The comparison never judges palette, token, or theme conformance, because a mock in the wrong theme fails forever and gets rationalized away.
-- A drift verdict cites the inventory line or intent assertion it violates.
-- Logic-only slices skip the render check.
-- A later slice changing composition re-runs it.
+- Judge the built code statically against the `design:` artifact: the structure delivers its hierarchy, breakpoint plan, and disclosure plan.
+- Judge a governed-verdict line against its named grammar and `UI_UX.md`'s floors the same way.
+- No screenshots, no Playwright, no dev server mid-build — servers are user-run (CLAUDE.md), so pixels wait for the land render pass, and the pixel-judged contracts (Experience intent, Source fidelity) are judged there too.
+- A conformant slice continues without stopping, whatever its size: the artifact already blessed its composition.
+- An off-plan slice — one that departed from the artifact's plan and improvised, or composed surface the artifact does not govern — finishes and commits, then stops: report the deviation and offer verification against a server the user starts. Off-plan is the trigger, never size, because a large change that follows the plan needs no steering and a small unsanctioned improvisation festers until QA.
+- Logic-only slices skip the check.
 
 ### Step 4 — commit
 
@@ -219,16 +211,19 @@ Shape check, once the suite is green:
 - With no `ARCHITECTURE.md` yet, create it with that one shape fact; a one-fact doc is valid, a stub is not.
 - No shape change means no edit.
 
-Task-end render pass, once shape is current and any surface was touched:
+Land render pass, once shape is current and any surface was touched — offered, never assumed:
 
-- Screenshot every touched surface at both breakpoints and in both themes — theme drift is cheapest to batch here.
-- Judge against the artifact, Experience intent and Source fidelity included.
-- When `source:` names a stored export, run the same scoped comparison: inventory qualities, never palette or theme.
-- Judge against the design docs and fix what fails.
+- Offer it once: the user starts the app and hands over the URL, because servers are user-run (CLAUDE.md) and this is the one point in the build that needs pixels.
+- On yes, screenshot every touched surface at both breakpoints and in both themes with the UI tool named in `CLAUDE.md` — theme drift is cheapest to batch here.
+- Judge against the artifact, Experience intent and Source fidelity included, and against the design docs and `UI_UX.md`'s floors; fix what fails.
+- When `source:` names a stored export, diff each render against the export covering that breakpoint — resolved as repo-root paths under `docs/assets/`, anything outside refused, not read.
+- The comparison judges density, hierarchy, scale, content, and fill of space; never palette, token, or theme conformance, because a mock in the wrong theme fails forever and gets rationalized away.
+- A drift verdict cites the inventory line or intent assertion it violates.
 - User-ratified deviations are not failures.
 - Its screenshots ride into the QA handoff, because the user reviews evidence, not promises.
+- On decline, QA proceeds on the script alone and the handoff states the evidence gap plainly — a declined pass is legitimate, a hidden one is not.
 
-Human QA gate, once the render pass is clean:
+Human QA gate, once the render pass is clean or declined:
 
 - Hand over a script: exact commands, URLs, and actions, with observations mapped to acceptance criteria.
 - Lead the handoff with the source-versus-build comparison when the task has a stored source design.
