@@ -33,7 +33,7 @@ Desired behavior: every harness claim in the payload matches the documented mech
 
 - In scope (must-have): all accuracy corrections; all deletions of unverifiable claims; the fourteen duplication collapses; four ground-up rewrites; ten trims; the Actions-contract promotion; the `CHANGELOG.md` entry and version bump; closing issues #17, #22, #26, #27.
 - Nice to have: extending the demolition pass to cover prose zones, so a future documentation rewrite has a connection map.
-- Out of scope (non-goals, named so the task does not expand silently): changing what any skill does. Every trigger, exit, gate, and behavior stays as-is. Pruning the `CLAUDE.md` MCP menu to servers this repo runs (that changes what `project-init` inherits and is a separate payload decision). Adding a tool-selection hook. Registering a Vue language server.
+- Out of scope (non-goals, named so the task does not expand silently): changing what any skill does. Every trigger, exit, gate, and behavior stays as-is. Pruning the `CLAUDE.md` MCP menu to servers this repo runs — decided and closed: the user keeps the full menu as-is, after a docs-grounded check confirmed `.mcp.json` carries no model-facing field (`type`, `url`, `command`, `args`, `env`, `headers`, `headersHelper`, `timeout`, `alwaysLoad` is the whole set) and context files are the only project-authored surface that reaches a session for third-party servers. Do not re-propose a thin-menu restructure. Adding a tool-selection hook. Registering a Vue language server.
 
 ## Requirements
 
