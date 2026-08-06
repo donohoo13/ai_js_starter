@@ -1,6 +1,6 @@
 ---
 name: review-board
-description: Multi-agent review board. Spawns parallel specialist reviewers — five code seats (correctness, security, reliability, maintainability, performance/operations) or three documentation seats (flow continuity, coherence, adversarial), chosen by what the change touches — then renders its own confirmed/plausible/rejected verdict on every finding and waits for the human to pick what gets addressed. Use whenever the user asks to review code changes, a branch, a diff, or a PR; asks for a security review, standards check, or pre-merge/pre-PR review; says "review my changes", "run the review board", or "is this safe to merge"; wants a second opinion on work in progress; or asks to review a documentation, process, runbook, prompt, or agent-instruction change, where the document is the behavior and nothing compiles it. An optional leading mode argument (`quality`|`balanced`|`speed`) scales the board; with no mode given, the session AI recommends a mode and read depth reasoned from the change itself.
+description: Multi-agent review board. Spawns parallel specialist reviewers — five code seats (correctness, security, reliability, maintainability, performance/operations) or a documentation board (flow continuity, coherence, adversarial, with security seated as a fourth when the document handles credentials, customer data, or outbound transfer), chosen by what the change touches — then renders its own confirmed/plausible/rejected verdict on every finding and waits for the human to pick what gets addressed. Use whenever the user asks to review code changes, a branch, a diff, or a PR; asks for a security review, standards check, or pre-merge/pre-PR review; says "review my changes", "run the review board", or "is this safe to merge"; wants a second opinion on work in progress; or asks to review a documentation, process, runbook, prompt, or agent-instruction change, where the document is the behavior and nothing compiles it. An optional leading mode argument (`quality`|`balanced`|`speed`) scales the board; with no mode given, the session AI recommends a mode and read depth reasoned from the change itself.
 argument-hint: '[quality|balanced|speed] [PR number, commit range, or paths to scope the review]'
 ---
 
@@ -112,7 +112,7 @@ At both gates, lead with a recommendation reasoned from this change; a recommend
 ### Gate 2 — board shape
 
 - Put the board shape to the user as gate 2 before spawning anything.
-- In `balanced` with a small self-contained diff, offer a lite board: Security solo, Correctness+Reliability merged, Maintainability+Performance merged, all diff-first.
+- In `balanced` with a small self-contained diff, offer a lite board: Security solo, Correctness+Reliability merged, Maintainability+Performance merged, all diff-first. A merged seat spawns at the highest `balanced` tier among the categories it carries — Correctness+Reliability at Opus, Maintainability+Performance at Sonnet — passed as an explicit `model`, since a frontmatter pin covers only its own seat.
 - Never recommend lite for a large or security-sensitive diff.
 - In `quality` or `speed`, never consolidate seats: `quality` exists to buy recall and merged lenses give up exactly that, while `speed` already takes its savings from tier and depth — five parallel seats cost no extra wall-clock.
 - For a documentation board, the floor settles composition and depth already, so gate 2 confirms only whether the board sits.
@@ -173,10 +173,10 @@ Once all reviewers have returned you become the chair, and triage is judgment, n
 
 ## Step 7 — Report and wait
 
-- Present the report per `references/output-format.md` Part B — `## Verdict summary`, `## Your call`, `## Noted, no decision needed`, `## Actions`, `## Process notes`, `## Evidence` — decisions first and evidence below, answerable from the first screen.
+- Produce Part B's two artifacts in order: write the full report — every seat's verbatim Actions, per-finding evidence, the residual check already performed — to `.ai/review/<YYYY-MM-DD>-<slug>.md`, then print the slim decision-layer report, which points at that file for every detail.
 - A bullet the human can neither answer nor act on goes in "Noted" as a one-liner.
 - Every `/capture-task` recommendation names its ground.
-- Close the report by stopping and asking: "Reply with finding IDs, `all confirmed`, or `none`."
+- Close the report by stopping and asking, per the output-format closing line — for example: "Which findings should I address? Reply with IDs, `all confirmed`, or `none`."
 
 > [!WARNING]
 > Fix nothing before the user selects. The report ends the turn.
@@ -193,7 +193,7 @@ Once all reviewers have returned you become the chair, and triage is judgment, n
 
 ## Step 9 — Leave the record commit
 
-- On a non-default branch, once the selection is resolved — including a selection of `none` — commit the fixes first, then the record commit as the last commit.
+- On a non-default branch, once the selection is resolved — including a selection of `none` — commit the fixes first (staged by explicit path, message naming the finding), then the record commit as the last commit.
 - The record commit is always empty and always last, because that gives one shape to parse and pins the record to the reviewed tree.
 - Write it with a quoted heredoc, never `-m`, because Actions contains backticks and both failure modes mimic success:
 

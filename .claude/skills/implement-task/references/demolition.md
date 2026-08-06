@@ -48,7 +48,16 @@ Its tool grant narrows the temptation rather than removing the capability — `B
 
 Run 2 then commits the red state under its own explicitly-named message and runs the supplied typecheck command, returning its error set verbatim alongside the command and its exit code. It opens no file it deletes and writes no replacement code: a helpful stub or shim reintroduces exactly the anchor the split exists to remove.
 
-**Any halt is BLOCKED, not a hiccup to continue past.** Run 1 stopping on a mandate that looks wrong, or run 2 stopping on uncommitted work in the zone, leaves the tree half-demolished. Recovery is `git restore --staged --worktree` over whatever was already removed, which returns the tree to its pre-dispatch state so the pass can start clean once the mandate is fixed; the deletions are staged rather than committed at that point, so nothing is lost. The dispatcher surfaces the report and waits rather than committing a partial demolition and building on it.
+**Any halt is BLOCKED, not a hiccup to continue past.** Run 1 stopping on a mandate that looks wrong, or run 2 stopping on uncommitted work in the zone, leaves the tree half-demolished. The dispatcher surfaces the report and waits rather than committing a partial demolition and building on it; the way back is the Recovery section below, matched to whether the deletions were still staged or already committed.
+
+## Recovery
+
+Two halted states exist, told apart by `git log` and `git status`, and each has its own way back:
+
+- **Deletions staged, no red commit** — run 2 halted before committing, or run 1 halted before run 2 ran: `git restore --staged --worktree .` over what was removed returns the tree to its pre-dispatch state, so the pass restarts clean once the mandate is fixed. Nothing was committed; nothing is lost.
+- **Red commit landed, pass incomplete** — the marker or map is partial but `git log` shows run 2's named red commit: `git restore` does nothing in this state and exits clean while restoring nothing, the failure that mimics success. When only the map is missing and the deletions themselves are right, re-run the supplied typecheck command against the red tree and write the map from its output. When the pass itself was wrong, `git revert <red-commit>` restores the incumbent in one commit and the pass restarts from the marker check.
+
+Either way the session re-enters through `implement-task`'s marker check, never by continuing mid-pass from memory.
 
 ## The record
 

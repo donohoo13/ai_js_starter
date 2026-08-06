@@ -96,8 +96,9 @@ The procedure lives in `references/demolition.md`. This section carries only the
 Check the marker before reading anything else:
 
 - A `demolition: done` line in the task file's Demolition section means the pass already ran.
-- Trust it only whole: `done` beside a non-empty connection map (or a recorded no-typechecker fallback) and a record path that resolves.
-- A marker missing either is a halted pass wearing a finished one's clothes — treat it as `BLOCKED` and read the reference's recovery section before touching the tree.
+- Trust it only whole: `done` beside a non-empty connection map (or a recorded no-typechecker fallback) — the two committed artifacts.
+- A marker missing its map is a halted pass wearing a finished one's clothes — treat it as `BLOCKED` and read `references/demolition.md` `## Recovery` before touching the tree.
+- The record path beside the marker is worktree-local scratch (the gitignored `.ai/` namespace), so a path that no longer resolves after a fresh clone or new worktree is a degradation to note in the running summary, never a halt signal.
 - With the marker whole, skip straight to the slice loop.
 - A resumed task looks identical to a fresh one from step 1's gate, and re-dispatching over a zone that now holds two slices of the replacement deletes this task's own finished work — the executor sees paths, the planner has no way to say "these are new", and the relay is a window nobody is guaranteed to be watching.
 
@@ -214,7 +215,7 @@ Shape check, once the suite is green:
 
 - Run it when the task added a module, moved a boundary, changed a data flow, or rewired a cross-context dependency.
 - Load `domain-modeling`, which owns `ARCHITECTURE.md` writes.
-- Update the owning `ARCHITECTURE.md` per `ARCHITECTURE-FORMAT.md`, then commit.
+- Update the owning `ARCHITECTURE.md` per `ARCHITECTURE-FORMAT.md` — and the root topology doc as well when the change rewired a cross-context dependency — then commit.
 - With no `ARCHITECTURE.md` yet, create it with that one shape fact; a one-fact doc is valid, a stub is not.
 - No shape change means no edit.
 
