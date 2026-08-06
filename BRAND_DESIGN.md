@@ -1,8 +1,17 @@
 # Brand Design Principles
 
-Brand identity for this project. Filled sections are fixed constraints: `grill-design` and `grill-product` read this file at runtime and design inside them. Bracketed placeholders mark axes not yet decided; the `brand-init` skill fills them through its derivation session, and no other session derives brand decisions inline. This file stays thin and tightly curated: it carries binding constraints only, a line earns its place by changing what a design session renders, and rationale, history, and derivations live in `docs/adr/` — an overgrown brand doc steers no better than an empty one, so additions strengthen an existing line before appending a sibling. The app's CSS is the source of truth for actual token values; read it before quoting any value in code. In monorepos, a per-app `BRAND_DESIGN.md` (e.g. `apps/<app>/BRAND_DESIGN.md`) overrides or extends this file.
+Brand identity for this project. Filled sections are fixed constraints: `grill-design` and `grill-product` read this file at runtime and design inside them.
 
-Two tiers govern how sections bind. **Identity sections** — Brand Foundations, Themes, Color System, Typography, Logo, Shape — are absolute: exact values and fixed facts, never reinterpreted per surface, because freedom on identity axes is incoherence, not creativity. **Steering sections** — everything else — direct judgment without dictating outcomes, and every adjective in them is anchored: tied to a named shipped product ("density of Linear") or a "shows up as" consequence in the interface, because an unanchored adjective ("clean", "modern") steers nothing. In every section, balance grants against restraints: every restraint names its sanctioned alternative ("never X; reach for Y"), because an agent given only prohibitions ships the null design, and the null design of a data app is a spreadsheet.
+- Bracketed placeholders mark axes not yet decided; the `brand-init` skill fills them through its derivation session, and no other session derives brand decisions inline.
+- This file stays thin and tightly curated: it carries binding constraints only, a line earns its place by changing what a design session renders, and rationale, history, and derivations live in `docs/adr/` — an overgrown brand doc steers no better than an empty one, so additions strengthen an existing line before appending a sibling.
+- The app's CSS is the source of truth for actual token values; read it before quoting any value in code.
+- In monorepos, a per-app `BRAND_DESIGN.md` (e.g. `apps/<app>/BRAND_DESIGN.md`) overrides or extends this file.
+
+Two tiers govern how sections bind:
+
+- **Identity sections** — Brand Foundations, Themes, Color System, Typography, Logo, Shape — are absolute: exact values and fixed facts, never reinterpreted per surface, because freedom on identity axes is incoherence, not creativity.
+- **Steering sections** — everything else — direct judgment without dictating outcomes, and every adjective in them is anchored: tied to a named shipped product ("density of Linear") or a "shows up as" consequence in the interface, because an unanchored adjective ("clean", "modern") steers nothing.
+- In every section, balance grants against restraints: every restraint names its sanctioned alternative ("never X; reach for Y"), because an agent given only prohibitions ships the null design, and the null design of a data app is a spreadsheet.
 
 ## Brand Foundations
 
