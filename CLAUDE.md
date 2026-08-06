@@ -47,8 +47,6 @@ The full company perspective lives in [docs/company/company-overview.md](./docs/
 - Kill every long-running process this session started (dev servers, watch-mode runners, tunnels, containers) once the active task no longer needs it, and never kill a process the session did not start. Two exceptions keep a process alive: the user directs it, or killing it loses state the task still needs (in-memory DB contents, an in-progress job or write); a slow restart is not lost state. An exercised exception is reported immediately: what is running, its port or PID, and the kill command. Nothing AI-started survives the human QA handoff or session end unreported; QA scripts state anything still running and how to stop it.
 - Shipped shell scripts (`scripts/`, skill `scripts/`) stay bash-3.2 compatible: macOS pins `/bin/bash` there permanently, so no associative arrays, `mapfile`/`readarray`, or `${var,,}`. Anything needing bash 4+ isn't portable to stock developer Macs.
 - Ad-hoc Bash tool commands run under zsh, not bash: zsh does not word-split an unquoted `$VAR` but does split an unquoted `$(cmd)`, so `for p in $(get_pids)` iterates per item while `PIDS=$(get_pids); for p in $PIDS` iterates once over the whole string. Split explicitly with `${=PIDS}` or a zsh array, or run anything longer than one line through `bash -c`; `printf '%s\n' $PIDS` does not fix it, since `printf` inherits the same non-split. Shipped scripts are unaffected, carrying a `#!/usr/bin/env bash` shebang. Verify the result rather than the exit status, because this failure mimics success: `kill` on a space-joined string errors into an `|| echo 'already gone'` branch that reads as a clean teardown.
-- Structure tests using AAA: Arrange (setup), Act (execute), Assert (verify). Keep these sections visually separated
-- Use environment variables for configuration (ports, DB URLs, secrets). Never hardcode sensitive values.
 
 #### Python
 
@@ -69,12 +67,6 @@ The full company perspective lives in [docs/company/company-overview.md](./docs/
 ### Markdown
 
 - Keep bullet points and long descriptions as single continuous lines (no line breaks within a bullet); one bullet per line keeps cuts, moves, and diffs atomic.
-- Use `- [ ]` for TODO items and `- [x]` for completed items instead of plain bullet points.
-- Always wrap code snippets, commands, and technical terms in single backticks: `` `git commit` `` not just git commit.
-- Use `###` for section headings with descriptive names (not just "Overview") to improve navigation.
-- Use relative links like `[docs](./docs/setup.md)` instead of absolute URLs for repo navigation.
-- Use `**bold**` for critical actions/warnings, `*italic*` for subtle emphasis—avoid ALL CAPS.
-- Use blockquote alerts for critical info: `> [!WARNING]` for pitfalls, `> [!TIP]` for helpful tips (renders on GitHub and GitLab).
 - Escape literal pipes in table cells as `\|`, including inside backticks: `|` separates columns regardless of code spans, so `` `a || b` `` silently adds phantom columns.
 - Use a list rather than a table when cells run past about one line; long-form content reads better and cannot break the table grammar.
 

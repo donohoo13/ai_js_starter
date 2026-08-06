@@ -170,7 +170,8 @@ There is no test runner for prose. Three checks stand in, at the seam a reader a
 - [ ] Rewrite `implement-task/SKILL.md`: same four steps. Section 3 already collapsed; what remains is the 536-word `:74` validate step. **Blocked.**
 - [ ] Rewrite `review-board/SKILL.md`: same four steps. Triple-statements already collapsed. **Blocked.**
 - [ ] Rewrite `project-init/references/fork-points.md`: same four steps. `:51` already collapsed. **Blocked.**
-- [ ] `CLAUDE.md`: rule inventory of all ~155 rules, user culling pass, then split the six run-ons. **Blocked on the cull**, which is the single largest reduction available and is the user's call alone.
+- [x] `CLAUDE.md` cull: the user decided it as a ~160-word directive rather than a 164-rule review — the JS/TS generics had already moved to the rules file, the MCP menu stays, the five two-natured rules were restored with a precedence clause, and eight generic bullets (six Markdown, two Development: AAA, env vars) were cut. 141 → 116 lines.
+- [ ] `CLAUDE.md` run-on splits: the six run-on bullets remain to split; splitting preserves every instruction and adds lines.
 - [ ] Remaining trims: `grill-design`, `grill-engineer`, `grill-me`, `grill-product`, `project-init`, `template-dev.md`, `BRAND_DESIGN.md`, and the `UI_UX.md` email section. Splitting run-ons preserves every instruction and adds lines; it buys executability, never size.
 - [x] Promote the Actions contract payload-wide, landed by strengthening `CLAUDE.md`'s existing evidence bullet to reach claims of absence rather than adding a sibling.
 - [x] `CHANGELOG.md` v1.7.0 entry and version bump. #22 closed with a pointer to v1.4.0; #17, #26, #27 close on merge.
