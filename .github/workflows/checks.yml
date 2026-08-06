@@ -9,6 +9,8 @@ on:
       - "pnpm-lock.yaml"
       - "scripts/setup/check-install.mjs"
       - "scripts/test/**"
+      - ".claude/hooks/**"
+      - ".claude/settings.json"
       - ".github/workflows/checks.yml"
   pull_request:
     paths:
@@ -17,6 +19,8 @@ on:
       - "pnpm-lock.yaml"
       - "scripts/setup/check-install.mjs"
       - "scripts/test/**"
+      - ".claude/hooks/**"
+      - ".claude/settings.json"
       - ".github/workflows/checks.yml"
   workflow_dispatch:
 
@@ -42,6 +46,11 @@ jobs:
       # engineStrict, devEngines, and pin drift. Runs on the runner's own Node.
       - name: Preinstall guard battery
         run: node scripts/test/check-install.battery.mjs
+
+      # Executes every case through the command string registered in
+      # settings.json, so prefilter and hook cannot drift apart unseen.
+      - name: Dev-server guard battery
+        run: node scripts/test/guard-dev-server.battery.mjs
 
       # Proves pnpm provisions and uses the pinned Node across a mismatched
       # ambient Node, a no-Node image, and a musl image.

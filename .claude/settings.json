@@ -91,6 +91,10 @@
           {
             "type": "command",
             "command": "input=$(cat); case \"$input\" in *.env*|*.vars*|*secret*|*.ssh*|*.claude.json*|*.config/gh*|*.docker*|*.kube*) printf '%s' \"$input\" | node \"$CLAUDE_PROJECT_DIR/.claude/hooks/guard-secret-read.mjs\";; esac"
+          },
+          {
+            "type": "command",
+            "command": "input=$(cat); case \"$input\" in *dev*|*vite*|*storybook*|*serve*|*start*|*preview*|*ngrok*|*cloudflared*|*compose*|*docker*|*podman*|*tunnel*) printf '%s' \"$input\" | node \"$CLAUDE_PROJECT_DIR/.claude/hooks/guard-dev-server.mjs\";; esac"
           }
         ]
       },

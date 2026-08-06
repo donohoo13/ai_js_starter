@@ -102,7 +102,7 @@ Each entry: what the artifact assumes today → the tailoring lever when the pro
   - Keep the executor at `Bash`, knowing the grant narrows temptation rather than capability; the same gap runs the other way, since `git rm` reaches `.claude/skills/**` past `guard-skill-edit`.
 - `research-analyst.md` — declares the Context7 tools, WebSearch, and WebFetch, and already instructs the fallback when Context7 comes up short. → nothing to fork; nothing breaks without Context7, but keep the keyless entry, since three lenses cite it.
 - shipped `CLAUDE.md` MCP Tools section — a menu of vetted working entries, declared as such by the section's HTML comment, so a bullet for an absent server is a menu line rather than a fact. → prune it to the servers the project runs and resolve the placeholders; the vetted wording is the value, so delete whole lines rather than rewording the survivors.
-- `implement-task/SKILL.md` — render checks screenshot through whichever UI tool the `CLAUDE.md` MCP section names. → a project with no UI leaves the checks inert; a different tool is renamed in `CLAUDE.md`, which the skill reads at runtime.
+- `implement-task/SKILL.md` — the land render pass (and `grill-engineer`'s build-now check) screenshots through whichever UI tool the `CLAUDE.md` MCP section names, against a server the user starts; the per-slice artifact check is static and screenshot-free. → a project with no UI leaves the passes inert; a different tool is renamed in `CLAUDE.md`, which the skill reads at runtime.
 
 ## Compliance posture (ships: none)
 
@@ -113,6 +113,11 @@ Each entry: what the artifact assumes today → the tailoring lever when the pro
 - `grill-engineer/SKILL.md`, `stage-for-commit/SKILL.md` — the build-now path lands on `/stage-for-commit` with the user committing directly. → under a PR-required model, reroute it to a branch feeding `/review-board` and `/ship-pr`.
 - shipped `CLAUDE.md` Data handling — generic logging, PII, and fixture rules with a self-contained field list. → mine the project's real policy documents and extend the field list, in the same pass that hardens `review-board` and `ship-pr` and revisits the `grill-design` assets entry.
 - `tdd/SKILL.md`, `implement-task/SKILL.md` — untouched by default. → add evidence requirements only on a clear in-project signal.
+
+## Dev-server ban (ships: servers are user-run)
+
+- `.claude/hooks/guard-dev-server.mjs` + its Bash hook entry — denies the common dev-instance, tunnel, and container spellings (`pnpm dev`/`start`/`serve`/`preview` and kin, `vite`, `storybook`, `ngrok`, `docker compose up`, `docker run -d`); the inline `case` prefilter lives in the hook's command string in `.claude/settings.json`. → tailor the pattern sets to the instance's real dev commands: add project script names that start servers, narrow patterns that collide with legitimate non-server scripts (`dev:*` names like `pnpm dev:codegen` ship blocked), and land every pattern edit with its matching prefilter token in that `settings.json` `case` in the same edit — `scripts/test/guard-dev-server.battery.mjs` executes through the registered command string, so a missing token fails the battery rather than shipping silently.
+- shipped `CLAUDE.md` Development servers-are-user-run bullet — states the ban, the hand-the-command mechanic, and the hook's gate-not-seal gap. → keep it in lockstep with the hook; a project that genuinely wants AI-started servers removes the hook, its wiring, and the bullet together, never just one.
 
 ## Secrets protection (ships: env-file conventions)
 
@@ -147,5 +152,5 @@ Run over `.claude/skills`, `.claude/agents`, `.claude/rules`, `.claude/settings.
 - Tracker: `grep -rniE 'linear|jira|docs/tasks|docs/briefs|docs/designs|docs/initiatives|docs/assets'`
 - Branch model: `grep -rniE '\bmain\b|default branch|guard-main'`
 - Toolchain: `grep -rniE 'pnpm|\buv\b|prettier|eslint|ruff|turbo'`
-- Infra: `grep -rniE 'lsp|context7|playwright|chrome-devtools|doctor|husky|prepare|worktree|gwt|zed|oauth|cloudflare|mcp slug|guard-secret|\.vars'`
+- Infra: `grep -rniE 'lsp|context7|playwright|chrome-devtools|doctor|husky|prepare|worktree|gwt|zed|oauth|cloudflare|mcp slug|guard-secret|guard-dev-server|\.vars'`
 - Lineage: `grep -rniE 'sync-template|lineage|changelog|template-dev|turbo|check-install'`
