@@ -94,7 +94,7 @@
           },
           {
             "type": "command",
-            "command": "input=$(cat); case \"$input\" in *dev*|*vite*|*storybook*|*serve*|*start*|*ngrok*|*cloudflared*|*compose*|*tunnel*) printf '%s' \"$input\" | node \"$CLAUDE_PROJECT_DIR/.claude/hooks/guard-dev-server.mjs\";; esac"
+            "command": "input=$(cat); case \"$input\" in *dev*|*vite*|*storybook*|*serve*|*start*|*preview*|*ngrok*|*cloudflared*|*compose*|*docker*|*podman*|*tunnel*) printf '%s' \"$input\" | node \"$CLAUDE_PROJECT_DIR/.claude/hooks/guard-dev-server.mjs\";; esac"
           }
         ]
       },
