@@ -4,64 +4,38 @@ description: Multi-agent review board. Spawns parallel specialist reviewers — 
 argument-hint: '[quality|balanced|speed] [PR number, commit range, or paths to scope the review]'
 ---
 
-# Review Board
+# Review board
 
-Run a panel of parallel specialist reviewers over a set of changes — code, documented process, or both — then act as the board chair: dedupe their findings, judge each one, render your own verdict, and present a consolidated report. The human decides what gets addressed; deep verification and any fix wait until they choose.
+You are the chair. You resolve scope, settle the seat set, set the dials through two user gates, spawn the seats, triage what comes back, report, and wait for the human before a single fix lands.
 
-Two principles run through every step:
+- Each seat gets one category, its own checklist, and a full context budget, and chair triage filters the overproduction that arrangement causes, because focused reviewers catch what one general pass misses.
+- Reuse session knowledge for facts; distrust session comfort for judgment.
 
-- **Parallel specialists beat one general pass.** A single reviewer skimming a whole board's worth of concerns misses what a focused reviewer catches; each board member gets one category, its own checklist, and a full context budget. The chair's triage matters just as much: sub-agents overproduce plausible-sounding findings, and your judgment is what separates signal from noise before the human ever sees it.
-- **Your session context cuts both ways.** In the common flow you implemented the change earlier this session and are now reviewing it. That context is an asset for facts — intent, stack, which code you actually read — so reuse it instead of re-deriving it. It is a liability for judgment — deciding a category needs no review, or that a finding "can't be right" — because the author's confidence is exactly what a blind spot feels like. Reuse your knowledge; distrust your comfort.
+## Step 1 — Resolve scope and context
 
-## State at invocation
+- Every invocation opens by snapshotting the branch, the default branch, the committed delta vs merge-base, and `git status --short | head -50`.
+- When argument 1 is a mode keyword (`quality`, `balanced`, or `speed`), it sets the board mode and everything after it is scope.
+- When no mode keyword is given, mode and depth both go to gate 1 as recommendations; never pick a silent default.
+- When the argument is a PR number, scope it with `gh pr diff <n>` and `gh pr view <n>`.
+- When the argument is a commit range, use it directly.
+- When the arguments are paths, restrict the default scope to those paths.
+- When there are no scope arguments, review the branch against its merge-base with the default branch, plus `git diff HEAD` and untracked files.
+- Resolve the default branch from `origin/HEAD` with the remote prefix stripped, falling back to `main`; use the local name and never `origin/<name>`, because unpushed default-branch commits would widen scope.
+- When the scope resolves to an empty diff, say so and ask what they meant; never review the whole repo unasked.
+- Establish intent before spawning, from the PR description, the commit messages, or a matching `docs/tasks/` file, and ask when it is unclear, because a review against unknown requirements wastes a board.
+- For a code change, snapshot the stack — `package.json`, runtime config, `tsconfig.json` — as a snapshot, not an audit, because the runtime decides which findings are real.
+- For a documentation-heavy change, take the process surface instead: which flow changes, who reads it, and which neighboring documents cite it.
+- When the diff mixes unrelated changes, record that for the report's `## Process notes`.
+- Gather context from session knowledge first when you authored the change, and otherwise go look.
 
-- Branch: !`git branch --show-current`
-- Default branch: !`def=$(git symbolic-ref --short refs/remotes/origin/HEAD 2>/dev/null); def=${def#*/}; echo "${def:-main}"`
-- Committed delta vs merge-base with the default branch: !`def=$(git symbolic-ref --short refs/remotes/origin/HEAD 2>/dev/null); def=${def#*/}; def=${def:-main}; base=$(git merge-base "$def" HEAD 2>/dev/null); [ -n "$base" ] && [ "$base" != "$(git rev-parse HEAD)" ] && git diff --stat "$base" HEAD | tail -1 || echo "(none: on the default branch, or no merge-base)"`
+## Step 2 — Settle the seat set
 
-Uncommitted changes at invocation (empty = clean):
+Settle the seat set first, then the dials: which board sits determines which dials are even available.
 
-```!
-git status --short | head -50
-```
+### Documentation board
 
-## Step 1: Resolve scope and context
-
-Parse the arguments:
-
-- A leading mode keyword (`quality`, `balanced`, or `speed`): sets the board mode used in Step 2; everything after it is scope. No keyword sends mode and depth to gate 1 in Step 2 — never a silent default.
-- A PR number (`142` or `#142`): use `gh pr diff <n>` and `gh pr view <n>`.
-- A commit range (`abc123..def456`): use it directly.
-- Paths: restrict the default scope to those paths.
-- Nothing: the current branch versus the merge base with the default branch from the snapshot above (`git diff $(git merge-base <default> HEAD)`, where `<default>` is the local default-branch name — the origin/HEAD detection `ship-pr` uses, with the remote prefix stripped, falling back to `main` when no origin/HEAD ref exists; the local name, not `origin/<name>`, so unpushed commits on the default branch never widen the scope) **plus** uncommitted changes (`git diff HEAD` and untracked files via `git status --porcelain`).
-
-If that resolves to an empty diff, tell the user there is nothing to review and ask what they meant. Do not review the whole repository unasked.
-
-Gather three pieces of context — from session knowledge first when you authored the change, otherwise by looking:
-
-- **Intent**: what the change is supposed to do, from the PR description, commit messages in scope, or a matching `docs/tasks/` file. If still unclear, ask the user for a one-line summary before spawning; a review against unknown requirements wastes a whole board's worth of tokens.
-- **Stack snapshot**: the review lens depends on the runtime — event-loop blocking and `fs` access mean nothing on Cloudflare Workers, connection pooling advice differs between `pg` and D1, module-level state is a per-isolate footgun on Workers and a cross-request race on Node. A quick look at `package.json`, runtime configs (`wrangler.jsonc`/`wrangler.toml`, `Dockerfile`, `next.config.*`), and `tsconfig.json` is enough; this is a snapshot, not an audit. On a documentation-heavy change the equivalent is the **process surface**: which documented flow the change alters, who or what actually reads it, and which neighboring documents cite it. A doc finding judged against the wrong flow is the same noise as a code finding judged against the wrong runtime.
-- **Scope hygiene**: if the diff mixes clearly unrelated changes (a refactor tangled with a feature, drive-by edits), record it for the report's process notes.
-
-## Step 2: Set the dials (gate 1), compose the board (gate 2), spawn
-
-Work this step in the order "Which seats" states, not the order it is written in: settle the seat set first, then the dials below, because the depth question means something different on each board.
-
-The mode presets the code board's two cost dials — seat model tier and read depth — because they trade the same currency (the documentation board has one dial: its depth is fixed, per the section below): recall against tokens and turnaround. Two user gates stand between invocation and spawn: gate 1 settles mode and depth posture when no mode keyword was given, gate 2 confirms the board's composition. Each gate leads with your recommendation, and each recommendation is reasoned from this session's change — in the common flow you authored the implementation, so you know which seams you touched, what you were least sure of, and where an author's blind spots most plausibly live. A recommendation that would read identically on any diff is a default wearing a costume. Everything else works the same in every mode: every category in scope gets covered, the chair runs on the session model, and the human gate holds. Mode changes how many agents carry those categories, never which categories go unreviewed.
-
-Depth is the fat in the board's budget; tier is the muscle. Full changed-file reads across every parallel seat dominate the board's token count and wall-clock, while the quality worth paying for lives mostly in the Opus judgment seats and the chair's triage. Cut depth before tier: diff-first with targeted escalation keeps nearly all the recall at a fraction of the reads, whereas dropping correctness or security a tier trades away exactly the judgment the board exists to buy.
-
-| Mode       | Seat models           | Read depth                                            | Reach for it when                                                                                  |
-| ---------- | --------------------- | ----------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
-| `quality`  | Per-seat matrix below | Full changed files, every seat                        | The miss costs more than the tokens: pre-merge on large, unfamiliar, or security-sensitive changes |
-| `balanced` | Per-seat matrix below | Diff-first per code seat; escalation by named trigger | The everyday review                                                                                |
-| `speed`    | Per-seat matrix below | Diff-first, every code seat                           | Mid-work sanity passes and small self-contained diffs, where turnaround matters more than recall   |
-
-A speed board is a screen, not a proof: diff-first reads with lower tiers catch pattern-shaped defects and miss interaction bugs. That is the right trade for mid-work passes and most small diffs — recommend it freely there — and the wrong one pre-merge on changes whose misses are expensive.
-
-### Which seats: code, documentation, or both
-
-**Settle this before the dials**, because the seat set decides what the depth question even means. The five code seats review executable logic. A change whose subject is a **documented process** — a runbook, an onboarding or contribution guide, an agent or prompt file, an API doc chain, a set of ADRs, or config whose job is to document behavior — has no logic to review and seats three different reviewers instead, because for that class the document _is_ the behavior: nothing executes it but a human or a model reading it, so a hole in the chain is the defect rather than a symptom of one.
+- When the subject is a documented process, seat three documentation reviewers instead of the five code seats, because the document is the behavior and nothing executes it.
+- Take prefix, per-mode tier, checklist, and subagent type from the documentation matrix.
 
 | Agent           | Prefix | `quality` | `balanced` | `speed` | Checklist                   | Subagent type        |
 | --------------- | ------ | --------- | ---------- | ------- | --------------------------- | -------------------- |
@@ -69,40 +43,15 @@ A speed board is a screen, not a proof: diff-first reads with lower tiers catch 
 | Coherence       | `COH`  | Opus      | Sonnet     | Haiku   | `references/coherence.md`   | `review-coherence`   |
 | Adversarial     | `ADV`  | Opus      | Opus       | Sonnet  | `references/adversarial.md` | `review-adversarial` |
 
-**All three run whenever this board sits.** The floor is three seats _running_, not three seats unmerged, so neither consolidating them nor dropping one is available: they hunt by genuinely different methods — traversal, agreement, and exploitation — and each reliably finds what the others cannot. Seat-skipping is a code-board rule and does not reach here, because "this document has no gate to red-team" is an argument available against almost any document and it retires the highest-yield seat first. Adversarial is the deepest-reasoning seat and never drops below Sonnet; coherence is the most systematic, grep-shaped work and covers from Haiku up.
+- All three seats run; neither dropping one nor consolidating them is available, because traversal, agreement, and exploitation each find what the others cannot.
+- Seat-skipping is a code-board rule and does not reach here, because "nothing to red-team" retires the highest-yield seat first.
+- Documentation seats read the full changed files in every mode, and no mode preset overrides that, because the defect sits in the untouched sentence beside the change.
+- In a heavily cross-referencing corpus, coherence reads wider than the changed files.
+- When the document tells a reader to handle credentials, customer data, or outbound transfer, seat security too — four seats rather than three — taking its row from the code matrix below. Its read stays at the board's fixed full-file depth but narrow in scope: obvious instructions that move a secret or a record somewhere it should not go, never a threat model of the prose.
 
-**Read depth is fixed on this board: full changed files, every seat, every mode.** It is not a dial here, and no mode preset overrides it. A prose diff loses the section that gives an edit its meaning, and the defect frequently sits in the untouched sentence beside the change; the three agent definitions read changed files in full regardless, so a diff-first instruction would only make the spawn prompt disagree with the seats it spawns. What still varies is how far _past_ the changed files a seat reads: the code triggers below apply, plus one of this board's own — a corpus that cross-references heavily, where coherence earns the wider sweep.
+### Code board
 
-**The security seat sits on this board too, making four rather than three**, whenever the document tells a reader to handle credentials, customer data, or outbound transfer — a runbook exporting a production URL, an onboarding guide pasting output into chat, a prompt file quoting a token. Its checklist gains a short documented-process section for exactly this; the rest of it stays code-shaped and inert on prose. Keep the read narrow: obvious instructions that move a secret or a record somewhere it should not go, not a threat model of the prose. Without this the board answers a request for a security review with three seats none of which owns one.
-
-A mixed change seats from both sets: every documentation seat, plus each code seat whose category has a surface.
-
-**You may recommend skipping the board; you never decide it.** Put a no-board recommendation through gate 2 as a shape like any other and let the user answer — declining is the largest composition call available and the cheapest to reach for, so it belongs to them. Recommend it only for an edit that changes no instruction to any reader, and say which: a typo, a broken link, formatting. When the user declines the board, record that as a declined board rather than as a board that ran, so `/ship-pr` reports it truthfully.
-
-**Diff-first is the default read depth for code seats in `balanced`; full-file is an escalation a seat earns through a named trigger.** `quality` and `speed` preset depth instead — full files everywhere and diff-first everywhere respectively — so these triggers do not fire in either, with one carve-out: the security-sensitive-surface trigger below still escalates the security seat inside a `speed` board. That seat is the one recall lever a screen keeps, and a diff-first security read cannot reach a defect that lives outside the hunk by definition. Diff-first means working from the diff and opening surrounding code only to confirm a suspected finding, so its recall loss is bounded; full changed-file reads are what multiply the board's cost. Escalate a code seat only when one of these fires:
-
-- **Code you did not author this session** — cold code gives no session context to lean on; full files are how a reviewer builds the interaction picture an author already holds.
-- **Cross-module contract changes** — modified signatures, types, or schemas consumed beyond the diff; the breakage lives outside the hunk by definition.
-- **Security-sensitive surface** — auth, input handling, secrets, or money paths; escalates the security seat, not the whole board.
-- **Tangled or oversized diff** — mixed concerns or a diff too large to carry its own context.
-- **Concurrency or resource lifecycles** — races and leaks live in the code around the hunk; escalates reliability specifically.
-
-"The change feels important" and "better safe than sorry" are not triggers — board-wide caution is how a cheap review quietly becomes an expensive one. Escalation is per-seat, with the trigger named.
-
-### Gate 1: mode and depth posture (only when no mode keyword was given)
-
-An explicit mode keyword is the user's call — run it as given and skip this gate. If the choice looks genuinely wrong for the diff (speed on a tangled security-sensitive change, quality on a two-line copy fix), say so once at gate 2 with your reasoning and let the user reconsider; their answer stands either way.
-
-With no keyword, do not silently assume anything. Settle the seat set first per the section above — the depth question means something different on each board — then open with two recommendations, each carrying reasoning specific to this change:
-
-1. **Mode** — lean `speed` for mid-work passes and small self-contained diffs, `balanced` for the everyday pre-merge review, `quality` only when the miss cost plainly dominates the token cost. Say why this diff lands where it does.
-2. **Depth posture** — this item is live only when the mode you recommend is `balanced`, since `quality` and `speed` preset depth; under either of those, state the preset as a fact the way the documentation seats' fixed depth is stated, and name the `speed` security carve-out when it applies. Under `balanced`: diff-first for code seats unless a trigger above fires, naming each escalated seat and its trigger ("I touched the auth middleware, so security reads full files; everything else diff-first"). State the documentation seats' fixed depth as a fact rather than offering it, and never carry a posture agreed here onto them.
-
-Ground both in what you actually did this session: the seams you touched, the parts you were least confident about, the categories where your author's blind spot most plausibly lives. Put them as one `AskUserQuestion` with your recommended shape as the first option; the user's pick feeds gate 2.
-
-### The seats
-
-The five code members, each a registered agent in `.claude/agents/` with a checklist in this skill's `references/` directory. Modes shift each seat's tier rather than flattening the board to one model, because the seats differ in ways no mode changes. Correctness and security misses are what a review exists to catch, and their findings come from intent-modeling and threat-modeling rather than pattern-matching, so they never drop below Sonnet — chair triage filters a cheap seat's extra noise, but nothing recovers a miss. Maintainability is the opposite pole: checklist-saturated, diff-local, and lowest miss cost (tech debt, not an incident), so Opus buys it nothing even in `quality` and Haiku covers it from `balanced` down. Reliability and performance sit between — pattern-shaped enough for Haiku on a speed screen, reasoning-shaped enough (races, resource lifecycles, cross-function complexity) to earn Opus when the miss is what you are paying to avoid. The chair (you) runs on the session model in every mode, because triage — verification, dedup, verdicts — is the judgment the board's value actually rests on.
+- Use the code matrix: five members live in `.claude/agents/` with their checklists in `references/`.
 
 | Agent                    | Prefix | `quality` | `balanced` | `speed` | Checklist                       | Subagent type            |
 | ------------------------ | ------ | --------- | ---------- | ------- | ------------------------------- | ------------------------ |
@@ -112,78 +61,161 @@ The five code members, each a registered agent in `.claude/agents/` with a check
 | Maintainability          | `MNT`  | Sonnet    | Haiku      | Haiku   | `references/maintainability.md` | `review-maintainability` |
 | Performance & operations | `PRF`  | Opus      | Sonnet     | Haiku   | `references/performance.md`     | `review-performance`     |
 
-Spawn mechanics are the same for both boards, against whichever matrix governs the seat. Spawn each seat by its `review-*` subagent type. Every seat holds `Bash`, so read-only is the spawn prompt's instruction below, not a property of the tool grant. Every frontmatter model pin encodes its seat's `balanced` column, so in `balanced` spawning by type is enough; in `quality` and `speed`, pass each seat's `model` from its matrix explicitly on the spawn — the per-invocation override takes precedence over the pin, and skipping it is how a `speed` board silently runs two Opus seats and costs more than the mode it replaced. If the definitions are not installed in this repo, fall back to `general-purpose` agents and set `model` explicitly in every mode, straight from the matrix; a documentation seat spawned that way carries no agent preamble, so its full-file read depth has to come from the prompt.
+- In every mode, skip a code seat only when its category has no surface in this change; the bar is "nothing to look at", never confidence, and in doubt you run them all.
 
-### Gate 2: board composition
+### Mixed and empty boards
 
-Form the board shape and put it to the user as one confirmation before spawning:
+- When the change mixes code and documentation, seat every documentation seat plus each code seat that has a surface.
+- When the board looks unnecessary, recommend skipping it through gate 2 and never decide it yourself; that recommendation is available only for edits that change no instruction to any reader, and you say which edits those are.
+- When the user declines the board, record it as a declined board, not one that ran, because `/ship-pr` must report truthfully.
 
-- **Full board or lite (`balanced` only).** On the documentation board the floor above already settles this bullet and the next; the only shape to confirm there is whether the board sits at all. For code, the five-seat board is the default. For a small, self-contained diff (a few files, localized logic, no signature changes or cross-module effects) offer a **lite board** instead: three consolidated seats — Security (Opus, solo), Correctness + Reliability (Opus, one agent reading both checklists), Maintainability + Performance (Sonnet, one agent reading both) — all diff-first. Lite trades some recall for a much shorter, cheaper run; recommend it only when the change is genuinely small and localized, and never on a large or security-sensitive diff where the focused five earn their cost. `quality` never consolidates seats — merged lenses give up exactly the recall it exists to buy — and `speed` already gets its savings from tier and depth while five parallel seats cost no extra wall-clock.
-- **Which code reviewers run (every mode).** Skip a code seat only when its category has no surface in the change: a pure-computation change has no I/O for performance to review, a test-only change has no performance story, a change touching no persistence and no external input has little security surface. Documentation seats are exempt, per the floor. The bar is "nothing to look at", never "I'm confident this part is fine" (second principle). When in doubt, run them all: a reviewer returning no findings with an Actions section showing the commands it ran is cheap; a category silently unreviewed is how the one real bug ships.
-- **Read depth finalization per running code reviewer (`balanced` only — the other modes preset it).** Apply the default-and-triggers rule above: diff-first for every code seat, full files only where a named trigger fires, decided per seat rather than board-wide. If you authored the change, you already know which triggers fire; a gate-1 depth posture carries straight into this list rather than being re-litigated. Documentation seats do not appear in this list; their depth is fixed above.
+## Step 3 — Set the dials: mode and read depth
 
-Present the shape with a one-line reason each, your recommendation as the accept-as-is first option (a single `AskUserQuestion`; one question, not several). In `quality` and `speed`, restate the preset tier and depth as facts rather than asking about them; the question is only which seats run — plus, when the user's explicit mode looks wrong for this diff, your one-time case for reconsidering (their answer is final). This is a cost/thoroughness tradeoff the user owns, and asking is cheap next to a board's worth of tokens.
+- Mode presets the code board's two dials, model tier and read depth; the documentation board has one dial, its depth being fixed at full changed files.
+- Apply the mode dial table in every mode.
 
-Then spawn the selected seats in a single message so they run in parallel, each in the foreground with `run_in_background: false` — a background subagent silently loses `LSP`, and foreground seats still run concurrently. Each agent is read-only — it must not modify, create, or delete any file — and its prompt must contain, concretely (agents cannot see this conversation). For a lite-board merged seat, pass both checklist paths and tell it to apply both, keeping each finding's prefix tied to its category:
+| Mode       | Model tier per seat                                                    | Code-seat read depth                                                                              |
+| ---------- | ---------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| `quality`  | the seat's `quality` column                                            | full changed files everywhere; escalation triggers do not fire                                    |
+| `balanced` | the seat's `balanced` column, already pinned in each agent frontmatter | diff-first by default, escalated per seat by a named trigger                                      |
+| `speed`    | the seat's `speed` column                                              | diff-first everywhere, except the security seat when the security-sensitive-surface trigger fires |
 
-1. The exact scope: the git commands to reproduce the diff, the base ref, and the list of changed files.
-2. The intent context, stated in a sentence or two.
-3. The stack snapshot, with an instruction that the agent's first step is a seconds-long confirmation of it (`package.json` plus any runtime config touching the changed files); a finding judged against the wrong runtime is noise. Documentation seats get the process surface in its place — the flow under change, its readers, and the documents citing it.
-4. Its checklist file and `references/output-format.md`, by absolute path, to read before reviewing.
-5. The read depth, stated explicitly — full changed files or diff-first — from the mode preset or the gate decisions; never left for the agent to choose.
-6. The evidence bar: every finding needs a `file:line` location, an excerpt, and a concrete failure scenario. For code seats the excerpt is code and the scenario names a specific input or state producing the wrong outcome; for documentation seats it is a quote of the text and a named reader path ending in a specific bad outcome, since a documented process has no inputs and the strongest doc findings — a null action, an unstated precedence — are by construction not a specific input. "This could be a problem" without a scenario is not a finding, and an empty findings list is a perfectly good result; agents must not invent findings to look busy.
-7. What not to flag: anything a linter or formatter auto-fixes, subjective style preferences, and pre-existing issues in untouched code or documents (unless the change makes them worse or newly reachable — then say so explicitly). Note for documentation seats that this excludes untouched _neighbors_ from being faulted for pre-existing problems, and never excludes reading them: a contradiction the change created lives in the file it did not open.
-8. Return format: findings per `references/output-format.md`, IDs prefixed with the agent's category prefix, returned as the agent's final message — including the Actions section, which is not optional and is what separates a seat that found nothing from a seat that looked at nothing. Say plainly that a mechanically checkable claim arrives as the command and its literal output, never as prose describing the result: a measured LLM-judge study found a judge's own notes described a defect in 113 of 114 confirmed-defective rounds while its structured verdict stayed clean, so reasoning reaching the right place is no guarantee the verdict follows it.
+- Under budget pressure, cut depth before tier, because full-file reads dominate cost while tier buys the judgment the board exists for.
+- Recommend `speed` as a screen, not a proof: freely for mid-work and small diffs, never pre-merge on a change whose miss is expensive.
+- These hold across every mode: every category in scope stays covered, the chair runs on the session model, and the human gate holds — the chair seat is never delegated because triage is where the board's value rests.
 
-## Step 3: Consolidate and triage
+### Read depth and escalation
 
-When all reviewers return, you become the chair. This step is your own judgment, not a summary job:
+**Diff-first is the default read depth for code seats in `balanced`; full-file is an escalation a seat earns through a named trigger.** `quality` and `speed` preset depth instead — full files everywhere and diff-first everywhere respectively — so these triggers do not fire in either, with one carve-out: the security-sensitive-surface trigger below still escalates the security seat inside a `speed` board. That seat is the one recall lever a screen keeps, and a diff-first security read cannot reach a defect that lives outside the hunk by definition. Diff-first means working from the diff and opening surrounding code only to confirm a suspected finding, so its recall loss is bounded; full changed-file reads are what multiply the board's cost. Escalate a code seat only when one of these fires:
 
-1. **Dedupe.** Different agents often catch the same defect through different lenses (a missing input check is both `SEC` and `COR`). Merge duplicates, keep the most severe categorization, and note the agreement; independent convergence is evidence of validity.
-2. **Read every seat's Actions section before its findings**, and read it as evidence rather than as reassurance. A command with its output is checkable: read each one against the conclusion drawn from it, because a seat can run the right command and misread its output — that is the failure this contract does not close, and you are the one standing where it surfaces. An attempt entry is judgeable a different way: ask whether those were the right artifacts to touch. A `not attempted` entry is information, not a defect; a section missing entries entirely is a seat you name in the report as unevidenced. Anything you find here becomes a `CHR` finding and runs the normal slots — a defect the chair spots and cannot file is a defect that dies in triage. Never convert a seat's Actions into a coverage claim of your own; the report carries its words whole.
-3. **Judge each finding from your own context; deep-verify nothing yet.** Default to what you already know — your read of the change and the task — to decide whether a finding is probably true and worth the user's attention. Open code during triage only when a finding _alarms_ you: it contradicts your understanding (your context may be the blind spot, or the reviewer may be hallucinating a line — "that can't be right" is how both feel), or it reads as wildly off from the task at hand (obviously off-topic or misdirected). A quick look settles those; everything else, trust your read. How much lands in that trusted bucket scales with the context you actually have: a change you authored, you can judge from memory; a change you are seeing cold, lean on the reviewers' evidence and let thin spots fall to Plausible rather than wave them through. The expensive confirm-and-root-cause pass is deferred to Step 5 and runs only on the findings the user chooses — doing it now on every finding is exactly the verify tail this step exists to cut.
-4. **Render a verdict per finding**, a line or two of reasoning each: **Confirmed** (matches your understanding of the change; you judge it real), **Plausible** (credible, but you cannot settle it from context — it needs runtime, domain, or intent knowledge you lack, or code you have not read), **Rejected** (contradicts what you know or is off-task; you looked and it does not hold — say why, since the rejection is how the user audits your triage). Have the spine to reject; a triage pass that confirms everything was not a triage pass. Rejecting a documentation finding carries one extra obligation: its "Noted" line quotes the reviewer's own one-line scenario alongside your reason. Those seats exist to challenge the author's reading, you are usually the author, and Rejected is the cheapest verdict on the board — so the human audits the rejection against the reviewer's words rather than your paraphrase of them.
-5. **Form the board recommendation** — one disposition per surviving finding, decided by where the defect came from rather than by how big the fix looks:
-   - **Fix in this session** for anything the work under review introduced or made worse. This session holds the change's context, which makes it the cheapest place that defect will ever be fixed; handing it to a future session buys back that context at full price on top of the same fix. A large fix is therefore a reason to start now, not grounds to file it — size never moves a finding out of this bucket.
-   - **`/capture-task`** in exactly two cases, and name which one applies: a pre-existing bug whose root cause needs investigation this change has no grounds to run, or a real design tradeoff that deserves deciding on its own terms rather than inside a review.
-   - **Noted, no action** for rejected findings and for confirmed-low ones you judge not worth the human's attention now — one line each, so they can see you saw it.
+- Code not authored this session — escalate that seat to full files.
+- Cross-module contract changes — escalate to full files.
+- A security-sensitive surface — escalate the security seat only.
+- A tangled or oversized diff — escalate to full files.
+- Concurrency or resource lifecycles — escalate reliability specifically.
+- "Feels important" is not a trigger; escalation is per-seat and the trigger is named.
 
-   Then order the fix-now list. Have a take; "it depends" is not a recommendation.
+## Step 4 — The two user gates
 
-## Step 4: Report and wait for the human
+At both gates, lead with a recommendation reasoned from this change; a recommendation that would read identically on any diff is a default in costume.
 
-Present the consolidated report using the exact structure in `references/output-format.md` (Part B). Its shape is the deliverable, not a container for one: the decisions the board is asking the human to make come first, in plain language, each ending in a direct question with your recommendation attached, and the evidence sits below them. Write it so the human can answer the closing question from the first screen without reading a code excerpt.
+### Gate 1 — mode and depth
 
-Two things keep that shape honest as you fill it in:
+- When the user gave an explicit mode keyword, run it as given and skip gate 1 entirely.
+- When an explicit mode looks wrong for the change, say so once at gate 2; the user's answer stands.
+- When no mode keyword was given, open gate 1 after the seats are settled with two recommendations, each reasoned from this change.
+- **Mode** — lean `speed` for mid-work, `balanced` for everyday pre-merge, and `quality` when the cost of a miss dominates, saying why for this diff.
+- **Depth posture** — this item is live only when the mode you recommend is `balanced`, since `quality` and `speed` preset depth; under either of those, state the preset as a fact the way the documentation seats' fixed depth is stated, and name the `speed` security carve-out when it applies. Under `balanced`: diff-first for code seats unless a trigger above fires, naming each escalated seat and its trigger ("I touched the auth middleware, so security reads full files; everything else diff-first").
+- Documentation depth is stated as fact and never offered, and the code board's depth posture is never carried onto documentation seats.
+- Gate 1 is one `AskUserQuestion` with the recommended shape first, and the pick feeds gate 2.
 
-- **A bullet the human can neither answer nor act on goes in the "Noted" section as a one-liner.** Stating that findings want their call and then asking nothing is what makes a report unanswerable — the reader cannot tell a question from a status note.
-- **Every `/capture-task` recommendation names its ground** — pre-existing bug needing investigation, or a design tradeoff needing its own decision (Step 3). A finding this session's own work introduced carries a fix-now recommendation at whatever size it turns out to be.
+### Gate 2 — board shape
 
-Then stop and ask which findings to address, for example: "Reply with finding IDs, `all confirmed`, or `none`."
+- Put the board shape to the user as gate 2 before spawning anything.
+- In `balanced` with a small self-contained diff, offer a lite board: Security solo, Correctness+Reliability merged, Maintainability+Performance merged, all diff-first.
+- Never recommend lite for a large or security-sensitive diff.
+- In `quality` or `speed`, never consolidate seats: `quality` exists to buy recall and merged lenses give up exactly that, while `speed` already takes its savings from tier and depth — five parallel seats cost no extra wall-clock.
+- For a documentation board, the floor settles composition and depth already, so gate 2 confirms only whether the board sits.
+- In `balanced` only, finalize depth per running code seat rather than board-wide; documentation seats do not appear in that item.
+- In `quality` or `speed` at gate 2, restate the preset tier and depth as facts and ask only which seats run.
+- Which code seats may be dropped is governed by the "nothing to look at" bar in Step 2; gate 2 confirms the set, it does not relax the bar.
+- Gate 2 is one `AskUserQuestion` carrying one question, a one-line reason per shape, recommendation first.
+
+## Step 5 — Spawn the seats
+
+### Mechanics
+
+- Spawn by `review-*` subagent type, against whichever matrix governs the seat.
+- Spawn all selected seats in a single message, each in the foreground with `run_in_background: false`, because a background subagent silently loses LSP.
+- In `balanced`, the frontmatter pins already encode that column, so spawning by type is enough.
+- In `quality` or `speed`, pass each seat's `model` explicitly, because skipping it makes a `speed` board silently run Opus seats.
+- When setting tiers, correctness and security never go below Sonnet, and maintainability never earns Opus.
+- When the agent definitions are not installed, fall back to `general-purpose`, set `model` explicitly in every mode, and give the depth in the prompt.
+- Instruct every agent to be read-only: never modify, create, or delete a file.
+- Every seat holds `Bash`; read-only is the spawn prompt's instruction, not a property of the tool grant.
+- For a lite-board merged seat, pass both checklist paths, instruct the seat to apply both, and keep each finding's prefix tied to its own category.
+
+### The prompt contract
+
+Every seat prompt contains all eight items:
+
+1. **Scope** — the exact scope: the git commands that reproduce the diff, the base ref, and the changed files.
+2. **Intent** — the intent context, in a sentence or two.
+3. **Stack** — the stack snapshot, plus an instruction to confirm it in seconds; documentation seats get the process surface instead.
+4. **Checklists** — its checklist and `references/output-format.md`, by absolute path, to be read before reviewing.
+5. **Depth** — the read depth stated explicitly, never left to the agent.
+6. **Evidence bar** — `file:line`, an excerpt, and a concrete failure scenario; or quoted text plus a named reader path. An empty findings list is a fine result; never invent findings to look busy.
+7. **Exclusions** — do not flag auto-fixes, subjective style, or pre-existing issues unless the change worsens them, and then say so. For documentation seats, the pre-existing exclusion never excludes reading untouched neighbors, because a contradiction the change created lives in the file it did not open.
+8. **Output** — return findings per `references/output-format.md`, IDs prefixed by category, as the final message, with severity `critical | high | medium | low` and confidence `high | medium | low`. The `### Actions` section is not optional, because it separates a seat that found nothing from one that looked at nothing. A mechanically checkable claim arrives as the command and its literal output, never prose describing the result.
+
+## Step 6 — Triage as chair
+
+Once all reviewers have returned you become the chair, and triage is judgment, not summary.
+
+1. **Dedupe across lenses** — keep the most severe categorization and note the agreement, because independent convergence is evidence of validity.
+2. **Read every seat's `### Actions` before its findings**, as evidence rather than reassurance.
+   - Run the residual check: read each command against the conclusion drawn from it, because a seat can run the right command and misread its output.
+   - Judge an attempt entry by whether those were the right artifacts; `not attempted` is information, not a defect.
+   - When a section is missing entries, name that seat in the report as unevidenced.
+   - When you spot a defect while reading Actions, file it as a `CHR` finding through the normal slots.
+   - Never convert a seat's Actions into a coverage claim of your own.
+3. **Judge each finding from your own context** and deep-verify nothing yet.
+   - When a finding alarms you, open the code for a quick look; otherwise trust your read.
+   - When reviewing work you did not author, lean on the evidence and let the thin spots fall to Plausible.
+4. **Render one verdict per finding, with reasoning** — **Confirmed**, **Plausible**, **Rejected**.
+   - Have the spine to reject, and say why, because a pass that confirms everything was not a triage pass.
+   - When rejecting a documentation finding, its "Noted" line quotes the reviewer's own scenario alongside your reason.
+5. **Give each surviving finding one disposition**, decided by where the defect came from, not by how big the fix looks.
+   - A finding this work introduced or worsened is fixed in this session, and size never moves it out, because this session holds the context that makes the fix cheapest.
+   - A pre-existing bug needing investigation, or a real design tradeoff, gets a `/capture-task` recommendation naming which of the two — those are the only cases.
+   - Rejected and confirmed-low findings get "Noted, no action", one line each.
+   - Once the dispositions are formed, order the fix-now list; have a take.
+
+## Step 7 — Report and wait
+
+- Present the report per `references/output-format.md` Part B — `## Verdict summary`, `## Your call`, `## Noted, no decision needed`, `## Actions`, `## Process notes`, `## Evidence` — decisions first and evidence below, answerable from the first screen.
+- A bullet the human can neither answer nor act on goes in "Noted" as a one-liner.
+- Every `/capture-task` recommendation names its ground.
+- Close the report by stopping and asking: "Reply with finding IDs, `all confirmed`, or `none`."
 
 > [!WARNING]
-> **Do not fix anything yet.** No edits, no "quick wins while I'm here", no staged patches. The human-in-the-loop gate is the contract of this skill: the report ends the turn, and code changes only happen after the user explicitly selects findings.
+> Fix nothing before the user selects. The report ends the turn.
 
-## Step 5: Verify, then address selected findings
+- When the user declines a confirmed or plausible finding, capture the one-line why at selection time, because nobody can reconstruct it later.
 
-This is where the deep verification deferred from triage happens — now, on the few findings the user chose, not all of them upfront. For each selected finding, confirm it against the actual code before writing a fix: reproduce the failure scenario, trace it to root cause, and fix the source rather than the reviewer's paraphrase of the symptom. If a finding does not hold up to that closer look, say so and skip it instead of inventing a fix — a triage verdict is a judgment, not a guarantee, and this is the point where the two can diverge. Apply fixes for exactly the selected findings and nothing else. A fix landing in a file with its own edit gate loads that gate's skill first — `skill-creator` for anything under `.claude/skills/`, where a hook denies the edit otherwise, and `curate-context` or `domain-modeling` for the governed context docs, where nothing enforces it and the instruction is the whole mechanism. The documentation board makes this routine rather than incidental, since those files are exactly what it reviews. After fixing, run the project's relevant checks (tests, typecheck, lint) for the touched areas and report the results honestly; a fix without a passing check is reported as unverified, not done.
+## Step 8 — Verify, then fix
 
-## Step 6: Leave the record commit
+- For each selected finding, confirm it against the actual code first: reproduce it, trace it to root cause, and fix the source rather than the paraphrase.
+- When a selected finding does not hold up, say so and skip it rather than inventing a fix.
+- Apply fixes for exactly the selected findings and nothing else.
+- When a fix lands in a gated file, load that gate's skill first.
+- After fixing, run the relevant checks; a fix without a passing check is reported as unverified, not as done.
 
-The board's outcome must outlive this conversation — `/ship-pr` documents it in the PR body, and a record nobody can find is a review that never happened. On a branch other than the default, once the user's selection is resolved (including `none`): commit any Step 5 fixes first (explicit paths, message naming the finding), then leave an always-empty record commit as the last commit on the branch:
+## Step 9 — Leave the record commit
+
+- On a non-default branch, once the selection is resolved — including a selection of `none` — commit the fixes first, then the record commit as the last commit.
+- The record commit is always empty and always last, because that gives one shape to parse and pins the record to the reviewed tree.
+- Write it with a quoted heredoc, never `-m`, because Actions contains backticks and both failure modes mimic success:
 
 ```bash
 git commit --allow-empty -F - <<'RECORD'
 review: board (<mode>) — <N> findings, <X> addressed, <Y> dismissed, <Z> rejected
 
-<record body>
+<ID> <severity> <verdict> <title> — <outcome: fix SHA, task path, the user's verbatim reason, or rejected>
+<one such line per finding>
+
+<every seat's ### Actions block, carried through verbatim>
+
+Review-Mode: <mode>
+Review-Scope: <base>..<head>
 RECORD
 ```
 
-**The heredoc is load-bearing, not style.** The body now carries Actions verbatim, and Actions is guaranteed by contract to contain backticks and quotes; inside a `-m "…"` argument those are command substitution and argument terminators, so the seat's evidence either vanishes or is replaced by a command re-run at commit time against a different tree. Both failures commit successfully with their errors on stderr only — the repo's own named hazard, a failure that mimics success. The quoted delimiter (`<<'RECORD'`, never `<<RECORD`) is what suppresses expansion; never interpolate the body into a double-quoted argument.
-
-The record body carries one line per finding — ID, severity, verdict, title, outcome (addressed + fix commit SHA, captured + the task file path, dismissed + the user's one-line reason verbatim, or rejected) — plus every seat's Actions section carried through verbatim rather than summarized, so a clean board leaves evidence that it ran rather than an absence that reads the same as never convening, and closes with trailers (`Review-Mode:`, `Review-Scope: <base>..<head>`) for grep-ability; `/ship-pr` finds records with `git log <default>..HEAD --grep='^review:'`. This subject shape is the stated point-of-use exception to the repo's 50-char imperative commit rule — the `review:` prefix is the grep contract, so the format wins.
-
-Capture dismissal reasons at selection time: when the user declines a confirmed or plausible finding, take the one-line why from their reply or ask for it — it is the one datum nobody can reconstruct later, and it is what makes a dismissal defensible instead of silent. A captured finding rides the `dismissed` count in the subject, since nothing about it was addressed on this branch; the body line is where its task file makes it findable. Always empty, always last: fix commits describe fixes, the record commit records the board — two jobs, two commits, one shape to parse. Pinning the record to the branch also pins it to the exact tree that was reviewed; a dated file could drift from that, a commit cannot.
-
-On the default branch (the solo flow) skip the commit — the report stays conversational, and nothing ships from there anyway. An interactive rebase can silently drop an empty commit; if the user rewrites the branch before shipping, warn them the record goes with it. Finally, when the branch has a remote to ship to, close with a one-line `/ship-pr` offer — offer only, never invoke it yourself.
+- The subject line is the stated point-of-use exception to the project's 50-char commit rule, and the `review:` prefix is the grep contract.
+- The body carries one line per finding — ID, severity, verdict, title, outcome — where the outcome is the fix SHA, the task path, the user's verbatim reason, or rejected.
+- Carry every seat's Actions through verbatim, never summarized, because a clean board must leave evidence it ran.
+- Close with the trailers `Review-Mode:` and `Review-Scope: <base>..<head>`; `/ship-pr` finds records with `git log <default>..HEAD --grep='^review:'`.
+- A finding captured as a task rides the `dismissed` count, and its body line carries the task path.
+- On the default branch, skip the record commit and let the report stay conversational.
+- When the branch may be rewritten, warn that an interactive rebase silently drops the empty record commit.
+- When a remote exists, close with a one-line `/ship-pr` offer; never invoke it yourself.
