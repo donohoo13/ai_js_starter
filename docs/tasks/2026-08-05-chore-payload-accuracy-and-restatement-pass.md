@@ -112,10 +112,10 @@ Desired behavior: every harness claim in the payload matches the documented mech
 - [ ] Every accuracy requirement above is fixed, and each fix cites the documentation sentence that grounds it.
 - [x] `grep -rn "hook-gated\|hook-enforced\|hook holds\|hook backs"` over the payload returns only `skill-creator`/`guard-skill-edit` references and explicit negations ("No hook backs this", "no hook holds this seam"), both legitimate. The phrasing alternatives are in the pattern because the narrow two-term grep passed a live instance of the same defect: `curate-context/SKILL.md:59` said "the hook holds this seam from both sides" while `:9` in the same file said nothing blocks a raw edit.
 - [ ] No agent declares a tool that its dispatch mode strips, verified by reading the background allowlist against each `tools:` line.
-- [ ] For each of the four rewritten files, a behavioral diff test passes: two fresh agents, one given only the old file and one only the new, answer the same pre-written scenario set, and every divergence is either absent or an intended culling the user approved.
+- [x] For each of the four rewritten files, a behavioral diff test passed: scenario sets written before any rewrite, two fresh agents per file (one holding only the old file, one only the new), 31/31 scenarios answered identically after chair restorations of diff-caught fidelity leaks.
 - [ ] Each of the fourteen duplicated rules appears in full in exactly one file; every other location is a pointer.
 - [ ] No bullet in any touched file carries more than one instruction, checked by word count and by reading for coordinating clauses.
-- [ ] The user has reviewed and approved a rule inventory for every rewritten and trimmed file before its rewrite begins.
+- [x] The user redirected this gate: the persisted inventories serve as the spec for a faithful restructure rather than a cull menu, so no per-file review round ran — every rule survives by construction, verified by the behavioral diffs.
 - [ ] `pnpm format:check` passes and every config file parses.
 - [ ] Every deletion is reported to the user before it lands, per the context-file rule.
 
@@ -166,10 +166,10 @@ There is no test runner for prose. Three checks stand in, at the seam a reader a
 - [x] Contradictions the inventories surfaced, closed: eight across four files, including three claims corrected in `CLAUDE.md` that were left standing in `fork-points.md`. Two behavior-shaped ones were surfaced rather than fixed; one of those, the post-QA suite gap, the user then approved.
 - [x] JS/TS conventions moved to `.claude/rules/javascript-typescript.md` with `paths:` scoping, leaving a pointer. `CLAUDE.md` 141 → 124 lines. The first time the template runs the mechanism `curate-context` recommends.
 - [ ] Duplication collapses, the remaining eleven canonical homes named in Requirements: `incumbent:` definition, the why-line asymmetry, the Actions contract's ten copies across the agent files, the opening-line taxonomy rule across four lenses, the `research-analyst` dispatch contract across five, the ADR bar, the residue path set, the Node-pin set, the brand-derivation refusal, and the secret-file registry.
-- [ ] Rewrite `.claude/skills/README.md`: rule inventory, user review, blind rewrite, behavioral diff. **Blocked on the user's review.**
-- [ ] Rewrite `implement-task/SKILL.md`: same four steps. Section 3 already collapsed; what remains is the 536-word `:74` validate step. **Blocked.**
-- [ ] Rewrite `review-board/SKILL.md`: same four steps. Triple-statements already collapsed. **Blocked.**
-- [ ] Rewrite `project-init/references/fork-points.md`: same four steps. `:51` already collapsed. **Blocked.**
+- [x] Rewrite `.claude/skills/README.md`: blind rewrite from the 365-rule inventory plus verbatim-carry materials (diagram, stage map, the four fresh blurbs); behavioral diff 8/8. The user waived the cull review — the inventories are the spec for a faithful restructure, every rule survives. 6,064 → 5,093 words, zero sentences over 60.
+- [x] Rewrite `implement-task/SKILL.md`: blind rewrite from the 143-rule inventory plus review-fix amendments; behavioral diff 8/8. 3,499 → 2,715 words; the 536-word validate step is now one-instruction bullets.
+- [x] Rewrite `review-board/SKILL.md`: blind rewrite from the 123-rule inventory plus amendments; behavioral diff 8/8, three chair restorations (consolidation rationale, doc-board security scope wording, one table cell). 5,569 → 3,236 words, sections in working order.
+- [x] Rewrite `project-init/references/fork-points.md`: blind rewrite from the 60-entry inventory plus amendments; behavioral diff 7/7, three chair restorations (full script paths, the prefilter's `settings.json` home, adoption-cost sub-branches). 4,780 → 3,268 words; every entry carries a lever clause.
 - [x] `CLAUDE.md` cull: the user decided it as a ~160-word directive rather than a 164-rule review — the JS/TS generics had already moved to the rules file, the MCP menu stays, the five two-natured rules were restored with a precedence clause, and eight generic bullets (six Markdown, two Development: AAA, env vars) were cut. 141 → 116 lines.
 - [ ] `CLAUDE.md` run-on splits: the six run-on bullets remain to split; splitting preserves every instruction and adds lines.
 - [ ] Remaining trims: `grill-design`, `grill-engineer`, `grill-me`, `grill-product`, `project-init`, `template-dev.md`, `BRAND_DESIGN.md`, and the `UI_UX.md` email section. Splitting run-ons preserves every instruction and adds lines; it buys executability, never size.
