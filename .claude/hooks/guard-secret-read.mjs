@@ -1,9 +1,14 @@
 #!/usr/bin/env node
 // PreToolUse guard: blocks Bash commands that reference secret-registered
-// files. The Read(...) globs in .claude/settings.json permissions.deny are
-// the single registry — native permission checks already enforce them for
-// Read/Grep/Glob/Edit/@file and the recognized shell readers (cat, head,
-// tail, sed); this hook extends the same registry to everything else Bash
+// files. The paired Read(...) and Edit(...) globs in .claude/settings.json
+// permissions.deny are the registry, and both spellings are load-bearing:
+// Read(...) covers Read/Grep/Glob/@file and the recognized shell readers
+// (cat, head, tail, sed) plus the Edit tool's own read-deny check, while
+// Edit(...) is what covers the writing tools — Edit, Write, MultiEdit, and
+// NotebookEdit — because a Read deny does not reach them and a Write(...)
+// rule is accepted but never consulted. Registering a path under Read alone
+// leaves it writable. This hook parses the Read(...) entries and extends
+// that half of the registry to everything else Bash
 // can do with a file: source, interpreter one-liners, base64, cp/mv
 // relocation, git add. Every verb is blocked, not just readers, because
 // relocation turns a denied read into an allowed one and staging a secret
@@ -94,7 +99,7 @@ for (const token of tokens) {
   for (const rule of rules) {
     if (rule.re.test(token)) {
       console.error(
-        `Blocked by guard-secret-read hook: "${token}" matches secret-registered pattern Read(${rule.glob}) in .claude/settings.json permissions.deny — secret-bearing files are unreadable to AI sessions. Per CLAUDE.md: name the secret and its file, then hand the user a ready-to-run command that references it inline (e.g. FOO="$(grep '^FOO=' <file> | cut -d= -f2-)" <cmd>) for their own terminal; never print the value or ask them to paste it into chat.`,
+        `Blocked by guard-secret-read hook: "${token}" matches secret-registered pattern Read(${rule.glob}) in .claude/settings.json permissions.deny — secret-bearing files are gated against accidental access. Per CLAUDE.md: name the secret and its file, then hand the user a ready-to-run command that references it inline (e.g. FOO="$(grep '^FOO=' <file> | cut -d= -f2-)" <cmd>) for their own terminal; never print the value or ask them to paste it into chat. A false positive — a command that only names a registered file without touching it — is rephrased so no registered spelling appears as a token, or handed to the user; never worked around with a file that opens the path.`,
       );
       process.exit(2);
     }

@@ -113,20 +113,17 @@ These rules govern any table rendering more than a handful of rows. They are bra
 
 ### Transactional Emails
 
-Transactional emails (verification, password reset, email-change confirmation) are customer-facing brand
-surfaces rendered in the most hostile client environments products touch: Outlook desktop renders HTML through
-Word's engine, Gmail strips and clips markup, and dark-mode clients recolor without permission. These rules govern
-every email template. BRAND_DESIGN.md voice rules and the no-em-dash rule apply to all email copy.
+Transactional emails (verification, password reset, email-change confirmation) are customer-facing brand surfaces rendered in the most hostile client environments products touch: Outlook desktop renders HTML through Word's engine (Microsoft's own rendering documentation), Gmail strips and clips markup, and dark-mode clients recolor without permission. These rules govern every email template. `BRAND_DESIGN.md` voice rules and the no-em-dash rule apply to all email copy.
 
-- Tables carry layout, inline CSS carries style: layout is nested tables with role="presentation", never flex/grid (partial support in Gmail and Outlook at best), and every load-bearing style is inline. A <style> block is progressive enhancement only (media queries, dark mode): Gmail drops the entire block past 8,192 characters or on a single CSS parse error.
-- One column, 600px: content is a single column at 600px max width, readable at mobile widths without media queries (Gmail and Outlook support them only partially).
-- Padding, never margin: spacing lives in table-cell padding; margin is unreliable across clients and negative margins silently break in both Gmail and Outlook.
-- Bulletproof CTA: the action button is a live-text link styled inline with a 44×44px minimum touch target, wrapped in the MSO conditional/VML fallback so Outlook renders the fill and rounding; never an image button. border-radius or a background image without a VML + solid-color fallback renders as nothing in Outlook.
-- Dark mode is declared, then defended: color-scheme and supported-color-schemes meta tags in the head, prefers-color-scheme overrides in the style block, a midtone palette instead of pure black/white, and logos and transparent images carry a subtle outline so they survive clients that force-invert (Gmail iOS, Outlook Windows).
-- System-stack fallbacks always: Gmail and Yahoo drop web fonts entirely; every font declaration ends in a system stack, and the brand fonts are an enhancement for the clients that keep them, never assumed.
-- Text-first, never image-only: the message survives with all images blocked (Outlook's default); images are HTTPS-hosted with explicit dimensions, 2x exports for retina, and styled alt text.
-- Plain-text part always: every email ships a multipart/alternative plain-text version, where auth links appear as literal URLs — phishing resistance for exactly the emails we send.
-- Authored preheader: the preview line after the subject is deliberate copy, never whatever text happens to render first.
-- Stay under the clip: total HTML stays well below Gmail's ~102KB clipping threshold, which truncates mid-markup and can break the layout it cuts.
-- Accessible like the app: semantic headings, lang on the root element, 16px body-copy floor, WCAG AA contrast per the Standards above.
-- Banned in email: JavaScript, forms, video, CSS positioning, negative margins, and checkbox/hover interactivity hacks; every one is stripped or silently breaks somewhere in the client set.
+- **Tables carry layout, inline CSS carries style**: layout is nested tables with `role="presentation"`, never flex/grid — partial support in Gmail and Outlook at best (caniemail.com) — and every load-bearing style is inline. A `<style>` block is progressive enhancement only (media queries, dark mode): Gmail drops the entire block past 8,192 characters or on a single CSS parse error (caniemail.com).
+- **One column, 600px**: content is a single column at `600px` max width, readable at mobile widths without media queries, which Gmail and Outlook support only partially (caniemail.com).
+- **Padding, never margin**: spacing lives in table-cell `padding`; `margin` is unreliable across clients and negative margins silently break in both Gmail and Outlook (caniemail.com).
+- **Bulletproof CTA**: the action button is a live-text link styled inline with a 44×44px minimum touch target (the Standards floor above), wrapped in the MSO conditional/VML fallback so Outlook renders the fill and rounding (Campaign Monitor's bulletproof-button pattern); never an image button — `border-radius` or a background image without a VML + solid-color fallback renders as nothing in Outlook.
+- **Dark mode is declared, then defended**: `color-scheme` and `supported-color-schemes` meta tags in the head, `prefers-color-scheme` overrides in the style block, a midtone palette instead of pure black/white, and logos and transparent images carry a subtle outline so they survive clients that force-invert — Gmail iOS, Outlook Windows (Litmus dark-mode guidance).
+- **System-stack fallbacks always**: Gmail and Yahoo drop web fonts entirely (caniemail.com); every font declaration ends in a system stack, and the brand fonts are an enhancement for the clients that keep them, never assumed.
+- **Text-first, never image-only**: the message survives with all images blocked, Outlook's default (Microsoft's client documentation); images are HTTPS-hosted with explicit dimensions, 2x exports for retina, and styled `alt` text.
+- **Plain-text part always**: every email ships a `multipart/alternative` plain-text version, where auth links appear as literal URLs — phishing resistance for exactly the emails we send.
+- **Authored preheader**: the preview line after the subject is deliberate copy, never whatever text happens to render first (Litmus preheader guidance).
+- **Stay under the clip**: total HTML stays well below Gmail's ~102KB clipping threshold (Litmus), which truncates mid-markup and can break the layout it cuts.
+- **Accessible like the app**: semantic headings, `lang` on the root element, `16px` body-copy floor, WCAG AA contrast per the Standards above.
+- **Banned in email**: JavaScript, forms, video, CSS positioning, negative margins, and checkbox/hover interactivity hacks; every one is stripped or silently breaks somewhere in the client set (caniemail.com).

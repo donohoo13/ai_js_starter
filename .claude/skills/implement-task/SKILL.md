@@ -4,87 +4,245 @@ description: Build a scoped task file from docs/tasks/ slice by slice in a dedic
 argument-hint: '[path to a docs/tasks/*.md file, or blank to pick from scoped tasks]'
 ---
 
-# Implement Task
+The design is settled before this skill runs: build what the task file specifies and never re-decide architecture. A single-unit task runs the same plan → tdd → validate → commit loop as a ten-slice feature, just once — ceremony scales with size, discipline never does.
 
-Build what a scoped task file specifies — the design is settled; this skill builds it, it does not re-decide architecture. **Ceremony scales with size; engineering discipline never does:** a single-unit task runs the same plan → tdd → validate → commit loop as a ten-slice feature, exactly once.
+## 1. Invocation and gating
 
-## State at invocation
+Take three snapshots at invocation, in this order:
 
-- Current branch: !`git branch --show-current`
-- Scoped tasks: !`grep -l 'status: scoped' docs/tasks/*.md 2>/dev/null || echo "(none)"`
-- In-progress tasks (resumable): !`grep -l 'status: in-progress' docs/tasks/*.md 2>/dev/null || echo "(none)"`
+- Branch: `git branch --show-current`.
+- Scoped tasks: `grep -l 'status: scoped' docs/tasks/*.md 2>/dev/null || echo "(none)"`.
+- Resumable tasks: `grep -l 'status: in-progress' docs/tasks/*.md 2>/dev/null || echo "(none)"`.
+- The snapshots are invocation-time only; re-check live state after any pause or any user action.
 
-Snapshots are from invocation time; re-check live state after any pause or user action.
+Pick the task:
 
-## 1. Locate and gate the task
+- With a path in `$ARGUMENTS`, read that file.
+- With no path, confirm which snapshot task to build; `status: in-progress` ones are resumable.
 
-- Path in `$ARGUMENTS` → read it. No path → confirm which of the scoped tasks in the snapshot above to build (in-progress ones are resumable).
-- Gate on readiness, not ceremony: `status: scoped` with concrete acceptance criteria means go. A file still `captured`, or with `TBD (needs grilling)` in load-bearing sections (Requirements, Acceptance criteria, Design decisions), is not buildable — recommend a `/grill-me engineer:` session on the file first and stop. Building on an under-specified file is how requirements get invented silently.
-- The same gate covers composition: a task whose slices render or reshape a user-facing surface is buildable only with a design artifact in `design:` frontmatter or a governed-verdict recorded in Design decisions. Neither present — recommend a `/grill-design` pass on the surface first and stop; an uncomposed surface gets composed from the API payload at build time, not from the user's task.
-- And it covers demolition, on four checks that all route back the same way. A task with no `incumbent:` key never decided what happens to the existing implementation, and a missing key is not a quiet `extend`. A key holding anything but exactly `none`, `replace`, or `extend` — a leftover `none | replace | extend` placeholder, a capitalization, a value with a parenthetical — decided nothing either, and reading it as "not `replace`" turns the gate's own null result into the outcome the gate exists to prevent. A `none` or `extend` verdict with no incumbent line in Design decisions is the same shape of nothing: those are the two answers that leave the build with no demolition to run, so the sentence explaining why is the entire price they carry, and a price nobody collects is a norm rather than a rule. And an `incumbent: replace` task with no zone in its Demolition section has no boundary to demolish along. Any of the four: recommend a `/grill-me engineer:` session on the file first and stop, naming what is missing. All four apply to a resumed `in-progress` file exactly as they do to a `scoped` one, since a task already in flight is where an unexamined verdict hides longest. **Check that the line exists; never weigh whether it convinces you.** Judging the reasoning would make this the place the verdict gets decided, which is the one thing the gate must not become — route the gap back and never write the key, the why, or the zone. All three are grilling outputs decided with a human in the room, and a build session that supplies any of them has handed the call to the party holding the measured preservation bias; a zone drawn here would be derived by reading the incumbent, which is the single thing the demolition pass exists to prevent.
+Gate on readiness, not ceremony:
 
-## 2. Guard the workspace
+- `status: scoped` plus concrete acceptance criteria means go.
+- Recommend `/grill-me engineer:` and stop when the file is still `captured`, or when `TBD (needs grilling)` appears in Requirements, Acceptance criteria, or Design decisions — an under-specified file gets its requirements invented silently.
+- Slices that render or reshape a user-facing surface are buildable only with a `design:` artifact or a governed-verdict recorded in Design decisions.
+- With neither present, recommend `/grill-design` and stop; otherwise the surface gets composed from the API payload.
 
-Never build on `main`, and never switch branches in a shared checkout — branch state is checkout-global, so a switch here yanks the tree out from under every other session working in it. The default workspace is a dedicated worktree:
+Then run all four `incumbent:` checks:
 
-1. Derive the branch from the task filename: `docs/tasks/YYYY-MM-DD-<type>-<slug>.md` → `<type>/<slug>`.
-2. Resume case: `git worktree list` already shows that branch's worktree → enter it with `EnterWorktree` (`path:` pointing at it) and continue; never recreate. Being listed proves the worktree exists, never that it is usable — `scripts/setup/gwt-add.sh` leaves the worktree in place when its dependency install fails, so check for `node_modules` in it before building and re-run `scripts/setup/gwt-add.sh --no-open <branch>` when it is absent (the script reuses an existing worktree and retries the install). Skipping that check is how a session runs the slice loop in a dependency-less tree and reads the resulting failures as its own bug.
-3. Doc pre-flight: the new branch is cut from `main`'s HEAD commit, so nothing uncommitted reaches it — and doc artifacts from earlier sessions (grilling exits, captures, ADRs, curate-context edits) routinely linger in the tree, because the sessions that write docs rarely commit them. Check `git status` for uncommitted or untracked doc and context files (`docs/**`, `CLAUDE.md`, `CONTEXT.md`, `ARCHITECTURE.md`, `UI_UX.md`, `BRAND_DESIGN.md`, `.claude/**`) — read the tree, not session memory; the session that wrote them is usually already gone. Found some → one offer: stage exactly those paths, hand back a ready-to-paste commit message, and wait for the user to commit on `main` before continuing, so the branch inherits the docs. This is `stage-for-commit`'s behavior inlined, not an invocation — that skill stages only its own session's work, which is right for its context but would forbid rescuing a dead session's docs, the entire point here. Declined → proceed; the carry-in below still rescues the task file, and the rest stays behind by the user's choice. Non-doc dirt gets named, never staged — it may be another session's work in flight.
-4. No worktree yet → one confirm naming the branch and the worktree target (`$HOME/Code/.worktrees/<project>/<branch>` with branch slashes flattened to dashes: `feature/foo` → `feature-foo`). On yes: verify the checkout is on `main` (a checkout parked on another branch seeds the worktree from the wrong tree — surface it and wait), run `scripts/setup/gwt-add.sh --no-open <branch>`, then enter via `EnterWorktree` (`path:` the created worktree). This step is the project instruction that authorizes the `EnterWorktree` tool. A non-zero exit from the script means the worktree cannot build or test: surface its output and stop rather than entering, because every typecheck, lint, and test run in that tree fails for reasons unrelated to the task.
-5. Carry the tracker in: the task file must exist on the new branch before the slice loop. The pre-flight commit landed → it is already on the branch; nothing to move. Still untracked (offer declined or skipped) → it does not exist on the fresh branch, so `mkdir -p docs/tasks` in the worktree and move the file over.
+- Refuse a task file with no `incumbent:` key — a missing key is never a quiet `extend`.
+- Refuse an `incumbent:` value outside `none`, `replace`, and `extend`; a placeholder, a capitalization, or a parenthetical decided nothing.
+- Never read an invalid value as "not `replace`": that turns the gate's null result into the outcome the gate exists to prevent.
+- Refuse `none` or `extend` carrying no one-line why in Design decisions — the why-line is the entire price those verdicts carry.
+- Refuse `replace` with no zone named in the Demolition section: there is no boundary to demolish along.
 
-Declining the confirm is the escape hatch: the user creates or picks a feature branch in the checkout and the build proceeds there — trust whatever non-main branch they choose. The same fallback applies where `scripts/setup/gwt-add.sh` or the `EnterWorktree` tool is unavailable. Teardown is never this skill's job: post-merge cleanup is `scripts/setup/gwt-remove.sh <branch>`, run by the user from the main checkout.
+Gate mechanics:
 
-## 3. Demolish, where the verdict says so
+- When any of these checks fails, recommend `/grill-me engineer:`, stop, and name what is missing.
+- Apply all four checks to a resumed `in-progress` file exactly as to a `scoped` one — in-flight tasks hide an unexamined verdict longest.
+- Every gate check asks only whether the line exists; never weigh whether the reasoning convinces you.
+- Never write the key, the why, or the zone yourself — all three are human-in-the-room grilling outputs — route the gap back.
 
-`incumbent: replace` runs the demolition pass before the first slice; `none` and `extend` go straight to the slice loop. It runs as two dispatches with separate contexts — a planner that reads and an executor that deletes — and neither one is optional or collapsible into the other. Read `references/demolition.md` (sibling of this SKILL.md) in full before dispatching: it carries the zone rule, the one exemption, the record's filter, and why splitting the reading from the deleting is the mechanism rather than a division of labor.
+## 2. Workspace
 
-**Check the marker first: a `demolition: done` line in the task file's Demolition section means the pass already ran.** Skip straight to the slice loop. A resumed task looks identical to a fresh one from step 1's gate, and re-dispatching over a zone that now holds two slices of the replacement deletes this task's own finished work — the executor sees paths, the planner has no way to say "these are new", and the relay is a window nobody is guaranteed to be watching.
+- Never build on `main`.
+- Never switch branches in a shared checkout: branch state is checkout-global, so a switch yanks the tree out from under other sessions.
+- The default workspace is a dedicated worktree, and this step is the project instruction authorizing the `EnterWorktree` tool.
 
-**Read the contract before writing the mandate.** Open the task's linked `design:` artifact and `brief:` here — step 1 checked only that they exist. The mandate has to quote the design statements that overrule an incumbent contract. An empty overrule set is normal, not a defect: chores, dependency swaps, and refactors are the purest `replace` cases and none of them has a design artifact, so an empty set simply tells the planner to preserve every contract it finds.
+### Step 1 — derive the branch
 
-**Refuse a zone reaching `.claude/skills/`, `.claude/agents/`, or `.claude/hooks/` unless the task file says in writing that the user authorized it.** The AI process suite is not application code, `git rm` from a subagent reaches it past the `guard-skill-edit` hook (which matches `Edit`/`Write` only) and past step 4's `skill-creator` rule (which runs after this step), and wholesale deletion of it is the user's call alone. Authorized in writing means load `skill-creator` before dispatching, so its landing checklist covers the removal.
+- Derive it from the filename: `docs/tasks/YYYY-MM-DD-<type>-<slug>.md` → `<type>/<slug>`.
 
-**Capture carve-outs before anything is deleted**, since the surface stops existing the moment demolition runs. Screenshot each with the project's UI verification tool, cropped to that surface alone, against seeded or anonymized data only — an authenticated or production surface gets the user's say-so before capture, a capture carrying real customer or production data is redacted or re-rendered before storage, and where neither is possible store nothing and write the carve-out into the task file as prose instead. Store under `docs/assets/<task-slug>/`, a committed path, and link from the task file's Demolition section. Never record them in a design artifact's `source:` frontmatter: that key triggers the render check's source-versus-build comparison, which would make a photograph of the demolished surface the fidelity target for its replacement, and it also puts the build session in the business of amending an artifact only a `grill-design` pass may touch. A declared carve-out whose capture produced nothing is BLOCKED, not an empty list — those two are indistinguishable downstream, and the second one silently deletes a surface the task promised to keep.
+### Step 2 — reuse an existing worktree
 
-**Dispatch run 1, `demolition-planner`** (registered in `.claude/agents/`), with the absolute path of this session's working tree — the worktree, not the main checkout, because the deletion that follows lands wherever the agents are and nothing else pins the target — plus `references/demolition.md`'s absolute path, the zone copied from the task file, the carve-out list, the paths of the `design:` and `brief:` artifacts so it can apply the record's exclusions rather than guess at them, the record's path (`.ai/demolition/<task-slug>.md`), and every overrule statement quoted with its location. It cannot see this conversation. It deletes nothing: it returns a kill list plus a manifest, and writes the record. Read the record and nothing else — opening the code that is about to die is precisely what the split exists to avoid.
+- When `git worktree list` already shows that branch's worktree, enter it with `EnterWorktree` (`path:`) and never recreate it.
+- Check for `node_modules` first when entering an existing worktree: `gwt-add.sh` leaves the worktree in place when its install fails.
+- With `node_modules` absent, re-run `scripts/setup/gwt-add.sh --no-open <branch>`; it reuses the worktree and retries.
 
-**Relay the plan and the manifest into this session's stream before dispatching run 2** — what dies, what the git-recoverability exemption spared and by which kind, what the blast-radius inventory found, what the archaeology turned up, and the references the planner suspected but could not locate. Relay all six of the planner's returns; the suspected-reference list is the one the compiler provably cannot regenerate, so dropping it here loses it for good. It lands in this stream rather than in a subagent transcript because that is what makes it visible to a human at all, and it is also how the dead-code reporting obligation gets met, since the record is never committed. **It is a window, not a gate:** nothing waits on a confirm, and the user can interrupt while it scrolls. A per-file confirmation would trade away the speed that makes demolition worth doing.
+### Step 3 — doc pre-flight
 
-**Dispatch run 2, `demolition-executor`, with the plan alone** — the working tree's path, the kill list verbatim as the planner returned it, the commit message, and the project's typecheck command discovered the same way step 4 discovers its validate commands. Send no record, no design artifact, and no reasoning about what any of it does: a run that can weigh what it removes is a run that can talk itself into keeping it. Name the commit message for what it is, so `git log` shows plainly where the tree went red. The executor deletes with `git rm`, commits that red state itself staging by the kill list's explicit paths rather than `git add -A` (a shared checkout can hold another session's uncommitted work that step 2 deliberately left alone), and returns the typechecker's error set alongside the command it ran and that command's exit code.
+- Check `git status` for uncommitted `docs/**`, `CLAUDE.md`, `CONTEXT.md`, `ARCHITECTURE.md`, `UI_UX.md`, `BRAND_DESIGN.md`, and `.claude/**` changes.
+- Read the tree for this, never session memory: the session that wrote the docs is usually already gone.
+- On finding doc files, make one offer — stage exactly those paths, hand back a commit message, and wait for the user to commit on `main`.
+- Inline `stage-for-commit`'s behavior here and never invoke that skill, which stages only its own session's work.
+- On a declined offer, proceed; the rest stays behind by the user's choice.
+- Name any non-doc dirt in `git status` and never stage it — it may be another session's work in flight.
 
-**A demolition that stops is BLOCKED.** The planner halts on a mandate it judges wrong; the executor halts on uncommitted work inside the zone, a path that does not exist, or a tree that is not the one it was sent to. Each leaves the tree half-demolished, and recovery is `git restore --staged --worktree` over the paths already removed, taking the tree back to the pre-dispatch state so the pass can start clean once the mandate is fixed. Surface what it reported and wait, exactly as the slice loop's BLOCKED state does — never commit a partial demolition and start building on top of it.
+### Step 4 — create the worktree
 
-**Write the returned compiler errors into the task file's Demolition section as the connection map, then add the `demolition: done` marker beside it.** That section is where file paths legitimately live; Design decisions bans them precisely because they go stale, and a later grilling session evolving the file would strip the map out of it. The session resuming this task tomorrow has no other copy, and a map living only in this context makes Land's zero-errors condition trivially true for whoever picks it up. Every red edge is a place something surviving still expects what died, which makes it the build's work list and a far more reliable handoff than prose describing the old surface. A returned error set that is empty, or a report of no typechecker on a stack you know is typed, is a stop rather than a pass: it means the command never ran, and an absent map satisfies every downstream check while enumerating nothing. A stack genuinely without a typechecker produces no map and leans on the planner's blast-radius inventory and suspected-reference list instead, both of which belong in this section too.
+- With no worktree yet, ask for one confirm naming the branch and `.claude/worktrees/<branch>` inside the main checkout, slashes flattened to dashes — the harness's default worktree home, so `EnterWorktree` raises no extra approval prompt.
+- On yes, verify the checkout is on `main` first; a checkout parked elsewhere seeds the worktree from the wrong tree, so surface that and wait.
+- Then run `gwt-add.sh --no-open` and enter via `EnterWorktree`.
+- When `gwt-add.sh` exits non-zero, surface its output and stop rather than entering: every check in that tree then fails for reasons unrelated to the task.
+
+### Step 5 — put the task file on the branch
+
+- The task file must exist on the new branch before the slice loop starts.
+- A landed pre-flight commit already put it there.
+- A task file still untracked needs `mkdir -p docs/tasks` in the worktree and a move across.
+
+### Fallback and teardown
+
+- A declined confirm means the user creates or picks a feature branch; build there, trusting any non-`main` branch.
+- An unavailable `gwt-add.sh` or `EnterWorktree` takes the same fallback.
+- Teardown is never this skill's job; `gwt-remove.sh` is the user's post-merge job.
+
+## 3. Demolition dispatch
+
+The procedure lives in `references/demolition.md`. This section carries only the dispatcher's own obligations.
+
+- `incumbent: none` and `incumbent: extend` go straight to the slice loop.
+- `incumbent: replace` runs the pass before the first slice.
+
+Check the marker before reading anything else:
+
+- A `demolition: done` line in the task file's Demolition section means the pass already ran.
+- Trust it only whole: `done` beside a non-empty connection map (or a recorded no-typechecker fallback) — the two committed artifacts.
+- A marker missing its map is a halted pass wearing a finished one's clothes — treat it as `BLOCKED` and read `references/demolition.md` `## Recovery` before touching the tree.
+- The record path beside the marker is worktree-local scratch (the gitignored `.ai/` namespace), so a path that no longer resolves after a fresh clone or new worktree is a degradation to note in the running summary, never a halt signal.
+- With the marker whole, skip straight to the slice loop.
+- A resumed task looks identical to a fresh one from step 1's gate, and re-dispatching over a zone that now holds two slices of the replacement deletes this task's own finished work — the executor sees paths, the planner has no way to say "these are new", and the relay is a window nobody is guaranteed to be watching.
+
+Dispatch:
+
+- Read `references/demolition.md` in full before dispatching.
+- The pass is two dispatches in separate contexts — a planner that reads, an executor that deletes — neither optional nor collapsible.
+- After run 1 returns, read the record and nothing else; never open the code about to die.
+- That last line instructs against an action rather than removing it, which `references/demolition.md` itself calls the weak form of control; the leak is named here rather than closed.
+- Relay run 1's plan and manifest into this session's stream, in full, before dispatching run 2.
+- The relay lands here so a human sees it and the dead-code reporting obligation is met; the record is never committed.
+
+Judge the returned error set before writing anything into the task file:
+
+- An empty set, or a report of no typechecker on a stack you know is typed, is a stop rather than a pass — the command never ran, and an absent map satisfies every downstream check while enumerating nothing.
+- The gate sits before the write because a marker laid down first survives the stop: the next session would find `demolition: done` on a pass that never completed.
+- Only once the set passes that judgment (or the stack is verifiably untyped, recorded as such), write the compiler errors into the task file's Demolition section as the connection map.
+- Add the `demolition: done` marker and the record's path beside it in that same write.
+- Demolition is where file paths legitimately live; Design decisions bans them precisely because they go stale, so a later grilling session evolving the file would strip the map out.
+- The session resuming this task tomorrow has no other copy, and a map living only in this context makes Land's zero-errors condition trivially true for whoever picks it up.
 
 ## 4. The slice loop
 
-Slices come from the file's Slices section; list order is build order (dependency-ordered at scoping time). No Slices section → the whole task is one work unit; run the loop once with the file's Design decisions and Acceptance criteria as the spec. Flip frontmatter to `status: in-progress` before starting (it rides along in the first slice's commit).
+- With a Slices section, list order is build order — it was dependency-ordered at scoping time.
+- With no Slices section, the whole task is one unit: run the loop once against Design decisions and Acceptance criteria.
+- Flip the file to `status: in-progress` before starting; it rides along in the first slice's commit.
 
-Each slice ends in one of three states. The first two continue automatically; only the third stops you:
+Report one state per slice:
 
-- **DONE** — validated and committed; next slice.
-- **DONE_WITH_CONCERNS** — committed, but with a doubt worth surfacing (e.g. an ambiguous requirement you resolved one way); note it in your running summary and continue.
-- **BLOCKED** — missing context, contradictory requirements, or a failure you cannot root-cause; stop, surface it, wait. If the task file itself is wrong or insufficient, that is also BLOCKED — surface it, do not silently redesign.
+- `DONE` — validated and committed; continue automatically.
+- `DONE_WITH_CONCERNS` — committed with a doubt worth surfacing; note it and continue.
+- `BLOCKED` — missing context, contradictory requirements, or an un-root-caused failure; stop, surface, wait.
+- A task file that is itself wrong is also `BLOCKED`: surface it, never silently redesign.
 
-For each slice:
+### Step 1 — deep plan
 
-1. **Deep plan** — a focused read-in, not a fresh design: re-read the slice against the file's Design decisions and Test strategy, read the touch points' current code, confirm shared types/schemas and their consumers (LSP findReferences). After a demolition, the incumbent is still one `git show` away on the red commit, and reaching for it is how a build that never read the old implementation ends up anchored to it anyway. Work from the connection map and the record's blast-radius entries; when a red edge names a contract neither one covers, that is a DONE_WITH_CONCERNS note or a question for the user, not a history dive. This is an instruction against an available action, which the demolition discipline itself says is the weak form of control — git history has to stay reachable for recovery, so the leak is real and stated rather than closed. Present a short plan — files, sequence, test seams, risks — and state "Proceeding unless you interrupt." A window to course-correct, not an approval gate. Any slice that renders or restyles something a user sees — a page, view, component, email, state, or copy — reads the task's design artifact (`design:` frontmatter) and `UI_UX.md` / `BRAND_DESIGN.md` (plus the app's theme CSS, the source of truth for token values) here before planning the build: the artifact is the composition contract, and a build that must deviate from it surfaces the deviation as a decision — BLOCKED, or a DONE_WITH_CONCERNS note for minor drift — never a silent redesign, because at build time the payload's shape is louder than the user's task. The artifact's Experience intent and Source fidelity sections are the build's judging contract and are never edited by the build session: a render that cannot satisfy them surfaces the conflict through the same decision machinery, never an adjustment of the contract to fit the render. A deviation the user then ratifies is recorded in the task file and carried into the QA handoff; later render passes judge against the artifact plus those recorded ratifications, and the artifact itself is amended only by a `grill-design` pass. A slice that changes skill files (anything under `.claude/skills/`) loads the `skill-creator` skill here the same way — its authoring discipline, gut-check handoff, and landing checklist govern the edit.
-2. **Build with `/tdd`** — red before green, one seam at a time.
-3. **Validate** — the project's own typecheck (where the stack has one), lint, and format checks, plus the slice's test files. While a demolition connection map is still open, a green project typecheck is not the per-slice bar: the contract is that every slice shrinks that error set and introduces no error outside its own scope, so a widening or unexplained set is a real regression rather than leftover rubble, and "it is red anyway" never becomes cover. **Shrinking the set is not the goal; reconnecting is.** A red edge closes by wiring its call site to the new interface, or it stays open and the slice reports BLOCKED — never by re-creating what died. A module at the old path re-exporting the old names over the new implementation satisfies the arithmetic perfectly, keeps lint and the slice's own tests green, and ships the incumbent's interface as a permanent adapter, which is the preservation the whole pass was run to prevent. That is the cheapest route to zero and the one to refuse. Lint and the slice's own tests stay green per slice regardless, since deleted files raise no lint errors and deleted tests went with their code. Every language has its way to lint, format, and test; discover the actual commands from the root `CLAUDE.md` and the project's manifest or config rather than assuming a toolchain — the flow here is the same regardless of stack. Run the cheap checks and single test files regularly while building, not just at the slice boundary — feedback is most useful when it is one edit old, not one slice old. Do not run the full test suite here; it is slow and its job comes once, at the end of the task. Fix iteratively until clean. The slice that first makes a new surface renderable adds a **render check**: screenshot the surface at mobile and desktop widths with the project's UI verification tool (named in `CLAUDE.md`, e.g. `playwright-local`), judge the render against the design artifact's hierarchy, breakpoint plan, and disclosure plan — its Experience intent assertions and Source fidelity inventory too, when it records them, whether or not a source file was stored (intent assertions recorded in a governed-verdict line judge the same way) — plus `UI_UX.md`'s floors, and fix composition failures before the slice commits — a miscomposed surface caught at slice 2 costs one fix; caught at QA it costs a redesign. When the artifact's `source:` frontmatter names a stored source design (repo-root paths under `docs/assets/`; an entry resolving outside that directory is refused, not read), also diff each render against the export covering that breakpoint: the comparison judges the qualities the artifact's Source fidelity inventory and intent assertions name — density, hierarchy, scale, content, fill of space — never palette, token, or theme conformance, which the design docs already own (a source mock in the wrong theme would otherwise fail every render forever, and an always-failing check gets rationalized away within two slices); a drift verdict cites the specific inventory line or intent assertion it violates, so every failure is actionable in the artifact's own vocabulary rather than vibes. Logic-only slices skip the check; a later slice that changes a surface's composition re-runs it.
-4. **Commit** — verify the branch again, stage by explicit path (the slice's files plus the updated task file with its checkboxes ticked), commit with a message naming the slice's behavior.
-5. **Completeness audit** — after multi-file changes: schemas, constant maps/enums, and import references updated consistently, and any code the slices orphaned verified dead per the CLAUDE.md dead-code rule — removed or reported, never silently left.
+- The deep plan is a focused read-in, not a fresh design.
+- Re-read the slice against Design decisions and Test strategy, and read the current code at the touch points.
+- Confirm shared types and consumers with LSP `findReferences`.
+- After a demolition, never `git show` the incumbent off the red commit; work from the connection map and the record.
+- A red edge naming a contract neither covers is a `DONE_WITH_CONCERNS` or a question, never a history dive.
+- Close the plan by presenting files, sequence, test seams, and risks, then `Proceeding unless you interrupt.`
+- That plan is a window to course-correct, not an approval gate.
+
+For a slice touching anything a user sees:
+
+- Read the `design:` artifact, `UI_UX.md`, `BRAND_DESIGN.md`, and the app's theme CSS before planning.
+- The app's theme CSS is the source of truth for token values.
+- When the build must deviate from the artifact, surface it — `BLOCKED`, or `DONE_WITH_CONCERNS` for minor drift — and never redesign silently, because at build time the payload's shape is louder than the task.
+- The artifact's Experience intent and Source fidelity sections are the build's judging contract, and the build session never edits them.
+- When a render cannot satisfy them, surface the conflict; never adjust the contract to fit the render.
+- Record a ratified deviation in the task file and carry it into QA.
+- Judge later render passes against the artifact plus recorded ratifications; only `grill-design` amends the artifact.
+- A slice changing anything under `.claude/skills/` loads `skill-creator` here.
+
+### Step 2 — build
+
+- Build with `/tdd`: red before green, one seam at a time.
+
+### Step 3 — validate
+
+- Run the project's own typecheck (where one exists), lint, format, plus the slice's test files.
+- Discover the lint, format, and test commands from `CLAUDE.md` and the project manifest; never assume a toolchain.
+- Run cheap checks and single test files regularly while building.
+- Do not run the full test suite here; it is slow, and its job is at Land and again after any post-QA fix, never mid-slice.
+- Fix failing checks iteratively until clean.
+- Lint and the slice's own tests stay green on every slice, because deleted files raise no lint errors and deleted tests went with their code.
+
+With a connection map still open:
+
+- A green project typecheck is not the per-slice bar.
+- Every slice shrinks the error set and introduces nothing outside its own scope.
+- A widening or unexplained set is a real regression; "it is red anyway" never becomes cover.
+- Shrinking is not the goal; reconnecting is.
+- A red edge closes by wiring its call site to the new interface, or it stays open and the slice reports `BLOCKED`.
+- Refuse a module at the old path re-exporting old names — that ships the incumbent as a permanent adapter.
+
+Render check:
+
+- Add one on the slice that first makes a surface renderable.
+- Screenshot at mobile and desktop widths with the UI tool named in `CLAUDE.md`.
+- Judge against the artifact's hierarchy, breakpoint plan, and disclosure plan.
+- Judge against Experience intent and the Source fidelity inventory when the artifact records them.
+- Judge intent assertions in a governed-verdict line the same way.
+- Judge against `UI_UX.md`'s floors as well.
+- Fix composition failures before the slice commits: caught at slice 2 it costs one fix, at QA it costs a redesign.
+- When `source:` names a stored export, diff each render against the export covering that breakpoint.
+- Resolve `source:` as repo-root paths under `docs/assets/`; anything outside is refused, not read.
+- The comparison judges density, hierarchy, scale, content, and fill of space — the qualities the inventory names.
+- The comparison never judges palette, token, or theme conformance, because a mock in the wrong theme fails forever and gets rationalized away.
+- A drift verdict cites the inventory line or intent assertion it violates.
+- Logic-only slices skip the render check.
+- A later slice changing composition re-runs it.
+
+### Step 4 — commit
+
+- Verify the branch again before staging.
+- Stage by explicit path: the slice's files plus the updated task file with checkboxes ticked.
+- The commit message names the slice's behavior.
+
+### Step 5 — completeness audit
+
+- After multi-file changes, audit that schemas, constant maps, and import references were updated consistently.
+- Verify orphaned code against the `CLAUDE.md` dead-code rule — removed or reported, never silently left.
 
 ## 5. Land
 
-All slices DONE, every acceptance criterion checked, and any demolition connection map closed to zero: run the full test suite once — its first and only run, there to catch cross-slice regressions that single-file runs cannot see. A failure here is a real regression: fix it (and amend or commit the fix) before proceeding.
+Preconditions: all slices `DONE`, every acceptance criterion checked, any connection map at zero.
 
-Suite green → one **shape check**: if the task added a module, moved a boundary, changed a data flow, or rewired a dependency between contexts, load the `domain-modeling` skill, which owns `ARCHITECTURE.md` writes, then update the owning `ARCHITECTURE.md` (and the root doc if cross-context topology moved) per its `ARCHITECTURE-FORMAT.md` and commit it — a shape change that ships without its doc update is how the map starts lying. No `ARCHITECTURE.md` yet means create it with that one shape-fact, per the format doc's growth rule: a one-fact doc is valid, a stub is not. No shape change, no edit.
+- Run the full test suite — its first run, catching cross-slice regressions single-file runs cannot see.
+- A suite failure is a real regression: fix it and amend or commit before proceeding.
 
-Shape current → **task-end render pass** when the task touched any surface: screenshot every touched surface at both breakpoints and in both themes (theme drift is cheapest to batch here), judge against the design artifact (Experience intent and Source fidelity included, when recorded), the stored source design when `source:` names one (same scoped comparison as the slice check — inventory-and-intent qualities, never palette or theme), and the design docs, and fix what fails — user-ratified deviations recorded in the task file are not failures; the screenshots ride into the QA handoff so the user reviews evidence, not promises.
+Shape check, once the suite is green:
 
-Render pass clean → **human QA gate**. Hand the user a QA script — the exact commands to run, URLs to visit, and actions to take to see the change in action, with what they should observe mapped to the acceptance criteria — then stop and wait for their verdict. When the task's design artifact records a stored source design, the handoff leads with the source-versus-build comparison — the render-pass screenshots beside the source exports, drift verdicts already cited — so the user reviews desirability evidence first rather than discovering the gap themselves. Instructions only: do not start servers or drive the app for them. A green suite proves the code does what the tests say; only the user can confirm it does what they meant, and this gate is where that feedback belongs — the task is not complete, and nothing downstream gets recommended, until they have seen it work. Issues they surface run back through the slice loop (fix, validate, commit), then hand back an updated QA script.
+- Run it when the task added a module, moved a boundary, changed a data flow, or rewired a cross-context dependency.
+- Load `domain-modeling`, which owns `ARCHITECTURE.md` writes.
+- Update the owning `ARCHITECTURE.md` per `ARCHITECTURE-FORMAT.md` — and the root topology doc as well when the change rewired a cross-context dependency — then commit.
+- With no `ARCHITECTURE.md` yet, create it with that one shape fact; a one-fact doc is valid, a stub is not.
+- No shape change means no edit.
 
-QA confirmed → flip `status: done` and commit the flip. Then one question: run `/review-board` before shipping? Recommend yes for anything non-trivial — author overconfidence is exactly what the board exists to catch. Alongside that question, name any capture candidates the build surfaced (`/curate-context` conventions, `/capture-task` asides) so they land or get declined before anything ships — post-ship suggestions force follow-up commits on a branch the user wants merged and done (ship-pr's pre-flight is the backstop, but earlier is better since the review board may add more). After the review-board call resolves (run, or declined), close with a one-line `/ship-pr` offer when the repo has a remote — offer only, never invoked on your own — and stop.
+Task-end render pass, once shape is current and any surface was touched:
 
-Never push or open a PR from this skill — `/ship-pr`, on the user's word, is the only door to the remote. Never create GitHub issues. The task file is the tracker; git history — one commit per slice — is the audit trail.
+- Screenshot every touched surface at both breakpoints and in both themes — theme drift is cheapest to batch here.
+- Judge against the artifact, Experience intent and Source fidelity included.
+- When `source:` names a stored export, run the same scoped comparison: inventory qualities, never palette or theme.
+- Judge against the design docs and fix what fails.
+- User-ratified deviations are not failures.
+- Its screenshots ride into the QA handoff, because the user reviews evidence, not promises.
+
+Human QA gate, once the render pass is clean:
+
+- Hand over a script: exact commands, URLs, and actions, with observations mapped to acceptance criteria.
+- Lead the handoff with the source-versus-build comparison when the task has a stored source design.
+- Stop and wait for their verdict.
+- Give instructions only; never start servers or drive the app for the user.
+- Recommend nothing downstream until the user has seen it work.
+- Issues surfaced at QA go back through the slice loop, then re-run the full suite before handing back an updated QA script.
+
+Close:
+
+- On QA confirmed, flip `status: done` and commit the flip.
+- Ask once after the flip whether to run `/review-board` before shipping, recommending yes for anything non-trivial: author overconfidence is what the board catches.
+- Name the capture candidates the build surfaced alongside that ask, so they land or get declined before shipping.
+- Close with a one-line `/ship-pr` offer once the review-board call resolves and a remote exists, then stop.
+- `/ship-pr` is an offer only; never invoke it.
+- Never push or open a PR from this skill.
+- Never create GitHub issues; the task file is the tracker and one commit per slice is the audit trail.

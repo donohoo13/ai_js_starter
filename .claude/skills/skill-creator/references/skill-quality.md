@@ -1,28 +1,28 @@
 # Skill Quality Reference
 
-Distilled from Anthropic's Agent Skills best-practices guide (platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices), the Claude Code skills reference (code.claude.com/docs/en/skills), and the Agent Skills engineering post (anthropic.com/engineering/equipping-agents-for-the-real-world-with-agent-skills). When guidance here surprises, verify against those sources; they move faster than this file.
+Distilled from the Agent Skills specification (agentskills.io/specification), Anthropic's Agent Skills best-practices guide (platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices), the Claude Code skills reference (code.claude.com/docs/en/skills), and the Agent Skills engineering post (anthropic.com/engineering/equipping-agents-for-the-real-world-with-agent-skills). Constraints name their source; anything unattributed is house style. When guidance here surprises, verify against those sources; they move faster than this file.
 
 ## Frontmatter
 
-- The Agent Skills standard requires exactly two fields, `name` and `description`; everything else is optional extension.
-- `name`: ≤64 chars, lowercase letters, numbers, and hyphens only; no XML tags; must not contain "anthropic" or "claude". Gerund form is preferred for new skills (`processing-pdfs`, not `pdf-processor`, never `helper`/`utils`).
-- `description`: non-empty, ≤1024 chars, no XML tags. Claude Code truncates the skill-listing text at 1,536 chars.
-- In Claude Code project skills the command name comes from the directory name; frontmatter `name` is display-only. Plugin skills differ: there `name` sets the command's last segment.
-- Claude Code extensions, all optional: `argument-hint` (autocomplete hint), `arguments` (named argument list backing `$name` placeholders), `disable-model-invocation: true` (manual `/name` invocation only), `user-invocable: false` (hidden from the `/` menu), `allowed-tools` / `disallowed-tools` (turn-scoped tool grants and blocks), `model` (turn-scoped model override), `context: fork` plus `agent` (run in a subagent), `hooks` (skill-scoped lifecycle hooks).
+- Spec: `name` and `description` are required; every other field is optional.
+- Spec: `name` is 1-64 chars, lowercase letters, numbers, and hyphens, no leading, trailing, or consecutive hyphens, matching the parent directory name. House style: gerund form (`processing-pdfs`, not `pdf-processor`, never `helper`/`utils`).
+- Spec: `description` is 1-1024 chars. Claude Code truncates `description` plus `when_to_use` at 1,536 in the listing, and a per-listing budget drops whole descriptions before that cap, least-invoked first.
+- Claude Code: project-skill command names come from the directory; frontmatter `name` is display-only. In plugin skills `name` sets the command's last segment.
+- Claude Code extensions, all optional: `when_to_use` (trigger phrases, appended to `description` and sharing its cap), `paths` (globs narrowing automatic activation; never forces a load), `argument-hint`, `arguments` (named list backing `$name` placeholders), `disable-model-invocation: true` (manual `/name` only; removes the skill from context, so its description goes unread), `user-invocable: false`, `allowed-tools` / `disallowed-tools`, `model`, `effort`, `context: fork` plus `agent`, `background: false` (fork only), `shell`, `hooks`. The spec also defines `license`, `compatibility`, `metadata`.
 - Malformed frontmatter YAML loads the body with empty metadata: `/name` still works but the skill never model-triggers. `claude --debug` surfaces the parse error.
 
 ## Description craft
 
-- Third person only ("Processes X", "Use when Y") — first or second person causes discovery problems.
-- State both what the skill does and when to use it; the description is the only trigger signal among potentially 100+ skills.
+- Third person ("Processes X", "Use when Y"). House style; no source ties grammatical person to discovery.
+- State both what the skill does and when to use it. `when_to_use` extends the description in the listing; `paths` decides whether automatic activation is available at all.
 - Name the concrete trigger contexts: file paths, phrases, task shapes. Include session-state triggers ("when editing files under X") alongside user-intent triggers ("when the user asks for Y") so mid-task situations fire, not just explicit requests.
 - Specificity beats pushiness: "use whenever X, Y, or Z, even if the user never says W" earns its place only when each listed context is real.
 
 ## Structure
 
-- Three-level progressive disclosure: metadata (always in context) → SKILL.md body (loaded on trigger) → bundled files (loaded on demand, zero cost until read).
-- Body under 500 lines; treat ~150 as the comfortable ceiling for a focused skill.
-- References exactly one level deep from SKILL.md — no reference→reference chains; a nested file may get head-previewed and its content missed.
+- Three-level progressive disclosure: metadata (in the listing) → SKILL.md body (loaded on invocation, and it stays for the session) → bundled files (loaded on demand, zero cost until read).
+- Spec: body under 500 lines. House style: ~150 is the comfortable ceiling for a focused skill.
+- Spec: references exactly one level deep; no reference→reference chains.
 - Table of contents for any reference file past ~100 lines.
 - Multi-domain skills organize by variant (`references/aws.md`, `references/gcp.md`) so a session reads only the branch it needs.
 - `scripts/` for deterministic repeated work, `assets/` for files used in output, `references/` for knowledge. Ship a script when test sessions keep independently writing the same helper.
