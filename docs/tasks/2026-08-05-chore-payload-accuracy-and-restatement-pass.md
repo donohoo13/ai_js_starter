@@ -109,15 +109,15 @@ Desired behavior: every harness claim in the payload matches the documented mech
 
 ## Acceptance criteria
 
-- [ ] Every accuracy requirement above is fixed, and each fix cites the documentation sentence that grounds it.
+- [ ] Every accuracy requirement above is fixed (the slices record each landing); the per-fix citation of a grounding documentation sentence was carried in commit messages and the changelog where it exists, not as a per-requirement ledger — checking this box requires that ledger, which nobody has built.
 - [x] `grep -rn "hook-gated\|hook-enforced\|hook holds\|hook backs"` over the payload returns only `skill-creator`/`guard-skill-edit` references and explicit negations ("No hook backs this", "no hook holds this seam"), both legitimate. The phrasing alternatives are in the pattern because the narrow two-term grep passed a live instance of the same defect: `curate-context/SKILL.md:59` said "the hook holds this seam from both sides" while `:9` in the same file said nothing blocks a raw edit.
-- [ ] No agent declares a tool that its dispatch mode strips, verified by reading the background allowlist against each `tools:` line.
+- [x] No agent declares a tool its dispatch mode strips: `demolition-planner` and all eight review seats are pinned to foreground dispatch at their call sites, so the `LSP` grant resolves; the review board measured two foreground probes overlapping 21 of 25 seconds, so concurrency survives.
 - [x] For each of the four rewritten files, a behavioral diff test passed: scenario sets written before any rewrite, two fresh agents per file (one holding only the old file, one only the new), 31/31 scenarios answered identically after chair restorations of diff-caught fidelity leaks.
-- [ ] Each of the fourteen duplicated rules appears in full in exactly one file; every other location is a pointer.
+- [ ] Eleven of the fourteen duplicated rules now appear in full in exactly one file with pointers elsewhere; three (the no-hook routing statements, the brand-derivation signposts, the secret-registry statements) were judged distinct jobs per reader rather than duplicates and deliberately left as-is — the criterion's absolute wording does not hold for them, by decision rather than omission.
 - [x] No bullet in any touched file carries more than one instruction: every named run-on is now a lead bullet holding one claim with sub-bullets holding one instruction each, verified by rereading each split for coordinating clauses.
 - [x] The user redirected this gate: the persisted inventories serve as the spec for a faithful restructure rather than a cull menu, so no per-file review round ran — every rule survives by construction, verified by the behavioral diffs.
-- [ ] `pnpm format:check` passes and every config file parses.
-- [ ] Every deletion is reported to the user before it lands, per the context-file rule.
+- [x] `pnpm format:check` passes and every config file parses, re-verified after every landing this branch.
+- [x] Every deletion was reported before landing: the five-rule cull (later reversed by the user), the eight-bullet cull, the docker gate, the collapse drops, and each rewrite's behavioral-diff divergence report.
 
 ## Dependencies
 
