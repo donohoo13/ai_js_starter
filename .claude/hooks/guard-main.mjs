@@ -25,22 +25,29 @@ if (!command.includes('git')) process.exit(0);
 // Blank quoted spans in one quote-aware pass: content inside quotes is data
 // (commit messages, grep patterns) and may hide separators. Two independent
 // regex passes mis-pair an apostrophe inside double quotes with a later single
-// quote and can swallow a real `git push`. Escaped quotes are not modeled;
-// this is a guardrail against honest mistakes, not a shell parser.
+// quote and can swallow a real `git push`. An unterminated quote (a comment
+// line with an apostrophe ahead of the git command) re-scans its tail as
+// unquoted text — failing toward inspecting beats silently skipping the rest
+// of a multiline batch. Escaped quotes are not modeled; this is a guardrail
+// against honest mistakes, not a shell parser.
 function blankQuotes(cmd) {
   let out = '';
   let quote = null;
-  for (const ch of cmd) {
+  let openIndex = -1;
+  for (let i = 0; i < cmd.length; i++) {
+    const ch = cmd[i];
     if (quote) {
       if (ch === quote) quote = null;
       continue;
     }
     if (ch === "'" || ch === '"') {
       quote = ch;
+      openIndex = i;
       continue;
     }
     out += ch;
   }
+  if (quote !== null) out += blankQuotes(cmd.slice(openIndex + 1));
   return out;
 }
 
