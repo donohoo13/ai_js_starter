@@ -77,5 +77,5 @@ The hook is the only executable surface: its battery pipes crafted `{tool_input:
 - [x] `guard-dev-server.mjs` + `settings.json` registration + test battery — the enforcement layer, demoable by piping a `pnpm dev` payload and watching it block.
 - [x] CLAUDE.md restatement: the ban as an absolute, the process-lifecycle block rewritten, the `playwright-local` line scoped, the hook documented (loads `curate-context`).
 - [x] implement-task SKILL.md + demolition reference: static artifact check, off-plan checkpoint, offered land-phase render pass, pre-flight carve-out ask (loads `skill-creator`).
-- [ ] grill-engineer build-now, grill-design capture steps, diagnose feedback loop: hand-the-command mechanic (loads `skill-creator`).
+- [x] grill-engineer build-now, grill-design capture steps, diagnose feedback loop: hand-the-command mechanic (loads `skill-creator`).
 - [ ] README blurbs + fork-points entry + CHANGELOG entry — the propagation layer, closing the grep criterion.
