@@ -69,7 +69,7 @@ Gate mechanics:
 
 ### Step 4 — create the worktree
 
-- With no worktree yet, ask for one confirm naming the branch and `$HOME/Code/.worktrees/<project>/<branch>`, slashes flattened to dashes.
+- With no worktree yet, ask for one confirm naming the branch and `.claude/worktrees/<branch>` inside the main checkout, slashes flattened to dashes — the harness's default worktree home, so `EnterWorktree` raises no extra approval prompt.
 - On yes, verify the checkout is on `main` first; a checkout parked elsewhere seeds the worktree from the wrong tree, so surface that and wait.
 - Then run `gwt-add.sh --no-open` and enter via `EnterWorktree`.
 - When `gwt-add.sh` exits non-zero, surface its output and stop rather than entering: every check in that tree then fails for reasons unrelated to the task.

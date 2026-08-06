@@ -62,7 +62,7 @@ Run the `grilling` skill under this frame: persona is the onboarding auditor —
 
 ## Phase 3 — Tailoring plan
 
-Present one itemized plan, grouped by landing zone (skills, agents, `settings.json`, hooks, scripts, `CLAUDE.md`, new skills). Each item states what changes, in which file, traced to the detection finding or interview answer that justifies it. The user approves or rejects each item individually — same discipline as `curate-context`. The final item is always self-removal (Phase 5). Nothing is written until the plan is resolved.
+Present one itemized plan, grouped by landing zone (skills, agents, `settings.json`, hooks, scripts, `.claude/rules/` files, `CLAUDE.md`, new skills). Each item states what changes, in which file, traced to the detection finding or interview answer that justifies it. The user approves or rejects each item individually — same discipline as `curate-context`. The final item is always self-removal (Phase 5). Nothing is written until the plan is resolved.
 
 ## Phase 4 — Apply
 

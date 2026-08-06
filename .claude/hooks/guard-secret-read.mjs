@@ -99,7 +99,7 @@ for (const token of tokens) {
   for (const rule of rules) {
     if (rule.re.test(token)) {
       console.error(
-        `Blocked by guard-secret-read hook: "${token}" matches secret-registered pattern Read(${rule.glob}) in .claude/settings.json permissions.deny — secret-bearing files are gated against accidental access. Per CLAUDE.md: name the secret and its file, then hand the user a ready-to-run command that references it inline (e.g. FOO="$(grep '^FOO=' <file> | cut -d= -f2-)" <cmd>) for their own terminal; never print the value or ask them to paste it into chat.`,
+        `Blocked by guard-secret-read hook: "${token}" matches secret-registered pattern Read(${rule.glob}) in .claude/settings.json permissions.deny — secret-bearing files are gated against accidental access. Per CLAUDE.md: name the secret and its file, then hand the user a ready-to-run command that references it inline (e.g. FOO="$(grep '^FOO=' <file> | cut -d= -f2-)" <cmd>) for their own terminal; never print the value or ask them to paste it into chat. A false positive — a command that only names a registered file without touching it — is rephrased so no registered spelling appears as a token, or handed to the user; never worked around with a file that opens the path.`,
       );
       process.exit(2);
     }

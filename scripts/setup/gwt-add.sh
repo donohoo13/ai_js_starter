@@ -2,9 +2,11 @@
 set -euo pipefail
 
 # Usage: ./scripts/setup/gwt-add.sh [--no-open] <branch-name> [git worktree add flags]
-# Creates a git worktree at $HOME/Code/.worktrees/<project>/<branch> (slashes
+# Creates a git worktree at <main-checkout>/.claude/worktrees/<branch> (slashes
 # in <branch> flattened to dashes, so feature/foo lands at feature-foo), copies
-# env files, runs pnpm install, and opens the worktree in Zed.
+# env files, runs pnpm install, and opens the worktree in Zed. The in-repo
+# location is the harness's default worktree home, so EnterWorktree needs no
+# extra approval prompt; .gitignore and .prettierignore both exclude it.
 # --no-open skips the editor launch (scripted/AI invocations, e.g. implement-task).
 
 no_open=0
@@ -23,7 +25,7 @@ shift
 
 # The main checkout is always the first entry in `git worktree list`;
 # rev-parse --show-toplevel would return the linked worktree's own path when
-# invoked from inside one, mis-deriving <project> below.
+# invoked from inside one, nesting the new worktree under a sibling worktree.
 # `|| true` is load-bearing: outside a repo, git fails and `pipefail` propagates
 # that through the whole pipeline, so `set -e` would kill the script with a bare
 # exit 128 and the friendly branch below would never run. Do not remove it.
@@ -33,10 +35,9 @@ if [[ -z "$main_root" ]]; then
   exit 1
 fi
 
-project=$(basename "$main_root")
 # Flatten branch slashes to dashes so any branch convention (feature/foo,
 # user/eng-123) yields one predictable directory level under the base.
-target="$HOME/Code/.worktrees/$project/${branch//\//-}"
+target="$main_root/.claude/worktrees/${branch//\//-}"
 
 # Re-running this script is the documented recovery from a failed dependency
 # install, so creation is idempotent: a worktree already at $target is adopted
