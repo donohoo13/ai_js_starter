@@ -1,12 +1,12 @@
 ---
 name: ship-pr
-description: Push the current non-main branch and open a GitHub PR whose body documents how the work was produced: summary, human QA evidence, and review-board outcomes. Use when the user says "ship this", "open a PR", "create the PR", "PR this branch", "ship it", or accepts the one-line ship-pr offer at the close of implement-task or review-board. Strictly user-invoked: never auto-chain into this from another skill, and never run it on main.
+description: Push the current non-main branch and open a descriptive GitHub PR whose body fills the project's pull request template with a summary and human QA evidence. Use when the user says "ship this", "open a PR", "create the PR", "PR this branch", "ship it", or accepts the one-line ship-pr offer at the close of implement-task or review-board. Strictly user-invoked: never auto-chain into this from another skill, and never run it on main.
 argument-hint: '[draft] (optional — opens the PR as a draft)'
 ---
 
 # Ship PR
 
-Take a completed, QA'd, reviewed implementation on its branch and land it on the remote: push the branch, open the PR. The PR body is the durable audit artifact — GitHub retains it after branches are deleted and record commits are squashed away — so its job is to answer, in one screen, how thoughtfully this change was produced: what it does, whether a human saw it work, whether a review board ran, and what happened to every finding, including the dismissed ones.
+Take a completed implementation on its branch and land it on the remote: push the branch, open the PR. The PR body is descriptive, not investigative — it answers, in one screen, what the change does and whether a human saw it work. Session context is capital — reuse what this conversation already knows — but the branch is ground truth: a resumed branch carries commits this conversation never saw, so the Summary and title describe the commit list below, never session memory alone.
 
 Invocation is the consent. The chain's invariant — push and PR only on the user's word — lives here as a named door: typing `/ship-pr`, or accepting another skill's one-line offer, is that word. Nothing extends the consent: one branch pushed, one PR opened, nothing else touches the remote.
 
@@ -22,25 +22,23 @@ Working tree at invocation (empty = clean):
 git status --short | head -50
 ```
 
+Branch commits against the default branch — the PR's actual contents:
+
+```!
+git log --oneline "$(git symbolic-ref --short refs/remotes/origin/HEAD 2>/dev/null || echo main)"..HEAD | head -30
+```
+
 ## Hard stops — mechanics only
 
-Refuse and route when the mechanics make shipping wrong. Never block on process — process gaps get documented truthfully instead (below), because a skill that blocks on process gets routed around with a bare `gh pr create`, and the paper trail is lost exactly when it mattered.
+Refuse and route only when the mechanics make shipping wrong. This skill polices no process — no review nudges, no gate checks — because process routing already happened upstream where it belongs, and a skill that blocks at the door gets routed around with a bare `gh pr create`.
 
 - **On the default branch** (`git symbolic-ref refs/remotes/origin/HEAD`, falling back to `main`) — nothing to PR; route to `stage-for-commit` or a feature branch.
 - **No remote** — nothing to push to.
 - **Dirty working tree** — this skill ships commits; it does not sweep the tree. Route uncommitted changes to a proper commit first, then re-invoke. Untracked files that are clearly unrelated strays don't block, but name them so the user decides.
 
-## Assemble the record
-
-Session context is capital — reuse what this conversation already knows — but the branch is ground truth. Three inputs:
-
-1. **Review record.** `git log <default>..HEAD --grep='^review:'` finds the always-empty record commits review-board leaves after its human gate resolves. The latest record describes the final state; earlier boards on the same branch each still get a line. A board ran this session but left no record commit → use the session's report and note the record's absence. Neither → offer `/review-board` once, one line, their call; declined means the PR says `Not run.` plainly. That sentence existing is the accountability — don't nag, don't block, don't soften it.
-2. **QA evidence.** A `docs/tasks/` file at `status: done` means the human QA gate passed — cite what its QA script exercised. Otherwise ask once: has a human seen this change in action? Record the answer as given. "Not yet human-verified" is a valid, honest entry; a false "verified" is the one thing this section must never contain.
-3. **Summary.** The task file's problem and requirements when one drove the work; else the branch's commit subjects plus session context. What and why in 2-4 lines. The diff is the changes — no restated file lists.
-
 ## Fill the template
 
-`.github/PULL_REQUEST_TEMPLATE.md` owns the structure; this skill owns the semantics of each section. It is loaded at invocation here (empty = missing) so you fill the project's actual sections, not an assumed set — a project may have customized them:
+`.github/PULL_REQUEST_TEMPLATE.md` owns the structure; this skill owns the semantics of the sections it defines below. It is loaded at invocation here (empty = missing) so you fill the project's actual sections, not an assumed set — a project may have customized them:
 
 ```!
 cat .github/PULL_REQUEST_TEMPLATE.md 2>/dev/null
@@ -56,28 +54,18 @@ Empty output → the template is missing; offer once to scaffold it from the can
 ## QA
 
 <!-- Who exercised the change in action and what they verified. "Not yet human-verified" is a valid, honest entry. -->
-
-## Review board
-
-<!-- Not run. -->
-<!-- or: Ran `balanced` board YYYY-MM-DD: N findings → C confirmed / P plausible / R rejected. -->
-<!-- Addressed: SEC-1, COR-2 (fix commits abc1234, def5678). -->
-<!-- Dismissed: REL-3 — one-line reason as given. -->
-<!-- Record: review commit <sha> on this branch. -->
 ```
 
 Section semantics:
 
-- **Summary** — the what and why; link the task file when one exists.
-- **QA** — who exercised the change and what they verified, from the evidence above, recorded verbatim.
-- **Review board** — `Not run.`, `Declined.` when the user was offered a board and said no, or: mode and date, seats that sat, finding counts by verdict, addressed IDs with their fix commit SHAs, dismissed IDs each with the user's recorded one-line reason, the record commit SHA, and each seat's Actions evidence carried from that record. Actions is the part that must survive: the record commit is squashed away on merge and this body is what remains, so a PR reporting only "0 findings" preserves an absence indistinguishable from nobody having looked. A zero-finding board with its seats' commands and outputs intact is a real result; the same board without them is a blank. Dismissals are the point of this section: a dismissal with a recorded reason is defensible; a silent one indicts the process. Never invent a reason that wasn't given — "no reason recorded" is the honest fallback.
-- **No AI attribution** — no generated-with footer, no `Co-Authored-By`. The user is the author of record; the Review board section is the disclosure that actually matters.
+- **Summary** — the what and why in 2-4 lines, from the task file's problem and requirements when one drove the work, else the commit subjects in the invocation snapshot plus session context; link the task file when one exists. The diff is the changes — no restated file lists.
+- **QA** — who exercised the change in action and what they verified. A `docs/tasks/` file at `status: done` means the human QA gate passed — cite what its QA script exercised, and name any commits that landed after the `done` flip (review fixes routinely do), because those postdate the human's look. Otherwise ask once: has a human seen this change in action? Record the answer as given. "Not yet human-verified" is a valid, honest entry; a false "verified" is the one thing this section must never contain.
+- **Any other section** — a customized template may carry sections this skill defines no semantics for; name each one at the confirm and leave it to the user to fill or strike, never filling it from session memory, because the honesty rules here are scoped to the sections above.
+- **No AI attribution** — no generated-with footer, no `Co-Authored-By`. The user is the author of record.
 
 ## Confirm once, ship, stop
 
-**Pre-flight: flush session capture candidates first.** Before showing the confirm, surface anything this session earned that would otherwise become a post-ship straggler — a `/curate-context` convention candidate, a `/capture-task` aside, a shape-doc fact — as part of the same confirm message, so the user can fold them into the branch now or decline them now. Once the PR is open the branch should be mergeable without follow-up commits; a suggestion that arrives after the push forces exactly the lingering-commit churn this skill exists to prevent. Declined candidates are dropped, not re-raised.
-
-Title: imperative mood, 72 characters or fewer, from the task file title or the branch's dominant commit subject. Show the exact title and body and ask one confirm — this is the last moment before the remote. On yes:
+Title: imperative mood, 72 characters or fewer, from the task file title or the dominant commit subject in the invocation snapshot. Show the exact title and body and ask one confirm — this is the last moment before the remote. On yes:
 
 ```bash
 git push -u origin <branch>
