@@ -67,7 +67,7 @@ Settle the seat set first, then the dials: which board sits determines which dia
 
 - When the change mixes code and documentation, seat every documentation seat plus each code seat that has a surface.
 - When the board looks unnecessary, recommend skipping it through gate 2 and never decide it yourself; that recommendation is available only for edits that change no instruction to any reader, and you say which edits those are.
-- When the user declines the board, record it as a declined board, not one that ran, because `/ship-pr` must report truthfully.
+- When the user declines the board, record it as a declined board, not one that ran — a decline is a legitimate decision, and reporting it as a completed board fabricates a review.
 
 ## Step 3 — Set the dials: mode and read depth
 
@@ -214,7 +214,7 @@ RECORD
 - The subject line is the stated point-of-use exception to the project's 50-char commit rule, and the `review:` prefix is the grep contract.
 - The body carries one line per finding — ID, severity, verdict, title, outcome — where the outcome is the fix SHA, the task path, the user's verbatim reason, or rejected.
 - Carry every seat's Actions through verbatim, never summarized, because a clean board must leave evidence it ran.
-- Close with the trailers `Review-Mode:` and `Review-Scope: <base>..<head>`; `/ship-pr` finds records with `git log <default>..HEAD --grep='^review:'`.
+- Close with the trailers `Review-Mode:` and `Review-Scope: <base>..<head>`; the grep contract (`git log <default>..HEAD --grep='^review:'`) serves the record's real readers — the user and any session re-reviewing this branch while it lives, and compliance forks that re-couple `ship-pr` to it.
 - A finding captured as a task rides the `dismissed` count, and its body line carries the task path.
 - On the default branch, skip the record commit and let the report stay conversational.
 - When the branch may be rewritten, warn that an interactive rebase silently drops the empty record commit.
