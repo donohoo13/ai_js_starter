@@ -33,7 +33,7 @@ Support and sales teams already run all three side by side — the seed transcri
 
 - **Deep-linking between the standalone tools** (each tool links contextually into the others): rejected because it preserves three logins and three navigation models — the friction users actually named — while adding cross-tool URL contracts we would maintain forever. Kept from it: the record-context handoff idea survives inside the workspace as shared context.
 - **Rebuild all three as one new app**: rejected as a multi-quarter freeze on visible progress; the portfolio below reaches the same end state through independently shippable projects, each valuable alone if priorities shift mid-way.
-- **Acquiring a shell product**: rejected on brand-coherence grounds after research; the design language in `BRAND_DESIGN.md` is a differentiator we would lose inside someone else's frame.
+- **Acquiring a shell product**: rejected on brand-coherence grounds after research; the design language in `BRANDING.md` is a differentiator we would lose inside someone else's frame.
 
 ### Doctrine
 

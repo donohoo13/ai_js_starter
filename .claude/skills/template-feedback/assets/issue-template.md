@@ -8,7 +8,7 @@ The reader is a template-dev session with none of the reporting project's contex
 
 ## Artifact
 
-The template file and section in play, at the version this project carries. Name the specific skill, hook, script, rule, or context-file bullet — "the design skill" is not an artifact, `grill-design/SKILL.md`'s grammar check is.
+The template file and section in play, at the version this project carries. Name the specific skill, hook, script, rule, or context-file bullet — "the design skill" is not an artifact, `grill-design/SKILL.md`'s component survey is.
 
 ## Lineage
 

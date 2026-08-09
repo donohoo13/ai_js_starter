@@ -1,6 +1,6 @@
 # Brand research — the locked evidence base
 
-Sourced findings behind `brand-init`'s method and `BRAND_DESIGN.md`'s structure, gathered 2026-07-27 via a research-analyst pass during the grill-product session that produced both. This file exists so no future session re-runs the research or re-litigates the structural decisions; edit it when better evidence lands, and carry the evidence grade with every claim.
+Sourced findings behind `brand-init`'s method and `BRANDING.md`'s structure, gathered 2026-07-27 via a research-analyst pass during the grill-product session that produced both. This file exists so no future session re-runs the research or re-litigates the structural decisions; edit it when better evidence lands, and carry the evidence grade with every claim.
 
 Evidence grades: **studied** (a published study or primary vendor documentation), **practitioner** (agency/vendor writing, consensus but unmeasured), **thin** (single source, uncorroborated).
 
@@ -29,6 +29,6 @@ Recorded so future edits know what was deliberate; the grill-product session tha
 - **Two-tier fill grammar** (identity absolute, steering anchored): strictness on identity axes costs no design quality because they are picked once, not per surface; freedom there is incoherence. Steering sections stay free precisely where good per-surface design happens. Rejected: one uniform grammar (leaves "clean and modern" legal), full steerability (incoherent identity).
 - **Anchored adjectives**: every steering adjective ties to a named shipped product or a "shows up as" consequence; unanchored adjectives are the under-constraint failure the evidence above names.
 - **One exemplar per voice context**: exemplars steer hardest, but a copy library stales and turns constraints into content.
-- **Brand strategy lives in BRAND_DESIGN.md Foundations, not a separate doc**: the four-document framework common in brand-strategy writing was rejected because runtime consumers (`grill-design`, `grill-product`) read this one file as their authority, and `docs/company/company-overview.md` is chartered narrative-only. Landing-page and per-surface specs were likewise rejected as doc content — they are `grill-design` artifacts.
+- **Brand strategy lives in BRANDING.md Foundations, not a separate doc**: the four-document framework common in brand-strategy writing was rejected because runtime consumers (`grill-design`, `grill-product`) read this one file as their authority, and `docs/company/company-overview.md` is chartered narrative-only. Landing-page and per-surface specs were likewise rejected as doc content — they are `grill-design` artifacts.
 - **Images, not URLs, in the mood board**: companies and sites change or vanish under a saved link; committed images are stable, and the distillation interview supplies the articulation a written manifest would have carried.
 - **Sole ownership**: `grill-design` refuses inline brand derivation and signposts here; two owners of one outcome drift.

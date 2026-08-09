@@ -44,7 +44,8 @@ it?" — a monthly-cadence check-in, not a monitoring dashboard.
 
 ## Layout
 
-Desktop (content capped, not full-bleed — see UI_UX.md Spacing & Whitespace):
+Desktop (content capped, not full-bleed — see ux-standards.md Spacing &
+Whitespace):
 
 +----------------------------------------------------------+
 | Projected spend $412 / $500          12 days left        |
@@ -67,7 +68,7 @@ stays above the fold.
 
 - Period selector: segmented control (small fixed option set, single-select).
 - Plan-limit alert threshold: direct text entry with a "$" prefix adornment —
-  a known exact value, so no stepper, no slider (UI_UX.md Numeric Entry &
+  a known exact value, so no stepper, no slider (ux-standards.md Numeric Entry &
   Controls).
 
 ## Disclosure
