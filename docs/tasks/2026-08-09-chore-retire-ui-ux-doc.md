@@ -62,16 +62,16 @@ Desired behavior: universal floors live in a path-scoped rules file that loads o
 
 ### grill-design
 
-- [ ] The grammar check becomes a **component survey**: glob for the project's component library by convention (`**/components/`, `**/ui/`, barrel exports) plus `docs/designs/` for a same-family artifact, then read names and exported prop signatures only. No component bodies, no escalation, no recorded path — a recorded path is a cache with no invalidation, which is the disease being removed, and the template ships an empty workspace so there is no path to record at init time.
-- [ ] `docs/designs/` is globbed alongside the components because a component only exists after a surface ships: two similar surfaces designed in parallel would otherwise diverge with nothing catching it.
-- [ ] The **Governed** verdict now means "this surface is an instance of `<component>`" or "this extends the composition in `<artifact>`", not "this is a `<grammar>` extension".
-- [ ] The **Grammar codification** exit is removed. Four exits become three. The flywheel moves to code, where `CLAUDE.md`'s Rule of Three already governs it and `implement-task`'s completeness audit already runs: the third table gets a `DataTable` component, and no doc mechanism is needed.
-- [ ] `SKILL.md:23` — the feel-silence clause goes from conditional to unconditional. A component carries structure and never at-rest feel, so every governed-verdict authors its two-to-four intent assertions.
-- [ ] `SKILL.md:17` — the opening-line taxonomy drops "a grammar codified into `UI_UX.md`" from the legal objectives.
-- [ ] `SKILL.md:69` — the skeletal-docs stop now triggers on `BRANDING.md` alone; the floors file is never skeletal.
-- [ ] `SKILL.md:14`, `:48`, `:59`, `:60` — fact sources and cross-references repathed.
-- [ ] `references/example-design-artifact.md:47`, `:71` — the cited paths sit **inside the rendered artifact text**, so every future artifact copies whatever is written there. Repath both.
-- [ ] Description frontmatter updated: it names `UI_UX.md` and the grammar check.
+- [x] The grammar check becomes a **component survey**: glob for the project's component library by convention (`**/components/`, `**/ui/`, barrel exports) plus `docs/designs/` for a same-family artifact, then read names and exported prop signatures only. No component bodies, no escalation, no recorded path — a recorded path is a cache with no invalidation, which is the disease being removed, and the template ships an empty workspace so there is no path to record at init time.
+- [x] `docs/designs/` is globbed alongside the components because a component only exists after a surface ships: two similar surfaces designed in parallel would otherwise diverge with nothing catching it.
+- [x] The **Governed** verdict now means "this surface is an instance of `<component>`" or "this extends the composition in `<artifact>`", not "this is a `<grammar>` extension".
+- [x] The **Grammar codification** exit is removed. Four exits become three. The flywheel moves to code, where `CLAUDE.md`'s Rule of Three already governs it and `implement-task`'s completeness audit already runs: the third table gets a `DataTable` component, and no doc mechanism is needed.
+- [x] `SKILL.md:23` — the feel-silence clause goes from conditional to unconditional. A component carries structure and never at-rest feel, so every governed-verdict authors its two-to-four intent assertions.
+- [x] `SKILL.md:17` — the opening-line taxonomy drops "a grammar codified into `UI_UX.md`" from the legal objectives.
+- [x] `SKILL.md:69` — the skeletal-docs stop now triggers on `BRANDING.md` alone; the floors file is never skeletal.
+- [x] `SKILL.md:14`, `:48`, `:59`, `:60` — fact sources and cross-references repathed.
+- [x] `references/example-design-artifact.md:47`, `:71` — the cited paths sit **inside the rendered artifact text**, so every future artifact copies whatever is written there. Repath both.
+- [x] Description frontmatter updated: it names `UI_UX.md` and the grammar check.
 
 ### The other three lenses
 
@@ -192,7 +192,7 @@ No test runner for prose. Three checks stand in, at the seam a reader actually c
 
 - [x] The new homes: three rules files written from the disposition table (`docs/notes/2026-08-09-ui-ux-disposition.md`, all 129 lines mapped and the five judgment calls approved before the write), the project-choice lines moved into the brand doc's bracketed prompts, `BRAND_DESIGN.md` → `BRANDING.md`, `UI_UX.md` deleted. Rule counts land exactly on the table: 55 / 10 / 12, and 83 original bullets = 77 relocated + 5 moved to the brand doc + 1 dropped as a duplicate of `BRANDING.md`'s Surfaces section. Red state: 43 `UI_UX` and 38 `BRAND_DESIGN` payload references outstanding.
 - [x] `curate-context`: the routing rewrite (split by what the rule governs, no count stated), the carve-out scoped to `BRANDING.md` with `ux-standards.md` named as closed, the identity-tier blast-radius gate with its capture offer and its unrun-check clause, the em-dash list, and the description. `skill-creator`'s landing checklist pulled the skills `README.md` blurb into this slice rather than leaving it for the sweep.
-- [ ] `grill-design`: component survey plus `docs/designs/` glob replacing the grammar check, codification exit removed, intent assertions unconditional, skeletal-docs trigger narrowed, and `references/example-design-artifact.md` repathed inside its rendered artifact text.
+- [x] `grill-design`: component survey plus `docs/designs/` glob replacing the grammar check, codification exit removed (four exits to three, with the absence explained rather than left silent), intent assertions unconditional on the governed path, skeletal-docs trigger narrowed to `BRANDING.md` with an empty component library routed to Ungoverned instead, an explicit read of the rules file added since no glob fires for this lens, and `references/example-design-artifact.md` repathed inside its rendered artifact text. Skills `README.md` blurb updated with it per `skill-creator`'s checklist.
 - [ ] The other three lenses: `grill-product`'s narrowed exit, and explicit floor reads in `grill-product`, `brand-init`, and `grill-initiative`.
 - [ ] The citation chain: `grill-engineer`, `capture-task/assets/task-template.md`, `references/example-scoped-task.md`'s governed-verdict line, and `implement-task`'s four sites including the pre-flight path list.
 - [ ] `project-init` and `fork-points.md`: the `:142` rewrite and relocation, three new entries with the glob-universality trap named, framework and styling-system detection, and the report pointer.
