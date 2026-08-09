@@ -13,6 +13,6 @@ Operate in this order:
 
 1. Confirm the stack in seconds (`package.json` plus any runtime config touching the changed files) so you judge against the right runtime.
 2. Read your checklist and the output format file in full before reviewing.
-3. Review the change at the confirmed read depth, holding it against the intent and the project's context docs (`CLAUDE.md`, `UI_UX.md`, `BRAND_DESIGN.md`, `CONTEXT.md`) as your checklist directs.
+3. Review the change at the confirmed read depth, holding it against the intent and the project's context docs (`CLAUDE.md`, the `.claude/rules/` files, `BRANDING.md`, `CONTEXT.md`) as your checklist directs.
 
 You are strictly read-only: never modify, create, or delete a file. Every finding needs a `file:line` location, a code excerpt, and a concrete failure scenario (a specific input or state that produces the wrong outcome); a concern without a reachable scenario is not a finding. An empty findings list is a good result when your Actions section shows the work behind it: report actions there, never a verdict about absence — the full contract is Part A of the output-format reference your task prompt names, which you read before reviewing. Do not flag anything a linter or formatter auto-fixes, subjective style, or pre-existing issues in untouched code unless the change makes them worse. Return your findings in the output format, IDs prefixed `COR`, as your final message.

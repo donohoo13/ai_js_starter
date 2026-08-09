@@ -110,21 +110,21 @@ Desired behavior: universal floors live in a path-scoped rules file that loads o
 
 ### The CLAUDE.md pointer
 
-- [ ] `CLAUDE.md` gains a pointer naming all three rules files, what each is for, and when each loads — so every session carries the context-aware framing before any glob fires. This is not decoration: `curate-context/SKILL.md:74` states that a read-triggered rule either takes a guaranteed placement or names itself in a guaranteed file, so the two uncovered routes have somewhere to read it from. A `Write` creating a new component and any Bash write both reach these paths without triggering the load.
-- [ ] Model it on the existing precedent at `CLAUDE.md:77`, which does exactly this for `javascript-typescript.md`: the file, its load trigger, and the two routes that miss it, stated in one bullet.
-- [ ] Structure it as a `#### Frontend and UI` subsection under Development, mirroring the `#### Javascript/Typescript/Node.js` subsection the JS/TS pointer already lives in, while the Standards section keeps a rewritten line for `BRANDING.md` alone (read before any brand decision, not imported, so not in context until a session opens it).
-- [ ] State each file's purpose in one clause, because the pointer's job is orientation a session gets for free: `ux-standards.md` holds the usability and accessibility floors every surface meets and is closed to growth; `frontend-styling.md` holds this project's styling conventions; `transactional-email.md` holds the email-client rules.
-- [ ] Record the pointer/file coupling in `fork-points.md` for all three, matching the note already at `fork-points.md:56`: pruning a pointer without deleting its rules file leaves the rules loading with nothing to explain them, and deleting the file without the pointer leaves a pointer at nothing.
+- [x] `CLAUDE.md` gains a pointer naming all three rules files, what each is for, and when each loads — so every session carries the context-aware framing before any glob fires. This is not decoration: `curate-context/SKILL.md:74` states that a read-triggered rule either takes a guaranteed placement or names itself in a guaranteed file, so the two uncovered routes have somewhere to read it from. A `Write` creating a new component and any Bash write both reach these paths without triggering the load.
+- [x] Model it on the existing precedent at `CLAUDE.md:77`, which does exactly this for `javascript-typescript.md`: the file, its load trigger, and the two routes that miss it, stated in one bullet.
+- [x] Structure it as a `#### Frontend and UI` subsection under Development, mirroring the `#### Javascript/Typescript/Node.js` subsection the JS/TS pointer already lives in, while the Standards section keeps a rewritten line for `BRANDING.md` alone (read before any brand decision, not imported, so not in context until a session opens it).
+- [x] State each file's purpose in one clause, because the pointer's job is orientation a session gets for free: `ux-standards.md` holds the usability and accessibility floors every surface meets and is closed to growth; `frontend-styling.md` holds this project's styling conventions; `transactional-email.md` holds the email-client rules.
+- [x] Record the pointer/file coupling in `fork-points.md` for all three, matching the note already at `fork-points.md:56`: pruning a pointer without deleting its rules file leaves the rules loading with nothing to explain them, and deleting the file without the pointer leaves a pointer at nothing.
 
 ### The reference sweep
 
-- [ ] `CLAUDE.md` — the remaining references: the AI-context-files list, the read-before-any-UI-decision rule (which becomes accurate for the first time, since the rules files actually load), and the `curate-context` routing list.
-- [ ] `README.md:8` — the Context files bullet.
-- [ ] `.claude/skills/README.md` — five references (`:39`, `:92`, `:98`, `:150`, `:152`) plus the `grill-design` and `grill-product` blurbs.
-- [ ] `.claude/rules/template-dev.md` — two references, including the steering-doc enumeration in the version-references rule.
-- [ ] `review-board/references/correctness.md:7` and `.claude/agents/review-correctness.md:16` — both carry the same doc roster, so both change.
-- [ ] `brand-init/references/brand-research.md` and `grill-initiative/references/example-initiative.md` — `BRAND_DESIGN.md` mentions.
-- [ ] `CHANGELOG.md` past entries are **not** touched: `template-dev.md` designates the changelog a history record, and version-stamped provenance is what history records are for.
+- [x] `CLAUDE.md` — the remaining references: the AI-context-files list, the read-before-any-UI-decision rule (which becomes accurate for the first time, since the rules files actually load), and the `curate-context` routing list.
+- [x] `README.md:8` — the Context files bullet.
+- [x] `.claude/skills/README.md` — five references (`:39`, `:92`, `:98`, `:150`, `:152`) plus the `grill-design` and `grill-product` blurbs.
+- [x] `.claude/rules/template-dev.md` — two references, including the steering-doc enumeration in the version-references rule.
+- [x] `review-board/references/correctness.md:7` and `.claude/agents/review-correctness.md:16` — both carry the same doc roster, so both change.
+- [x] `brand-init/references/brand-research.md` and `grill-initiative/references/example-initiative.md` — `BRAND_DESIGN.md` mentions.
+- [x] `CHANGELOG.md` past entries are **not** touched: `template-dev.md` designates the changelog a history record, and version-stamped provenance is what history records are for.
 
 ### Release
 
@@ -136,10 +136,10 @@ Desired behavior: universal floors live in a path-scoped rules file that loads o
 - [ ] `grep -rn "UI_UX" --include="*.md" . | grep -v "^docs/" | grep -v "^CHANGELOG.md"` returns zero hits. Payload baseline on `main`: 44.
 - [ ] `grep -rn "BRAND_DESIGN" --include="*.md" . | grep -v "^docs/" | grep -v "^CHANGELOG.md"` returns zero hits. Payload baseline on `main`: 38.
 - [ ] Both exclusions are anchored `^docs/` and `^CHANGELOG.md` with no `./` prefix, because `grep -r .` emits bare relative paths on this platform; a `^./` anchor silently matches nothing and reports history files as payload defects.
-- [ ] A written disposition table accounts for all 129 lines of `UI_UX.md`: each line lands in one of the three rules files, in `BRANDING.md`, or is dropped with a stated reason. No line is unaccounted for.
-- [ ] No payload file outside `CHANGELOG.md` describes a surface grammar as a codifiable artifact or cites one as a citation type.
+- [x] A written disposition table accounts for all 129 lines of `UI_UX.md`: each line lands in one of the three rules files, in `BRANDING.md`, or is dropped with a stated reason. No line is unaccounted for.
+- [x] No payload file outside `CHANGELOG.md` describes a surface grammar as a codifiable artifact or cites one as a citation type.
 - [ ] Each of the three rules files has a `fork-points.md` entry naming its tailoring lever and its pointer coupling.
-- [ ] `CLAUDE.md` names all three rules files, states what each is for in one clause, and states the load trigger plus the two routes that miss it — so a session that never opens a matching file still knows the rules exist and why.
+- [x] `CLAUDE.md` names all three rules files, states what each is for in one clause, and states the load trigger plus the two routes that miss it — so a session that never opens a matching file still knows the rules exist and why.
 - [ ] `grill-product`, `grill-design`, `brand-init`, and `grill-initiative` each carry an explicit instruction to read `.claude/rules/ux-standards.md` by path.
 - [ ] `pnpm format:check` passes.
 - [ ] `grep -rniE 'v[0-9]'` over the payload's steering docs is clean, per the template's pre-release rule.
@@ -196,6 +196,6 @@ No test runner for prose. Three checks stand in, at the seam a reader actually c
 - [x] The other three lenses: `grill-product`'s exit narrowed to `BRANDING.md` with the closed-floors reason stated inline, explicit floor reads in `grill-product`, `brand-init`, and `grill-initiative`, and the skills `README.md` chain diagram, router description, and three blurbs repathed off the grammar vocabulary.
 - [x] The citation chain: `grill-engineer` (Survivors citation, governed-verdict binding, build-now floors, surface-gate wording), `capture-task/assets/task-template.md`, `references/example-scoped-task.md`'s governed-verdict rewritten to cite a component rather than a doc section, and `implement-task`'s four sites including the pre-flight path list, which now leans on its existing `.claude/**` entry to cover the rules files.
 - [x] `project-init` and `fork-points.md`: the `:142` entry narrowed to `BRANDING.md` and pointed at Stack and toolchain, three new rules-file entries there with the glob-universality trap and the pointer coupling named, a fifth entry covering the one case where init edits `paths:` rather than content, framework and styling-system detection in Phase 1, and the closing report pointer.
-- [ ] The `CLAUDE.md` pointer: a `#### Frontend and UI` subsection naming the three rules files, their purposes, and their load trigger, plus the rewritten Standards line for `BRANDING.md`; the pointer coupling recorded in `fork-points.md` for all three.
-- [ ] The reference sweep to zero: `CLAUDE.md`'s remaining references, `README.md`, the skills `README.md`, `template-dev.md`, `review-board/references/correctness.md`, `.claude/agents/review-correctness.md`, `brand-research.md`, and `example-initiative.md`. Both greps hit zero here.
+- [x] The `CLAUDE.md` pointer: a `#### Frontend and UI` subsection naming the three rules files, their purposes, and their load trigger, plus the rewritten Standards line for `BRANDING.md`; the pointer coupling recorded in `fork-points.md` for all three.
+- [x] The reference sweep to zero: `CLAUDE.md`'s remaining references, `README.md`, the skills `README.md`, `template-dev.md`, `review-board/references/correctness.md`, `.claude/agents/review-correctness.md`, `brand-research.md`, and `example-initiative.md`. Both greps hit zero here.
 - [ ] `CHANGELOG.md` v2.5.0 with the migration procedure for diverged instances, and the version bump.

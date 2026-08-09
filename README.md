@@ -5,7 +5,7 @@ Opinionated AI-first starter template: a Claude Code process suite on a pnpm + T
 ## What Ships
 
 - **AI process suite** ([`.claude/`](./.claude/)) — the skill chain (grilling lenses, capture/implement/review flow), review-board agents, guard hooks, and the permission/secrets registry; the human-readable map is [`.claude/skills/README.md`](./.claude/skills/README.md).
-- **Context files** ([`CLAUDE.md`](./CLAUDE.md), [`UI_UX.md`](./UI_UX.md), [`BRAND_DESIGN.md`](./BRAND_DESIGN.md)) — AI coding standards plus the design foundations: brand-agnostic UI/UX floors and a brand skeleton filled by `/brand-init`.
+- **Context files** ([`CLAUDE.md`](./CLAUDE.md), [`BRANDING.md`](./BRANDING.md)) plus path-scoped rules in [`.claude/rules/`](./.claude/rules/) — AI coding standards, a brand skeleton filled by `/brand-init`, and the frontend rule set (brand-agnostic UX floors, styling conventions, transactional email) that loads on its own when a session reads a matching file.
 - **Monorepo skeleton** — `apps/*` and `packages/*` pnpm workspaces with a Turborepo task graph (`turbo build` / `lint` / `test` / `typecheck`), Prettier + husky pre-commit, and pnpm-only installs enforced at `preinstall`. No example app: the suite ships process, not product code.
 - **Setup scripts** ([`scripts/setup/`](./scripts/setup/)) — `doctor.sh` (warn-only LSP binary check, wired into `prepare`), `check-install.mjs` (pnpm-only + Node-major preinstall guard against `.nvmrc`), `gwt-add.sh`/`gwt-remove.sh` (git worktree helpers for parallel AI branches).
 - **MCP config** ([`.mcp.json`](./.mcp.json)) — browser-verification servers plus boilerplate stanzas for common services, all launched via `pnpm dlx`.
