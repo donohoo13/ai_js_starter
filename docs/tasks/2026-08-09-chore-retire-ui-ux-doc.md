@@ -1,6 +1,6 @@
 ---
 type: chore
-status: scoped
+status: in-progress
 created: 2026-08-09
 incumbent: extend
 ---
@@ -39,25 +39,25 @@ Desired behavior: universal floors live in a path-scoped rules file that loads o
 
 ### The three rules files
 
-- [ ] `.claude/rules/ux-standards.md` — the universal floors: `UI_UX.md`'s Standards (minus the project-choice lines below), Surface Composition, Spacing & Whitespace, Motion, Forms, Numeric Entry & Controls, Feedback & Status, Data Tables. Every rule keeps its source citation verbatim.
-- [ ] `.claude/rules/frontend-styling.md` — the CSS section (rem/em/%/no-px/`clamp()`), the CSS-First standard, and the Tailwind block, which stays marked as inert where the project does not use Tailwind.
-- [ ] `.claude/rules/transactional-email.md` — the thirteen Transactional Emails rules, unchanged.
-- [ ] All three carry `paths:` frontmatter. `ux-standards.md` and `frontend-styling.md` scope to component, markup, and style extensions (`tsx,jsx,vue,svelte,astro,html,css,scss,sass,less`) and deliberately exclude bare `.ts`/`.js`, which would collide with `javascript-typescript.md` and load on every backend file. `transactional-email.md` scopes to email template locations.
-- [ ] Each file opens with the same load-mechanism preamble `javascript-typescript.md:13` carries: the read trigger, and the two routes that miss it (a `Write` creating a new file, and any Bash write).
-- [ ] `ux-standards.md` states in its own preamble that it is closed to growth: a new UI rule is a project decision belonging in `BRANDING.md`, a surface decision belonging in a `docs/designs/` artifact, or a reusable pattern belonging in a component.
+- [x] `.claude/rules/ux-standards.md` — the universal floors: `UI_UX.md`'s Standards (minus the project-choice lines below), Surface Composition, Spacing & Whitespace, Motion, Forms, Numeric Entry & Controls, Feedback & Status, Data Tables. Every rule keeps its source citation verbatim.
+- [x] `.claude/rules/frontend-styling.md` — the CSS section (rem/em/%/no-px/`clamp()`), the CSS-First standard, and the Tailwind block, which stays marked as inert where the project does not use Tailwind.
+- [x] `.claude/rules/transactional-email.md` — the thirteen Transactional Emails rules, unchanged.
+- [x] All three carry `paths:` frontmatter. `ux-standards.md` and `frontend-styling.md` scope to component, markup, and style extensions (`tsx,jsx,vue,svelte,astro,html,css,scss,sass,less`) and deliberately exclude bare `.ts`/`.js`, which would collide with `javascript-typescript.md` and load on every backend file. `transactional-email.md` scopes to email template locations.
+- [x] Each file opens with the same load-mechanism preamble `javascript-typescript.md:13` carries: the read trigger, and the two routes that miss it (a `Write` creating a new file, and any Bash write).
+- [x] `ux-standards.md` states in its own preamble that it is closed to growth: a new UI rule is a project decision belonging in `BRANDING.md`, a surface decision belonging in a `docs/designs/` artifact, or a reusable pattern belonging in a component.
 
 ### Project choices moving to BRANDING.md
 
-- [ ] `UI_UX.md:11` mobile-first → `BRANDING.md` Layout. Viewport posture is a product decision, which the reference instance demonstrated by replacing the line and citing its own brand doc's Layout section as the justification.
-- [ ] `UI_UX.md:48` the 8px spacing base with 4px half-steps → `BRANDING.md` Layout (`spacing rhythm`). The floor is "spacing comes from a constrained scale"; the specific base is a project choice.
-- [ ] `UI_UX.md:54` density is modal → `BRANDING.md` Density, which already exists as a section.
-- [ ] `UI_UX.md:17` dark elevation → `BRANDING.md` Surfaces, Borders, Shadows, and Gradients, which already states the elevation policy. Resolve the duplication in favor of the brand doc rather than carrying both.
-- [ ] `UI_UX.md:59-65` motion durations: the research-backed perception bands stay a floor in `ux-standards.md`; the project's chosen durations, easing, and signature transitions stay `BRANDING.md` Motion. Where the two touch, the rules file states the band and the brand doc picks inside it.
-- [ ] Every remaining Standards line is audited against the same test before it moves: does a different project reasonably choose differently? A yes sends it to `BRANDING.md`.
+- [x] `UI_UX.md:11` mobile-first → `BRANDING.md` Layout. Viewport posture is a product decision, which the reference instance demonstrated by replacing the line and citing its own brand doc's Layout section as the justification.
+- [x] `UI_UX.md:48` the 8px spacing base with 4px half-steps → `BRANDING.md` Layout (`spacing rhythm`). The floor is "spacing comes from a constrained scale"; the specific base is a project choice.
+- [x] `UI_UX.md:54` density is modal → `BRANDING.md` Density, which already exists as a section.
+- [x] `UI_UX.md:17` dark elevation → `BRANDING.md` Surfaces, Borders, Shadows, and Gradients, which already states the elevation policy. Resolve the duplication in favor of the brand doc rather than carrying both.
+- [x] `UI_UX.md:59-65` motion durations: the research-backed perception bands stay a floor in `ux-standards.md`; the project's chosen durations, easing, and signature transitions stay `BRANDING.md` Motion. Where the two touch, the rules file states the band and the brand doc picks inside it.
+- [x] Every remaining Standards line is audited against the same test before it moves: does a different project reasonably choose differently? A yes sends it to `BRANDING.md`.
 
 ### The rename
 
-- [ ] `BRAND_DESIGN.md` → `BRANDING.md`, content preserved. The doc holds audience, positioning, messaging pillars, voice, vocabulary, and anti-goals, most of which is not design; the name invited UI content to land in the wrong file, and the `BRAND_DESIGN`/`UI_UX` pairing that justified it disappears with this change.
+- [x] `BRAND_DESIGN.md` → `BRANDING.md`, content preserved. The doc holds audience, positioning, messaging pillars, voice, vocabulary, and anti-goals, most of which is not design; the name invited UI content to land in the wrong file, and the `BRAND_DESIGN`/`UI_UX` pairing that justified it disappears with this change.
 - [ ] Every `BRAND_DESIGN.md` reference across the payload updated (19 files carry one).
 
 ### grill-design
@@ -108,9 +108,17 @@ Desired behavior: universal floors live in a path-scoped rules file that loads o
 - [ ] `project-init/SKILL.md:87` — the closing report's design-doc pointer.
 - [ ] Per `curate-context/SKILL.md:75`, every new rules file and every `paths:` change lands its `fork-points.md` entry in the same change, with `skill-creator` loaded first because the manifest lives under `.claude/skills/`.
 
+### The CLAUDE.md pointer
+
+- [ ] `CLAUDE.md` gains a pointer naming all three rules files, what each is for, and when each loads — so every session carries the context-aware framing before any glob fires. This is not decoration: `curate-context/SKILL.md:74` states that a read-triggered rule either takes a guaranteed placement or names itself in a guaranteed file, so the two uncovered routes have somewhere to read it from. A `Write` creating a new component and any Bash write both reach these paths without triggering the load.
+- [ ] Model it on the existing precedent at `CLAUDE.md:77`, which does exactly this for `javascript-typescript.md`: the file, its load trigger, and the two routes that miss it, stated in one bullet.
+- [ ] Structure it as a `#### Frontend and UI` subsection under Development, mirroring the `#### Javascript/Typescript/Node.js` subsection the JS/TS pointer already lives in, while the Standards section keeps a rewritten line for `BRANDING.md` alone (read before any brand decision, not imported, so not in context until a session opens it).
+- [ ] State each file's purpose in one clause, because the pointer's job is orientation a session gets for free: `ux-standards.md` holds the usability and accessibility floors every surface meets and is closed to growth; `frontend-styling.md` holds this project's styling conventions; `transactional-email.md` holds the email-client rules.
+- [ ] Record the pointer/file coupling in `fork-points.md` for all three, matching the note already at `fork-points.md:56`: pruning a pointer without deleting its rules file leaves the rules loading with nothing to explain them, and deleting the file without the pointer leaves a pointer at nothing.
+
 ### The reference sweep
 
-- [ ] `CLAUDE.md` — three references: the AI-context-files list, the read-before-any-UI-decision rule (which becomes accurate for the first time, since the rules file actually loads), and the `curate-context` routing list.
+- [ ] `CLAUDE.md` — the remaining references: the AI-context-files list, the read-before-any-UI-decision rule (which becomes accurate for the first time, since the rules files actually load), and the `curate-context` routing list.
 - [ ] `README.md:8` — the Context files bullet.
 - [ ] `.claude/skills/README.md` — five references (`:39`, `:92`, `:98`, `:150`, `:152`) plus the `grill-design` and `grill-product` blurbs.
 - [ ] `.claude/rules/template-dev.md` — two references, including the steering-doc enumeration in the version-references rule.
@@ -125,11 +133,13 @@ Desired behavior: universal floors live in a path-scoped rules file that loads o
 
 ## Acceptance criteria
 
-- [ ] `grep -rn "UI_UX" --include="*.md" . | grep -v "^./docs/" | grep -v "^./CHANGELOG.md"` returns zero hits. Baseline at scoping time: 61.
-- [ ] `grep -rn "BRAND_DESIGN" --include="*.md" . | grep -v "^./docs/" | grep -v "^./CHANGELOG.md"` returns zero hits.
+- [ ] `grep -rn "UI_UX" --include="*.md" . | grep -v "^docs/" | grep -v "^CHANGELOG.md"` returns zero hits. Payload baseline on `main`: 44.
+- [ ] `grep -rn "BRAND_DESIGN" --include="*.md" . | grep -v "^docs/" | grep -v "^CHANGELOG.md"` returns zero hits. Payload baseline on `main`: 38.
+- [ ] Both exclusions are anchored `^docs/` and `^CHANGELOG.md` with no `./` prefix, because `grep -r .` emits bare relative paths on this platform; a `^./` anchor silently matches nothing and reports history files as payload defects.
 - [ ] A written disposition table accounts for all 129 lines of `UI_UX.md`: each line lands in one of the three rules files, in `BRANDING.md`, or is dropped with a stated reason. No line is unaccounted for.
 - [ ] No payload file outside `CHANGELOG.md` describes a surface grammar as a codifiable artifact or cites one as a citation type.
-- [ ] Each of the three rules files has a `fork-points.md` entry naming its tailoring lever.
+- [ ] Each of the three rules files has a `fork-points.md` entry naming its tailoring lever and its pointer coupling.
+- [ ] `CLAUDE.md` names all three rules files, states what each is for in one clause, and states the load trigger plus the two routes that miss it — so a session that never opens a matching file still knows the rules exist and why.
 - [ ] `grill-product`, `grill-design`, `brand-init`, and `grill-initiative` each carry an explicit instruction to read `.claude/rules/ux-standards.md` by path.
 - [ ] `pnpm format:check` passes.
 - [ ] `grep -rniE 'v[0-9]'` over the payload's steering docs is clean, per the template's pre-release rule.
@@ -154,7 +164,7 @@ Desired behavior: universal floors live in a path-scoped rules file that loads o
 
 **The gap this exposes, for the second time.** The `incumbent:` key conflates "the old content dies" with "run the demolition pass", and the pass is code-shaped: its connection map is a typechecker's error set, which markdown does not have. The 2026-08-05 task recorded this at `:131` and nobody closed it. Capture a prose mode rather than working around it a third time.
 
-**The connection map exists anyway.** `grep -rn "UI_UX"` over the payload returns 61 hits at scoping time. That count reaching zero is mechanically checkable and serves the same function the compiler's error set serves for code: it enumerates every place something surviving still expects what moved.
+**The connection map exists anyway.** `grep -rn "UI_UX"` over the payload returns 44 hits on `main`, and `BRAND_DESIGN` returns 38. Both reaching zero is mechanically checkable and serves the same function the compiler's error set serves for code: it enumerates every place something surviving still expects what moved. The scoping session's first count said 61 because its exclusions were anchored `^./docs/` while `grep -r .` emits bare relative paths here, so history files counted as payload — the exact shape of failure this repo's evidence rule exists to catch, found by the number moving the wrong way after slice 1.
 
 **Three files, split by who tailors them, not by topic.** `ux-standards.md` is never touched by init and ships identical everywhere; `frontend-styling.md` is content-pruned to the real styling system; `transactional-email.md` is deleted or kept whole. Three init behaviors justify three files. One combined file would force init to surgically edit a document it otherwise has no business opening, and would drag email rules into every `.tsx` read in a project that sends no mail.
 
@@ -180,11 +190,12 @@ No test runner for prose. Three checks stand in, at the seam a reader actually c
 
 ## Slices
 
-- [ ] The new homes: write the three rules files from the disposition table, move the project-choice lines into the brand doc, rename `BRAND_DESIGN.md` → `BRANDING.md`, delete `UI_UX.md`. Leaves 61 dangling references — the red state.
+- [x] The new homes: three rules files written from the disposition table (`docs/notes/2026-08-09-ui-ux-disposition.md`, all 129 lines mapped and the five judgment calls approved before the write), the project-choice lines moved into the brand doc's bracketed prompts, `BRAND_DESIGN.md` → `BRANDING.md`, `UI_UX.md` deleted. Rule counts land exactly on the table: 55 / 10 / 12, and 83 original bullets = 77 relocated + 5 moved to the brand doc + 1 dropped as a duplicate of `BRANDING.md`'s Surfaces section. Red state: 43 `UI_UX` and 38 `BRAND_DESIGN` payload references outstanding.
 - [ ] `curate-context`: the four-way routing rewrite, the carve-out scoped to `BRANDING.md`, the identity-tier blast-radius gate with its capture offer, the em-dash list, and the description.
 - [ ] `grill-design`: component survey plus `docs/designs/` glob replacing the grammar check, codification exit removed, intent assertions unconditional, skeletal-docs trigger narrowed, and `references/example-design-artifact.md` repathed inside its rendered artifact text.
 - [ ] The other three lenses: `grill-product`'s narrowed exit, and explicit floor reads in `grill-product`, `brand-init`, and `grill-initiative`.
 - [ ] The citation chain: `grill-engineer`, `capture-task/assets/task-template.md`, `references/example-scoped-task.md`'s governed-verdict line, and `implement-task`'s four sites including the pre-flight path list.
 - [ ] `project-init` and `fork-points.md`: the `:142` rewrite and relocation, three new entries with the glob-universality trap named, framework and styling-system detection, and the report pointer.
-- [ ] The reference sweep to zero: `CLAUDE.md`, `README.md`, the skills `README.md`, `template-dev.md`, `review-board/references/correctness.md`, `.claude/agents/review-correctness.md`, `brand-research.md`, and `example-initiative.md`. Both greps hit zero here.
+- [ ] The `CLAUDE.md` pointer: a `#### Frontend and UI` subsection naming the three rules files, their purposes, and their load trigger, plus the rewritten Standards line for `BRANDING.md`; the pointer coupling recorded in `fork-points.md` for all three.
+- [ ] The reference sweep to zero: `CLAUDE.md`'s remaining references, `README.md`, the skills `README.md`, `template-dev.md`, `review-board/references/correctness.md`, `.claude/agents/review-correctness.md`, `brand-research.md`, and `example-initiative.md`. Both greps hit zero here.
 - [ ] `CHANGELOG.md` v2.5.0 with the migration procedure for diverged instances, and the version bump.

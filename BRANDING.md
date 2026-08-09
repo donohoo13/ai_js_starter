@@ -5,7 +5,7 @@ Brand identity for this project. Filled sections are fixed constraints: `grill-d
 - Bracketed placeholders mark axes not yet decided; the `brand-init` skill fills them through its derivation session, and no other session derives brand decisions inline.
 - This file stays thin and tightly curated: it carries binding constraints only, a line earns its place by changing what a design session renders, and rationale, history, and derivations live in `docs/adr/` — an overgrown brand doc steers no better than an empty one, so additions strengthen an existing line before appending a sibling.
 - The app's CSS is the source of truth for actual token values; read it before quoting any value in code.
-- In monorepos, a per-app `BRAND_DESIGN.md` (e.g. `apps/<app>/BRAND_DESIGN.md`) overrides or extends this file.
+- In monorepos, a per-app `BRANDING.md` (e.g. `apps/<app>/BRANDING.md`) overrides or extends this file.
 
 Two tiers govern how sections bind:
 
@@ -63,11 +63,11 @@ Two tiers govern how sections bind:
 
 ## Layout
 
-[grid system, max content widths, spacing rhythm]
+[grid system, max content widths, spacing rhythm; the viewport posture — mobile-first (design the narrow viewport first and let wide viewports reveal more, with primary mobile actions in the bottom-center reach zone per Hoober's grip research) or desktop-first, stated as a choice with the reason the product's job gives it; the spacing scale's base unit and half-step (8px with 4px half-steps is the common pick, and Material, Carbon, and Atlassian all constrain to base-unit multiples) and its tiering across the three distances — inside a group, between distinct elements, between sections (Atlassian's 0-8 / 12-24 / 32+ as the directional shape). `ux-standards.md` requires that a scale exist and be adhered to; this section is where its numbers are decided]
 
 ## Density
 
-[compact vs airy; how tables and dense surfaces breathe]
+[compact vs airy; how tables and dense surfaces breathe; whether density is modal — comfortable as the default with a compact mode existing only for data-dense views (tables, resource lists) and never applying to focused-input components like date pickers and alerts (Cloudscape, Material) — or a single density throughout]
 
 ## Surfaces, Borders, Shadows, and Gradients
 
@@ -75,7 +75,7 @@ Two tiers govern how sections bind:
 
 ## Motion
 
-[duration range, easing, signature transitions; what never animates]
+[duration range picked inside the perception bands `ux-standards.md` states; easing, where entrances conventionally decelerate (`ease-out`) and `ease-in` never opens an entrance; signature transitions, including the proportional scale a dialog and a button press animate from (~0.8 for dialogs rather than zero, ~0.95 for presses rather than anything dramatic, as the common pick); what never animates]
 
 ## Data Visualization
 
@@ -83,7 +83,7 @@ Two tiers govern how sections bind:
 
 ## Imagery & Iconography
 
-[imagery mode — photographic, illustrated, abstract, or product-first — with treatment rules (color grading, composition, subject matter); icon character above `UI_UX.md`'s one-family floor: stroke weight, filled vs outline, corner rounding]
+[imagery mode — photographic, illustrated, abstract, or product-first — with treatment rules (color grading, composition, subject matter); icon character above `ux-standards.md`'s one-family floor: stroke weight, filled vs outline, corner rounding]
 
 ## Voice and Copy
 
