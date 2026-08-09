@@ -4,45 +4,47 @@ status: captured
 created: 2026-08-09
 ---
 
-# Test that every rules file's paths globs actually match
+# Assert rules globs match the paths they claim
 
 ## Context
 
 Surfaced by the `quality` review board's security seat on `chore/retire-ui-ux-doc` as finding SEC-4, seated because `.claude/rules/*.md` `paths:` frontmatter is a control surface: the glob decides whether a rule loads, and no human reads it as prose.
 
-The UI_UX retirement moved the usability and accessibility floors out of a root markdown file and onto that mechanism. Before the change the floors were reached by a skill naming the file; now they are reached by a glob matching a path.
+Half of that finding is closed. `scripts/test/rules-frontmatter.battery.mjs` now asserts every rules file's frontmatter parses, closes, and carries quoted, brace-balanced, non-empty globs — the malformed cases, which load the body with empty metadata so the rules never fire and the session looks identical to one with no rules to follow. It is red-capable: a deliberately unbalanced brace was verified to fail it.
+
+This task carries the half that could not be closed, and the reason it could not.
 
 ## Problem
 
-Current behavior: nothing protects the glob. `grep -rn "rules/" .claude/settings.json .claude/hooks/` returns nothing — no `PreToolUse` matcher covers `.claude/rules/**`, and `guard-skill-edit` is scoped to `.claude/skills/`. No battery under `scripts/test/` parses the frontmatter. A typo in a brace list, a stray unquoted `*`, or a well-meaning narrowing silently stops the floors loading.
+Current behavior: the battery checks that a glob is well-formed, not that it matches anything. A perfectly-formed glob pointing at the wrong paths passes it and still fails silently at runtime — which is not hypothetical, since the same review found two real instances: `**/templates/**` reaching every Django, Flask, and Express view directory, and a `*.email.*` suffix glob dropping two extensions its sibling globs carried. Both were caught by a reviewer reading carefully.
 
-The failure is indistinguishable from a session that simply had no UX rules to follow, which is the same silent-gap class the retirement exists to close.
+The blocker is that a match assertion has to use the harness's own glob engine or it tests something else. No glob library ships in this repo (`node_modules` holds husky, node, prettier, turbo), and a vendored `minimatch` or `picomatch` would answer a question about that library rather than about what loads the rules — a green run that means nothing, which is worse than no test.
 
-Two live examples from the same review show the mechanism is easy to get wrong in practice: `**/templates/**` reached every Django and Flask view directory, and the `*.email.*` suffix glob dropped two extensions its sibling globs carried. Both were caught by a reviewer reading carefully, not by anything mechanical.
+One concrete question rides on this and is currently unanswered: whether `**/` matches zero path segments here. It decides whether `'**/emails/**/*.tsx'` reaches react-email's default `emails/welcome.tsx`. The security seat recorded it as unresolved rather than guessing, and the branch added zero-segment spellings as insurance; a match battery would say whether that insurance is needed or redundant.
 
-Desired behavior: a battery alongside `guard-dev-server.battery.mjs` and `check-install.battery.mjs` that parses every `.claude/rules/*.md` `paths:` block and asserts a known fixture path matches each file's globs, plus a known non-matching path that must not.
+Desired behavior: positive and negative match assertions per rules file — `ux-standards.md` matches a `.tsx` and not a `.py`; `transactional-email.md` matches `emails/welcome.tsx` and not `templates/registration/login.html` — running against the same semantics the harness applies.
 
 ## Scope
 
-- In scope (must-have): the battery, its fixtures, and wiring it wherever the other two batteries run.
-- Nice to have: asserting the frontmatter parses as YAML at all, which catches the malformed case where the body loads with empty metadata.
-- Out of scope (non-goals, named so the task does not expand silently): a `PreToolUse` hook over `.claude/rules/`. A test is the right instrument for a content check, matching the reasoning `ADR-FORMAT.md` already applies to ADR linting.
+- In scope (must-have): establish which glob semantics `paths:` uses, then extend the existing battery with per-file positive and negative cases.
+- Out of scope (non-goals, named so the task does not expand silently): a `PreToolUse` hook over `.claude/rules/`. A test is the right instrument for a content check, matching the reasoning `ADR-FORMAT.md` already applies to ADR linting. Rewriting the well-formedness half, which ships and passes.
 
 ## Requirements
 
-- Match the two shipped batteries' shape and reporting so the three read alike.
-- Assert positive and negative cases per file: `ux-standards.md` matches a `.tsx` and must not match a `.py`; `transactional-email.md` matches `emails/welcome.tsx` and must not match `templates/registration/login.html`.
-- The glob semantics must be the harness's, not a stand-in library's, or the battery tests something other than what loads the rules.
+- Extend `scripts/test/rules-frontmatter.battery.mjs` rather than adding a fourth battery; the well-formedness checks and the match checks belong to one question.
+- Discover the rules files rather than enumerating them, as the current battery does, so a new file is covered on arrival.
+- State in the file what the match layer's semantics are grounded in, so a later reader can tell a verified assertion from an assumed one.
 
 ## Acceptance criteria
 
-- [ ] The battery runs green and fails when a glob is deliberately broken.
-- [ ] It covers every file in `.claude/rules/` carrying `paths:`, discovered rather than enumerated.
+- [ ] The battery asserts at least one matching and one non-matching path per rules file carrying `paths:`.
+- [ ] The zero-segment question is answered in the battery or in a comment citing where the answer came from.
+- [ ] It fails when a glob is narrowed to miss its own positive fixture.
 
 ## Dependencies
 
-- [ ] Which glob implementation the harness uses for `paths:`. No glob library is installed in this repo, so the battery either vendors the right one or shells out to whatever the harness uses.
+- [ ] Which glob implementation the harness uses for `paths:`. Documentation, an observed behavior, or a maintainer answer all work; a guess does not.
 
 ## Risks / open questions
 
-- [ ] The security seat could not settle whether `**/` matches zero path segments here and declined to guess. That question is exactly what this battery would answer, and it decides whether the zero-segment spellings added during the review were necessary or redundant.
+- [ ] If the harness's engine cannot be established, the honest outcome is to leave the match layer unbuilt and say so in the battery, rather than shipping assertions against a stand-in that can diverge silently.
