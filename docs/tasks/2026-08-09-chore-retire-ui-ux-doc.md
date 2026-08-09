@@ -83,13 +83,13 @@ Desired behavior: universal floors live in a path-scoped rules file that loads o
 
 "Named grammar" is a citation type in the build chain, not just a `grill-design` concept. Each of these changes to cite a component or a design artifact:
 
-- [ ] `capture-task/assets/task-template.md:61` — the Survivors citation.
-- [ ] `grill-engineer/SKILL.md` — the same sentence in the Survivors spec, plus its two other floor references.
-- [ ] `implement-task/SKILL.md:186` — judging a governed-verdict line.
-- [ ] `grill-engineer/references/example-scoped-task.md:65` — the worked governed-verdict cites `UI_UX.md` Surface Composition. This is a change in **kind**, not path: the example teaches the pattern by demonstration, and the new form cites a component.
-- [ ] `.claude/skills/README.md:98` — the flywheel blurb.
-- [ ] `implement-task/SKILL.md:63` — the doc pre-flight `git status` path list names both filenames. This is a behavioral check, not prose.
-- [ ] `implement-task/SKILL.md:151`, `:225` — deep-plan reads and the land render pass.
+- [x] `capture-task/assets/task-template.md:61` — the Survivors citation.
+- [x] `grill-engineer/SKILL.md` — the same sentence in the Survivors spec, plus its two other floor references.
+- [x] `implement-task/SKILL.md:186` — judging a governed-verdict line.
+- [x] `grill-engineer/references/example-scoped-task.md:65` — the worked governed-verdict cites `UI_UX.md` Surface Composition. This is a change in **kind**, not path: the example teaches the pattern by demonstration, and the new form cites a component.
+- [x] `.claude/skills/README.md:98` — the flywheel blurb.
+- [x] `implement-task/SKILL.md:63` — the doc pre-flight `git status` path list names both filenames. This is a behavioral check, not prose.
+- [x] `implement-task/SKILL.md:151`, `:225` — deep-plan reads and the land render pass.
 
 ### curate-context
 
@@ -194,7 +194,7 @@ No test runner for prose. Three checks stand in, at the seam a reader actually c
 - [x] `curate-context`: the routing rewrite (split by what the rule governs, no count stated), the carve-out scoped to `BRANDING.md` with `ux-standards.md` named as closed, the identity-tier blast-radius gate with its capture offer and its unrun-check clause, the em-dash list, and the description. `skill-creator`'s landing checklist pulled the skills `README.md` blurb into this slice rather than leaving it for the sweep.
 - [x] `grill-design`: component survey plus `docs/designs/` glob replacing the grammar check, codification exit removed (four exits to three, with the absence explained rather than left silent), intent assertions unconditional on the governed path, skeletal-docs trigger narrowed to `BRANDING.md` with an empty component library routed to Ungoverned instead, an explicit read of the rules file added since no glob fires for this lens, and `references/example-design-artifact.md` repathed inside its rendered artifact text. Skills `README.md` blurb updated with it per `skill-creator`'s checklist.
 - [x] The other three lenses: `grill-product`'s exit narrowed to `BRANDING.md` with the closed-floors reason stated inline, explicit floor reads in `grill-product`, `brand-init`, and `grill-initiative`, and the skills `README.md` chain diagram, router description, and three blurbs repathed off the grammar vocabulary.
-- [ ] The citation chain: `grill-engineer`, `capture-task/assets/task-template.md`, `references/example-scoped-task.md`'s governed-verdict line, and `implement-task`'s four sites including the pre-flight path list.
+- [x] The citation chain: `grill-engineer` (Survivors citation, governed-verdict binding, build-now floors, surface-gate wording), `capture-task/assets/task-template.md`, `references/example-scoped-task.md`'s governed-verdict rewritten to cite a component rather than a doc section, and `implement-task`'s four sites including the pre-flight path list, which now leans on its existing `.claude/**` entry to cover the rules files.
 - [ ] `project-init` and `fork-points.md`: the `:142` rewrite and relocation, three new entries with the glob-universality trap named, framework and styling-system detection, and the report pointer.
 - [ ] The `CLAUDE.md` pointer: a `#### Frontend and UI` subsection naming the three rules files, their purposes, and their load trigger, plus the rewritten Standards line for `BRANDING.md`; the pointer coupling recorded in `fork-points.md` for all three.
 - [ ] The reference sweep to zero: `CLAUDE.md`'s remaining references, `README.md`, the skills `README.md`, `template-dev.md`, `review-board/references/correctness.md`, `.claude/agents/review-correctness.md`, `brand-research.md`, and `example-initiative.md`. Both greps hit zero here.

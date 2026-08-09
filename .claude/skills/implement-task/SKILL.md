@@ -60,7 +60,7 @@ Gate mechanics:
 
 ### Step 3 — doc pre-flight
 
-- Check `git status` for uncommitted `docs/**`, `CLAUDE.md`, `CONTEXT.md`, `ARCHITECTURE.md`, `UI_UX.md`, `BRAND_DESIGN.md`, and `.claude/**` changes.
+- Check `git status` for uncommitted `docs/**`, `CLAUDE.md`, `CONTEXT.md`, `ARCHITECTURE.md`, `BRANDING.md`, and `.claude/**` changes; the `.claude/**` entry already covers the `.claude/rules/` files.
 - Read the tree for this, never session memory: the session that wrote the docs is usually already gone.
 - On finding doc files, make one offer — stage exactly those paths, hand back a commit message, and wait for the user to commit on `main`.
 - Inline `stage-for-commit`'s behavior here and never invoke that skill, which stages only its own session's work.
@@ -148,7 +148,7 @@ Report one state per slice:
 
 For a slice touching anything a user sees:
 
-- Read the `design:` artifact, `UI_UX.md`, `BRAND_DESIGN.md`, and the app's theme CSS before planning.
+- Read the `design:` artifact, `.claude/rules/ux-standards.md`, `BRANDING.md`, and the app's theme CSS before planning.
 - The app's theme CSS is the source of truth for token values.
 - When the build must deviate from the artifact, surface it and never redesign silently, because at build time the payload's shape is louder than the task: a deviation that blocks the slice is `BLOCKED`, and a buildable one lands through Step 3's off-plan checkpoint.
 - The artifact's Experience intent and Source fidelity sections are the build's judging contract, and the build session never edits them.
@@ -182,7 +182,7 @@ With a connection map still open:
 Artifact check, on every slice that composes or reshapes a surface:
 
 - Judge the built code statically against the `design:` artifact: the structure delivers its hierarchy, breakpoint plan, and disclosure plan.
-- Judge a governed-verdict line against its named grammar and `UI_UX.md`'s floors the same way.
+- Judge a governed-verdict line against the component or design artifact it names and against `ux-standards.md`'s floors the same way.
 - The slice's report names the verdict — on-plan or off-plan — so an unstated verdict reads as an unrun check, never as conformance.
 - Mid-build uses no session-started server and no self-served pixels: on-plan slices defer all pixel judgment (Experience intent, Source fidelity) to the land render pass.
 - An on-plan slice continues without stopping, whatever its size: the artifact already blessed its composition.
@@ -222,7 +222,7 @@ Land render pass, once shape is current and any surface was touched — offered,
 - One app start serves this pass and the QA gate together: hand the start command carrying the worktree's absolute path (`cd <worktree> && <dev command>` — a terminal sitting in the main checkout serves `main`, not the branch), ask for the URL, and offer to run the pass before the user begins their own QA.
 - Confirm the served app is the branch build before screenshotting; screenshots of the wrong tree enter QA as evidence of code the branch does not contain.
 - On yes, screenshot every touched surface at both breakpoints and in both themes with the UI tool named in `CLAUDE.md` — theme drift is cheapest to batch here.
-- Judge against the artifact, Experience intent and Source fidelity included, and against the design docs and `UI_UX.md`'s floors; fix what fails.
+- Judge against the artifact, Experience intent and Source fidelity included, and against `BRANDING.md` and `ux-standards.md`'s floors; fix what fails.
 - When `source:` names a stored export, diff each render against the export covering that breakpoint — resolved as repo-root paths under `docs/assets/`, anything outside refused, not read.
 - The comparison judges density, hierarchy, scale, content, and fill of space; never palette, token, or theme conformance, because a mock in the wrong theme fails forever and gets rationalized away.
 - A drift verdict cites the inventory line or intent assertion it violates.

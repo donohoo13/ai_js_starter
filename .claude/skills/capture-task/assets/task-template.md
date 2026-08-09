@@ -58,7 +58,7 @@ design: docs/designs/<file>.md
 
 **Carve-outs**: <!-- "none declared", or one line per preserved surface naming where it lives inside the zone -->
 
-**Survivors**: <!-- "none declared", or one line per component the rebuild inherits, each carrying four things: the path (never also in the zone); the citation — artifact path plus the section the keeping statement lives under, or the named grammar section or UI_UX.md floor on a governed-verdict task; the grain, where "whole component" asserts the cited statement endorses every section of it and a placement-or-hierarchy citation yields named sections instead; and what the rebuild owes it — trim, retreatment, state rewiring, or nothing — which lands as an acceptance criterion. "none declared" is legal exactly when the task carries no `design:` key and no governed-verdict line, never because of what the work is called. Rebuild cost has no slot here. -->
+**Survivors**: <!-- "none declared", or one line per component the rebuild inherits, each carrying four things: the path (never also in the zone); the citation — artifact path plus the section the keeping statement lives under, or on a governed-verdict task the component the verdict named, the design artifact it extends, or the ux-standards.md floor; the grain, where "whole component" asserts the cited statement endorses every section of it and a placement-or-hierarchy citation yields named sections instead; and what the rebuild owes it — trim, retreatment, state rewiring, or nothing — which lands as an acceptance criterion. "none declared" is legal exactly when the task carries no `design:` key and no governed-verdict line, never because of what the work is called. Rebuild cost has no slot here. -->
 
 ## Test strategy
 

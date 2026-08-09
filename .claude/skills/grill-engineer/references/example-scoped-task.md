@@ -62,7 +62,7 @@ None external; reuses the existing cache layer, identity resolver, and record ac
 - API: `POST /records/:id/presence/heartbeat` — empty body, viewer derived from session; responds `{ viewers: [{ id, name, avatarUrl }] }` excluding the caller; 403 unauthorized, 404 unknown record; store-unavailable degrades to an empty list by design.
 - No schema changes — presence is intentionally non-durable.
 - Reference implementation: the existing record-lock hook + service pairing, which already models "open-record-scoped client polling against per-record server state"; the web side is a `useRecordPresence(recordId)` hook that polls while the record is open, clears on unmount, and feeds a small presence avatar cluster.
-- Surface governed-verdict: the presence avatar cluster rides the record header's existing composition (`UI_UX.md` Surface Composition); layout already determined, no design artifact. Recorded feel, since the grammar carries none: presence registers at a glance without competing with the record's own content.
+- Surface governed-verdict: the presence avatar cluster is an instance of the existing `AvatarStack` component (props `users`, `max`, `size`), sitting in the record header's existing composition; layout already determined, no design artifact. Intent assertions, which every governed-verdict carries because a component supplies structure and never at-rest feel: presence registers at a glance without competing with the record's own content, and zero viewers renders as absence rather than as an empty frame.
 - `incumbent: none`: nothing tracks or displays who is viewing a record today, so there is no existing implementation to demolish or build on.
 
 ## Test strategy
