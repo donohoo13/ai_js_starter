@@ -1,15 +1,16 @@
 ---
 name: curate-context
-description: Curation discipline for the prescriptive context files — every CLAUDE.md and CLAUDE.local.md at any depth (including the user-global ~/.claude/CLAUDE.md), README.md, BRAND_DESIGN.md, UI_UX.md, and path-scoped rules under .claude/rules/. Use whenever a session is about to create or edit one of these files, whatever brought the edit — a convention to record, a doc correction, another skill's follow-through, or an edit arriving mid-task with nobody naming this skill. The trigger is the file itself: an Edit or Write whose path is one of those names loads this skill first, and nothing else enforces that. Also the distillation path: use when the user says "codify", "capture this convention", "add this to CLAUDE.md", "remember this convention", or "we should document this". Ceremony scales with the edit class; HITL means no model-invented content lands unseen. Descriptive docs (CONTEXT.md, CONTEXT-MAP.md, ARCHITECTURE.md, docs/adr/) belong to domain-modeling — hand off, never write them here.
+description: Curation discipline for the prescriptive context files — every CLAUDE.md and CLAUDE.local.md at any depth (including the user-global ~/.claude/CLAUDE.md), README.md, BRANDING.md, and path-scoped rules under .claude/rules/ (ux-standards.md, frontend-styling.md, transactional-email.md, javascript-typescript.md). Use whenever a session is about to create or edit one of these files, whatever brought the edit — a convention to record, a doc correction, another skill's follow-through, or an edit arriving mid-task with nobody naming this skill. The trigger is the file itself: an Edit or Write whose path is one of those names loads this skill first, and nothing else enforces that. Also the distillation path: use when the user says "codify", "capture this convention", "add this to CLAUDE.md", "remember this convention", or "we should document this". Ceremony scales with the edit class; HITL means no model-invented content lands unseen. Descriptive docs (CONTEXT.md, CONTEXT-MAP.md, ARCHITECTURE.md, docs/adr/) belong to domain-modeling — hand off, never write them here.
 argument-hint: '[optional: the edit or lesson to consider]'
 ---
 
 # Curate Context
 
-The curation discipline for the prescriptive context files — the docs that steer future behavior rather than describe the system: every `CLAUDE.md` and `CLAUDE.local.md` (root, nested per-package, and the user-global `~/.claude/CLAUDE.md`), every `README.md`, path-scoped rule files under `.claude/rules/`, and the design foundations `BRAND_DESIGN.md` / `UI_UX.md`. Every edit to one of these goes through this skill.
+The curation discipline for the prescriptive context files — the docs that steer future behavior rather than describe the system: every `CLAUDE.md` and `CLAUDE.local.md` (root, nested per-package, and the user-global `~/.claude/CLAUDE.md`), every `README.md`, path-scoped rule files under `.claude/rules/`, and the brand foundation `BRANDING.md`. Every edit to one of these goes through this skill.
 
 - Nothing blocks a raw edit: the load rests on this skill's description triggering on the file names and on the `CLAUDE.md` rule that states the same thing, which is why both spell the paths out.
-- Two stated carve-outs: the design docs also open to a loaded `grill-design` or `grill-product` session, which legitimately writes them mid-interview under its own discipline, and everything under `.claude/skills/` (its README included) is `skill-creator`/`guard-skill-edit` territory — written only with that gate loaded, never under this skill alone.
+- Two stated carve-outs: `BRANDING.md` also opens to a loaded `grill-design` or `grill-product` session, which legitimately writes it mid-interview under its own discipline, and everything under `.claude/skills/` (its README included) is `skill-creator`/`guard-skill-edit` territory — written only with that gate loaded, never under this skill alone.
+- The carve-out reaches `BRANDING.md` and stops there. `.claude/rules/ux-standards.md` is closed to growth and takes no mid-interview append from any lens, because a floors file a design session can extend is how one accretes a project's surfaces one at a time until the floors are buried in them.
 - The descriptive docs — `CONTEXT.md`, `CONTEXT-MAP.md`, `ARCHITECTURE.md`, `docs/adr/` — are `domain-modeling`'s territory: hand off rather than write them, and that side of the seam holds the same way, through `domain-modeling`'s own description and the same `CLAUDE.md` rule.
 
 The hard part is not writing bullets. It is deciding what deserves to exist. A rule is paid for by every future session that loads the file, so the cost is real and recurring. Default to writing nothing; when writing, hold the whole edit as close to zero net growth as the file allows. Forcing output is the primary failure mode of this skill.
@@ -63,7 +64,12 @@ Wrong placement is its own failure: an app-specific rule in a root file pollutes
 - **Domain vocabulary, a hard-to-reverse decision, or an engineering-shape fact** → `domain-modeling`'s job (`CONTEXT.md`, `docs/adr/`, `ARCHITECTURE.md`). Hand off rather than write; no hook holds this seam, so both skills' descriptions and the `CLAUDE.md` context-edit rule are the whole mechanism from either side. If `domain-modeling` was active this session (the grill lenses run it), whatever it already captured counts as documented — route only the residue.
 - **An imperative rule aimed at the AI** — it changes what the model does in a future session → the nearest enclosing `CLAUDE.md`.
 - **A procedure a human performs** — setup, onboarding, auth flows, running things → the `README.md` nearest the code it serves, next to its related steps. The test is who executes it: per-developer OAuth scope selection is README material even when the AI discovered it, because the model cannot perform it and the human must.
-- **Brand, visual, or UX foundation** — color, type, aesthetic, CSS, a11y, units → `BRAND_DESIGN.md` for brand identity, `UI_UX.md` for usability and implementation standards.
+- **A brand, visual, or UX rule** — route by what the rule governs, because these destinations have opposite lifecycles and only some of them grow. Getting this split wrong is how a floors file fills with one project's surfaces.
+  - **A choice this project makes that another could reasonably make differently** — palette, type, viewport posture, the spacing scale's base unit, density, motion character, voice → `BRANDING.md`.
+  - **A styling convention the project's stack imposes** — units, the styling system's idioms → `.claude/rules/frontend-styling.md`.
+  - **A universal usability or accessibility floor** → nowhere. `.claude/rules/ux-standards.md` ships complete, every rule in it carries a source, and it is closed to growth. A floor genuinely missing from it is a finding about the template rather than a line to append, and `/template-feedback` is its channel.
+  - **One surface's hierarchy, layout, controls, or disclosure** → that surface's artifact in `docs/designs/`, authored by `grill-design`. A composition is never a context file: it governs one screen, and a context file is paid for by every session.
+  - **A pattern that has now proven itself across three surfaces** → a component. Reuse is recorded in code, where the Rule of Three already governs it and the next surface inherits it by importing rather than by reading a description of it.
 
 **At what scope?** The nearest enclosing file to the code the rule governs — a rule about one package belongs in that package's `CLAUDE.md` or `README.md`, not the root. If only a broad file exists but the rule is package-specific, place it in the narrowest available file and note the better future home. When unsure, choose narrower, then pick the placement by how the rule has to load:
 
@@ -91,6 +97,13 @@ Wrong placement is its own failure: an app-specific rule in a root file pollutes
 
 **Judge the edit whole before presenting it: net line growth.** Every bullet can be individually defensible and the edit still bad — twelve defensible bullets is how a context file dies. Prefer rewriting an existing line to carry the new constraint over appending a sibling; state the net count with the proposal. Zero net growth with the lesson landed is the benchmark, not the exception.
 
+**An edit to `BRANDING.md`'s identity sections reports its blast radius before it asks.** Those sections — Themes, Color System, Typography, Logo, Shape — are the tier the doc's own preamble calls absolute, and a change to one of them is wrong on every surface in the product until someone notices, which no other context-file edit is. So the ask arrives with the reach attached: grep the token across the theme CSS and the components, say how many call sites and which surfaces it touches, and name the `docs/designs/` artifacts that cite it. Then ask.
+
+- Steering-section edits keep the ordinary ceremony. A gate that fires on every brand edit trains the reflexive yes, which is `ux-standards.md`'s own interruption-hierarchy rule turned on this process.
+- The report is what makes the confirmation mean something. A bare "change the primary to X?" gets a yes; the same question carrying "47 call sites across 9 surfaces, and the compare artifact cites it by name" gets a decision.
+- After the confirm, offer `/capture-task` once, with the dependency list as the task's requirements — the list is already written by then, and throwing it away means someone rebuilds it by hand when the retreatment work starts. Suggest once and drop it if the user does not bite, per the `CLAUDE.md` capture rule.
+- Where the grep cannot run — no theme file yet, no components yet — say that plainly rather than reporting a clean radius. An unrun check and a genuinely empty one read identically in a one-line answer, and only one of them is safe.
+
 Presentation scales with triage: a correction or deletion is one line — the diff and its why. New rules and distillation get the full deliberation, including what you rejected — that is where "picky" becomes visible:
 
 - **Curate** → the exact bullet(s), target file and heading, net line count, and a one-line rationale kept out of the bullet itself.
@@ -108,7 +121,7 @@ One whole-file exception is sanctioned at point of use: `project-init`'s approve
 ## Quality checks
 
 - A project-specific convention aimed at a global file (`~/.claude/CLAUDE.md`) is a routing mismatch — flag it and route to the project file.
-- Internal docs (`CLAUDE.md`, `BRAND_DESIGN.md`, `UI_UX.md`) are exempt from the em-dash ban, but match each file's existing punctuation style.
+- Internal docs (`CLAUDE.md`, `BRANDING.md`, the `.claude/rules/` files) are exempt from the em-dash ban, but match each file's existing punctuation style.
 - Before finishing, reread the edit as a future session with no memory of today. A line that does not change what that session would do gets cut.
 
 $ARGUMENTS

@@ -93,10 +93,10 @@ Desired behavior: universal floors live in a path-scoped rules file that loads o
 
 ### curate-context
 
-- [ ] `SKILL.md:66` routing — the single highest-leverage line in the change, since it is the decision procedure for where all future UI content lands. It becomes a four-way split: brand identity and project design choices → `BRANDING.md`; a universal usability floor → nowhere, because the file is closed and a genuinely new floor is a template-feedback finding; one surface's composition → a `docs/designs/` artifact via `grill-design`; a reusable pattern → a component.
-- [ ] The identity-tier gate: an edit to `BRANDING.md`'s identity sections (Color System, Typography, Shape, Themes, Logo — the tier the doc's own preamble at `:12` already defines as absolute) first reports its blast radius (grep the token across theme CSS and components, count the surfaces, name the `docs/designs/` artifacts citing it), then asks. Steering-section edits keep normal ceremony. A gate that fires on every brand edit trains the reflexive yes.
-- [ ] After the confirm, offer `/capture-task` once with the dependency list as the task's requirements — the list is already written, and `CLAUDE.md`'s suggest-once rule governs the offer.
-- [ ] `SKILL.md:111` em-dash exemption, `SKILL.md:9`, `:59`, and the description all name the doc set.
+- [x] `SKILL.md:66` routing — the single highest-leverage line in the change, since it is the decision procedure for where all future UI content lands. It becomes a split by what the rule governs, stated without a count so the enumeration cannot go stale: a project choice → `BRANDING.md`; a stack styling convention → `frontend-styling.md`; a universal floor → nowhere, because `ux-standards.md` is closed and a genuinely missing floor is a `/template-feedback` finding; one surface's composition → a `docs/designs/` artifact via `grill-design`; a pattern proven across three surfaces → a component.
+- [x] The identity-tier gate: an edit to `BRANDING.md`'s identity sections (Color System, Typography, Shape, Themes, Logo — the tier the doc's own preamble at `:12` already defines as absolute) first reports its blast radius (grep the token across theme CSS and components, count the surfaces, name the `docs/designs/` artifacts citing it), then asks. Steering-section edits keep normal ceremony. A gate that fires on every brand edit trains the reflexive yes.
+- [x] After the confirm, offer `/capture-task` once with the dependency list as the task's requirements — the list is already written, and `CLAUDE.md`'s suggest-once rule governs the offer.
+- [x] `SKILL.md:111` em-dash exemption, `SKILL.md:9`, `:59`, and the description all name the doc set.
 
 ### project-init and fork-points
 
@@ -191,7 +191,7 @@ No test runner for prose. Three checks stand in, at the seam a reader actually c
 ## Slices
 
 - [x] The new homes: three rules files written from the disposition table (`docs/notes/2026-08-09-ui-ux-disposition.md`, all 129 lines mapped and the five judgment calls approved before the write), the project-choice lines moved into the brand doc's bracketed prompts, `BRAND_DESIGN.md` → `BRANDING.md`, `UI_UX.md` deleted. Rule counts land exactly on the table: 55 / 10 / 12, and 83 original bullets = 77 relocated + 5 moved to the brand doc + 1 dropped as a duplicate of `BRANDING.md`'s Surfaces section. Red state: 43 `UI_UX` and 38 `BRAND_DESIGN` payload references outstanding.
-- [ ] `curate-context`: the four-way routing rewrite, the carve-out scoped to `BRANDING.md`, the identity-tier blast-radius gate with its capture offer, the em-dash list, and the description.
+- [x] `curate-context`: the routing rewrite (split by what the rule governs, no count stated), the carve-out scoped to `BRANDING.md` with `ux-standards.md` named as closed, the identity-tier blast-radius gate with its capture offer and its unrun-check clause, the em-dash list, and the description. `skill-creator`'s landing checklist pulled the skills `README.md` blurb into this slice rather than leaving it for the sweep.
 - [ ] `grill-design`: component survey plus `docs/designs/` glob replacing the grammar check, codification exit removed, intent assertions unconditional, skeletal-docs trigger narrowed, and `references/example-design-artifact.md` repathed inside its rendered artifact text.
 - [ ] The other three lenses: `grill-product`'s narrowed exit, and explicit floor reads in `grill-product`, `brand-init`, and `grill-initiative`.
 - [ ] The citation chain: `grill-engineer`, `capture-task/assets/task-template.md`, `references/example-scoped-task.md`'s governed-verdict line, and `implement-task`'s four sites including the pre-flight path list.
