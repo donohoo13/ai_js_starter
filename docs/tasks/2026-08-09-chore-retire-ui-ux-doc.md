@@ -1,6 +1,6 @@
 ---
 type: chore
-status: in-progress
+status: done
 created: 2026-08-09
 incumbent: extend
 ---
