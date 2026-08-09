@@ -98,6 +98,7 @@ Check the marker before reading anything else:
 - A `demolition: done` line in the task file's Demolition section means the pass already ran.
 - Trust it only whole: `done` beside a non-empty connection map (or a recorded no-typechecker fallback) — the two committed artifacts.
 - A marker missing its map is a halted pass wearing a finished one's clothes — treat it as `BLOCKED` and read `references/demolition.md` `## Recovery` before touching the tree.
+- No marker is not proof that no pass ran: check `git log --grep='^demolition:'` before dispatching, because a session that died between run 2's red commit and the write that lays the marker down leaves a fully demolished tree wearing an untouched one's clothes. A hit there is `BLOCKED` into that same Recovery section — never a fresh dispatch, which re-plans over files that are already gone and strands the record the pointer write never recorded.
 - The record path beside the marker is worktree-local scratch (the gitignored `.ai/` namespace), so a path that no longer resolves after a fresh clone or new worktree is a degradation to note in the running summary, never a halt signal.
 - With the marker whole, skip straight to the slice loop.
 - A resumed task looks identical to a fresh one from step 1's gate, and re-dispatching over a zone that now holds two slices of the replacement deletes this task's own finished work — the executor sees paths, the planner has no way to say "these are new", and the relay is a window nobody is guaranteed to be watching.

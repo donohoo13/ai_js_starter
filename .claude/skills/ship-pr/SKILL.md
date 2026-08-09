@@ -14,7 +14,7 @@ Invocation is the consent. The chain's invariant — push and PR only on the use
 
 - Current branch: !`git branch --show-current`
 - Default branch ref: !`git symbolic-ref --short refs/remotes/origin/HEAD 2>/dev/null || echo "(no remote HEAD; fall back to main)"`
-- Remote: !`[ -n "$(git remote)" ] && git remote | head -1 || echo "(none)"`
+- Remote (empty = no remote): !`git remote | head -1`
 
 Working tree at invocation (empty = clean):
 
@@ -25,8 +25,10 @@ git status --short | head -50
 Branch commits against the default branch — the PR's actual contents:
 
 ```!
-git log --oneline "$(git symbolic-ref --short refs/remotes/origin/HEAD 2>/dev/null || echo main)"..HEAD | head -30
+git log --oneline origin/HEAD..HEAD | head -30
 ```
+
+An error here means `origin/HEAD` is unset rather than that the branch is empty; re-read the range against the default branch reported above with a plain `git log` call before writing the Summary.
 
 ## Hard stops — mechanics only
 
