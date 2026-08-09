@@ -13,7 +13,7 @@ Correctness over speed: this session is allowed to be long. Read everything that
 
 ## Context
 
-- Remote: !`[ -n "$(git remote 2>/dev/null)" ] && git remote -v | head -2 || echo "(no remote)"`
+- Remote (empty = no remote, or not a git repo): !`git remote -v | head -2`
 - Copied-over state (empty = clean): !`git rev-parse --is-inside-work-tree >/dev/null 2>&1 && git status --porcelain -- .claude CLAUDE.md | head -20 || echo "(not a git repo)"`
 
 ## Operating principles

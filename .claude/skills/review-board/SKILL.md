@@ -1,6 +1,6 @@
 ---
 name: review-board
-description: Multi-agent review board. Spawns parallel specialist reviewers — five code seats (correctness, security, reliability, maintainability, performance/operations) or a documentation board (flow continuity, coherence, adversarial, with security seated as a fourth when the document handles credentials, customer data, or outbound transfer), chosen by what the change touches — then renders its own confirmed/plausible/rejected verdict on every finding and waits for the human to pick what gets addressed. Use whenever the user asks to review code changes, a branch, a diff, or a PR; asks for a security review, standards check, or pre-merge/pre-PR review; says "review my changes", "run the review board", or "is this safe to merge"; wants a second opinion on work in progress; or asks to review a documentation, process, runbook, prompt, or agent-instruction change, where the document is the behavior and nothing compiles it. An optional leading mode argument (`quality`|`balanced`|`speed`) scales the board; with no mode given, the session AI recommends a mode and read depth reasoned from the change itself.
+description: Multi-agent review board. Spawns parallel specialist reviewers — five code seats (correctness, security, reliability, maintainability, performance/operations) or a documentation board (flow continuity, coherence, adversarial, with security seated as a fourth when the document handles credentials, customer data, or outbound transfer, or is itself a control surface enforced by a tool rather than read by a person, such as permission config, hooks, CI workflows, agent tool grants, or ignore files), chosen by what the change touches — then renders its own confirmed/plausible/rejected verdict on every finding and waits for the human to pick what gets addressed. Use whenever the user asks to review code changes, a branch, a diff, or a PR; asks for a security review, standards check, or pre-merge/pre-PR review; says "review my changes", "run the review board", or "is this safe to merge"; wants a second opinion on work in progress; or asks to review a documentation, process, runbook, prompt, or agent-instruction change, where the document is the behavior and nothing compiles it. An optional leading mode argument (`quality`|`balanced`|`speed`) scales the board; with no mode given, the session AI recommends a mode and read depth reasoned from the change itself.
 argument-hint: '[quality|balanced|speed] [PR number, commit range, or paths to scope the review]'
 ---
 
@@ -25,7 +25,7 @@ You are the chair. You resolve scope, settle the seat set, set the dials through
 - Establish intent before spawning, from the PR description, the commit messages, or a matching `docs/tasks/` file, and ask when it is unclear, because a review against unknown requirements wastes a board.
 - For a code change, snapshot the stack — `package.json`, runtime config, `tsconfig.json` — as a snapshot, not an audit, because the runtime decides which findings are real.
 - For a documentation-heavy change, take the process surface instead: which flow changes, who reads it, and which neighboring documents cite it.
-- When the diff mixes unrelated changes, record that for the report's `## Process notes`.
+- When the diff mixes unrelated changes, record that as a process note for the full report file, which carries them; the printed decision layer has no slot for one, because a tangled scope is context for whoever reads the review later rather than a call the user makes now.
 - Gather context from session knowledge first when you authored the change, and otherwise go look.
 
 ## Step 2 — Settle the seat set
@@ -47,7 +47,10 @@ Settle the seat set first, then the dials: which board sits determines which dia
 - Seat-skipping is a code-board rule and does not reach here, because "nothing to red-team" retires the highest-yield seat first.
 - Documentation seats read the full changed files in every mode, and no mode preset overrides that, because the defect sits in the untouched sentence beside the change.
 - In a heavily cross-referencing corpus, coherence reads wider than the changed files.
-- When the document tells a reader to handle credentials, customer data, or outbound transfer, seat security too — four seats rather than three — taking its row from the code matrix below. Its read stays at the board's fixed full-file depth but narrow in scope: obvious instructions that move a secret or a record somewhere it should not go, never a threat model of the prose.
+- Seat security as a fourth — four seats rather than three, taking its row from the code matrix below — on either of two triggers, because a document reaches security by instructing a reader or by being the enforcement itself:
+  - **The document instructs**: it tells a reader to handle credentials, customer data, or outbound transfer.
+  - **The document controls**: the changed artifact is enforced by a tool rather than read by a person — permission and settings config, hooks, CI workflows, agent tool grants, and ignore files, which is a list of examples and not the boundary. Ask whether something would behave differently if this file changed and nobody read it; when the answer is yes, seat security. These artifacts tell a reader nothing, so an instruction-shaped trigger never fires on the one class where a defect is a live hole rather than bad advice, and a permission entry with no mirrored spelling, or a hook whose prefilter misses the pattern it guards, reads as clean prose to every other seat. The trigger reads the artifact's class and not the diff's size, because config has no trivial diff: a comment can disable a step and an indentation change can reparent a key, so the change that looks inert on the way past is exactly the one the seat is here for.
+- The security seat's read stays at the board's fixed full-file depth but narrow in scope: instructions that move a secret or a record somewhere it should not go, and config that grants more reach than the change claims — never a threat model of the prose.
 
 ### Code board
 
@@ -183,39 +186,21 @@ Once all reviewers have returned you become the chair, and triage is judgment, n
 
 - When the user declines a confirmed or plausible finding, capture the one-line why at selection time, because nobody can reconstruct it later.
 
-## Step 8 — Verify, then fix
+## Step 8 — Verify, fix, and commit the fixes
 
 - For each selected finding, confirm it against the actual code first: reproduce it, trace it to root cause, and fix the source rather than the paraphrase.
 - When a selected finding does not hold up, say so and skip it rather than inventing a fix.
 - Apply fixes for exactly the selected findings and nothing else.
 - When a fix lands in a gated file, load that gate's skill first.
 - After fixing, run the relevant checks; a fix without a passing check is reported as unverified, not as done.
+- Commit the fixes, staged by explicit path, each message naming the finding it closes. These are the only commits a board produces, because a commit records a change to the code and nothing else about the review is one.
+- On the default branch, `CLAUDE.md`'s commit rule applies as everywhere else: branch first, then commit there. A board is not a licence to commit to `main`, and leaving the fixes staged instead strands them with no SHA for the outcome line below.
 
-## Step 9 — Leave the record commit
+## Step 9 — Close out the review locally
 
-- On a non-default branch, once the selection is resolved — including a selection of `none` — commit the fixes first (staged by explicit path, message naming the finding), then the record commit as the last commit.
-- The record commit is always empty and always last, because that gives one shape to parse and pins the record to the reviewed tree.
-- Write it with a quoted heredoc, never `-m`, because Actions contains backticks and both failure modes mimic success:
-
-```bash
-git commit --allow-empty -F - <<'RECORD'
-review: board (<mode>) — <N> findings, <X> addressed, <Y> dismissed, <Z> rejected
-
-<ID> <severity> <verdict> <title> — <outcome: fix SHA, task path, the user's verbatim reason, or rejected>
-<one such line per finding>
-
-<every seat's ### Actions block, carried through verbatim>
-
-Review-Mode: <mode>
-Review-Scope: <base>..<head>
-RECORD
-```
-
-- The subject line is the stated point-of-use exception to the project's 50-char commit rule, and the `review:` prefix is the grep contract.
-- The body carries one line per finding — ID, severity, verdict, title, outcome — where the outcome is the fix SHA, the task path, the user's verbatim reason, or rejected.
-- Carry every seat's Actions through verbatim, never summarized, because a clean board must leave evidence it ran.
-- Close with the trailers `Review-Mode:` and `Review-Scope: <base>..<head>`; the grep contract (`git log <default>..HEAD --grep='^review:'`) serves the record's real readers — the user and any session re-reviewing this branch while it lives, and compliance forks that re-couple `ship-pr` to it.
-- A finding captured as a task rides the `dismissed` count, and its body line carries the task path.
-- On the default branch, skip the record commit and let the report stay conversational.
-- When the branch may be rewritten, warn that an interactive rebase silently drops the empty record commit.
-- When a remote exists, close with a one-line `/ship-pr` offer; never invoke it yourself.
+- Append the outcome to the full report file — one line per finding: ID, severity, verdict, title, and the outcome, which is the fix SHA, the task path, the user's verbatim reason for declining, or rejected. Do this even when the selection was `none`, because a board that found things and changed nothing is exactly the run whose reasoning goes missing first.
+- A finding captured as a task counts as dismissed, and its line carries the task path.
+- **The review stays on this machine.** The full report file lives in the gitignored `.ai/` namespace, and the board's deliberation — verdicts, Actions, dismissal reasons — reaches no commit message, PR body, or other outbound surface on its own. A branch carries the work, not the argument about the work. The one thing that does cross is a fix commit's subject naming the finding it closes: that labels a code change rather than reporting a review, which is why Step 8 asks for it.
+- **When the user does ask for board content on an outbound surface, scrub it first.** Replace every literal credential, token, and PII value with its match count and `file:line`, and leave the raw line in the report file. A security seat's secret grep can hit a real value in a path no deny rule covers, and the evidentiary property — the command and what it returned — survives a count and a location intact.
+- Locality costs something, accepted deliberately, and the loss is routine rather than exotic: the report dies with its worktree. `scripts/setup/gwt-remove.sh` is the cleanup `ship-pr` hands the user after a merge, and `git worktree remove` takes the gitignored `.ai/` tree with it — after which "re-run the board" is not a recovery, because the branch is gone and the diff is empty. When a review's reasoning needs to outlive the branch, copy the report out of the worktree before cleanup; when it needs to reach the remote, that is a compliance posture rather than a template default, and `project-init/references/fork-points.md` carries the add-back.
+- When a remote exists, close with a one-line `/ship-pr` offer; never invoke it yourself. On the default branch, skip the offer — `ship-pr` refuses there.

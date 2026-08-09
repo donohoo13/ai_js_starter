@@ -44,7 +44,18 @@ Live only when the change alters a document a person or model follows — a runb
 
 Cite the instruction and name what escapes and to where. A document that merely mentions credentials is not a finding; one that tells a reader to move one is.
 
+## Control surfaces
+
+Live when the changed artifact is the enforcement rather than an instruction about it — permission and settings config, hooks, CI workflows, agent tool grants, and the ignore files that decide what stays out of a repository. These tell a reader nothing, so the documented-process items above never fire on them, and a defect here is a live hole rather than bad advice. There is no attacker to name and no payload to trace: the finding is the gap between what the control claims to cover and what it covers.
+
+- A deny, allow, or ignore entry that misses a spelling of the same target, so one route stays open — a `Read(...)` rule with no `Edit(...)` twin, an ignore pattern narrowed to a subdirectory of what it must exclude.
+- A hook or guard whose matcher and its registration disagree, so it never runs on the case it names — a pattern with no corresponding prefilter token, a matcher scoped to a tool the bypass route does not use.
+- A tool, permission, or workflow grant wider than the change claims — a capability added for one caller that every caller now holds, a workflow trigger reaching branches or events the change never mentions.
+- An enforcement the change newly depends on that no other rule protects: name it, because a control resting on one unguarded line is the next silent regression.
+
+Cite the config line, the spelling or token it is missing, and the reach that stays open. "This grants more than it says" is the finding; do not manufacture an attack scenario to justify it.
+
 ## Do not flag
 
-- Theoretical weaknesses with no reachable untrusted input in this codebase's threat model; state the entry point or do not file it.
+- Theoretical weaknesses with no reachable untrusted input in this codebase's threat model; state the entry point or do not file it. This bar governs code and instruction findings; a control-surface finding states the uncovered reach instead, and needs no entry point.
 - Pre-existing vulnerabilities in untouched code, unless the change extends or newly exposes them; then flag with that framing.
