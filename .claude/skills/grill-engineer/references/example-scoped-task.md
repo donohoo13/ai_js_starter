@@ -45,6 +45,7 @@ Nothing today signals that a teammate has the same record open. Desired: while v
 - [ ] A viewer who navigates away stops appearing within the TTL, with no explicit sign-off action.
 - [ ] A caller without access to the record receives 403 from the heartbeat and never sees its viewers.
 - [ ] Presence-store unavailability degrades to an empty viewer list, never an error surfaced to the user.
+- [ ] The rendered cluster satisfies both intent assertions in the governed-verdict line: presence registers at a glance without competing with the record's own content, and zero viewers renders as absence rather than as an empty frame. (A governed-verdict task binds this one render criterion; without it the assertions gate nothing, since the land render pass ticks only what Acceptance criteria names.)
 
 ## Dependencies
 

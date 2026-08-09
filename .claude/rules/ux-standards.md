@@ -1,6 +1,6 @@
 ---
 paths:
-  - '**/*.{tsx,jsx,vue,svelte,astro,html,css,scss,sass,less}'
+  - '**/*.{tsx,jsx,vue,svelte,astro,mdx,html,htm,mjml,hbs,css,scss,sass,less}'
 ---
 
 # UX standards
@@ -9,7 +9,7 @@ The usability and accessibility floors every user-facing surface meets, whatever
 
 Loads when a session reads a file matching the globs above, which covers every `Edit` because that tool requires a prior read of the file. Two routes reach a matching path without triggering the load: a `Write` creating a new file, which carries no read precondition, and any Bash write (`sed -i`, a `cat >` heredoc, a formatter run in place), which the load mechanism does not observe. `CLAUDE.md` names this file directly so both routes have somewhere to read it from.
 
-This file is closed to growth. A new UI rule belongs somewhere else, and which one is decided by what the rule governs: a choice this project makes and another could reasonably make differently goes to [`BRANDING.md`](../../BRANDING.md); one surface's composition goes to that surface's artifact in `docs/designs/`, authored by `grill-design`; a pattern proven across three surfaces becomes a component, which is where reuse is recorded. A floor genuinely missing here is a finding about the template rather than a line to append, and `/template-feedback` is its channel.
+This file is closed to growth. A new UI rule belongs somewhere else, and which one is decided by what the rule governs: a choice this project makes and another could reasonably make differently goes to [`BRANDING.md`](../../BRANDING.md); a convention the project's stack imposes goes to [`frontend-styling.md`](./frontend-styling.md); one surface's composition goes to that surface's artifact in `docs/designs/`, authored by `grill-design`; a pattern proven across three surfaces becomes a component, which is where reuse is recorded. A floor genuinely missing here is a finding about the template rather than a line to append, and `/template-feedback` is its channel — except in the `ai_starter` template repo itself, where that skill refuses to run because a gap found here is just work: land the floor through `/curate-context` with its source cited, since sourcing every rule is what makes an addition auditable rather than an exception.
 
 Brand identity — palette, typography, density, emphasis, voice, and the project's own layout and motion choices — lives in `BRANDING.md`, which takes precedence wherever the two overlap.
 
@@ -36,7 +36,7 @@ Every surface is composed from its user task, never from its data payload — an
 
 ## Spacing & Whitespace
 
-- **Constrained scale**: every spacing value comes from the project's spacing scale; arbitrary one-off values never appear (Material, Carbon, and Atlassian all constrain spacing to base-unit multiples). The scale's base unit and its tiering are `BRANDING.md` Layout decisions.
+- **Constrained scale**: every spacing value comes from the project's spacing scale; arbitrary one-off values never appear (Material, Carbon, and Atlassian all constrain spacing to base-unit multiples). The scale's base unit and its tiering are `BRANDING.md` Layout decisions; where that section is still bracketed, read the scale off the app's theme CSS, which is the source of truth for token values either way, and say the brand doc is unfilled rather than inventing a base.
 - **Proximity is grouping**: space within a group is smaller than space between groups; two unrelated elements sitting closer than two related ones means the spacing is wrong (Gestalt proximity, NN/g). Uniform spacing everywhere destroys grouping as surely as crowding does.
 - **Borders are the last grouping tool**: reach for spacing and a background tone step before a border; excessive borders read as clutter (Refactoring UI). A deliberately line-led brand documents that choice in `BRANDING.md`, which wins.
 - **Line length**: reading text caps near `70ch` (the 45–75 characters-per-line consensus; WCAG 1.4.8 sets ≤80 as the accessibility bound).
