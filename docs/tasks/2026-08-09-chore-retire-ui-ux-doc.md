@@ -58,7 +58,7 @@ Desired behavior: universal floors live in a path-scoped rules file that loads o
 ### The rename
 
 - [x] `BRAND_DESIGN.md` → `BRANDING.md`, content preserved. The doc holds audience, positioning, messaging pillars, voice, vocabulary, and anti-goals, most of which is not design; the name invited UI content to land in the wrong file, and the `BRAND_DESIGN`/`UI_UX` pairing that justified it disappears with this change.
-- [ ] Every `BRAND_DESIGN.md` reference across the payload updated (19 files carry one).
+- [x] Every `BRAND_DESIGN.md` reference across the payload updated (19 files carry one).
 
 ### grill-design
 
@@ -128,35 +128,35 @@ Desired behavior: universal floors live in a path-scoped rules file that loads o
 
 ### Release
 
-- [ ] `CHANGELOG.md` v2.5.0 entry: what, why, and adaptation notes carrying a **migration procedure**, not a summary. `sync-template` Phase 2 shows an instance "delete `UI_UX.md`" as one diff item; an instance whose copy has accreted its own grammars needs to be told which sections go to `CONTEXT.md` as vocabulary, which become components, which are project choices bound for `BRANDING.md`, and which are floors that already exist in the new rules file. The reference instance is exactly this case and is the test the notes have to pass.
-- [ ] `package.json` `version` → 2.5.0.
+- [x] `CHANGELOG.md` v2.5.0 entry: what, why, and adaptation notes carrying a **migration procedure**, not a summary. `sync-template` Phase 2 shows an instance "delete `UI_UX.md`" as one diff item; an instance whose copy has accreted its own grammars needs to be told which sections go to `CONTEXT.md` as vocabulary, which become components, which are project choices bound for `BRANDING.md`, and which are floors that already exist in the new rules file. The reference instance is exactly this case and is the test the notes have to pass.
+- [x] `package.json` `version` → 2.5.0.
 
 ## Acceptance criteria
 
-- [ ] `grep -rn "UI_UX" --include="*.md" . | grep -v "^docs/" | grep -v "^CHANGELOG.md"` returns zero hits. Payload baseline on `main`: 44.
-- [ ] `grep -rn "BRAND_DESIGN" --include="*.md" . | grep -v "^docs/" | grep -v "^CHANGELOG.md"` returns zero hits. Payload baseline on `main`: 38.
-- [ ] Both exclusions are anchored `^docs/` and `^CHANGELOG.md` with no `./` prefix, because `grep -r .` emits bare relative paths on this platform; a `^./` anchor silently matches nothing and reports history files as payload defects.
+- [x] `grep -rn "UI_UX" --include="*.md" . | grep -v "^docs/" | grep -v "^CHANGELOG.md"` returns zero hits. Payload baseline on `main`: 44.
+- [x] `grep -rn "BRAND_DESIGN" --include="*.md" . | grep -v "^docs/" | grep -v "^CHANGELOG.md"` returns zero hits. Payload baseline on `main`: 38.
+- [x] Both exclusions are anchored `^docs/` and `^CHANGELOG.md` with no `./` prefix, because `grep -r .` emits bare relative paths on this platform; a `^./` anchor silently matches nothing and reports history files as payload defects.
 - [x] A written disposition table accounts for all 129 lines of `UI_UX.md`: each line lands in one of the three rules files, in `BRANDING.md`, or is dropped with a stated reason. No line is unaccounted for.
 - [x] No payload file outside `CHANGELOG.md` describes a surface grammar as a codifiable artifact or cites one as a citation type.
-- [ ] Each of the three rules files has a `fork-points.md` entry naming its tailoring lever and its pointer coupling.
+- [x] Each of the three rules files has a `fork-points.md` entry naming its tailoring lever and its pointer coupling.
 - [x] `CLAUDE.md` names all three rules files, states what each is for in one clause, and states the load trigger plus the two routes that miss it — so a session that never opens a matching file still knows the rules exist and why.
-- [ ] `grill-product`, `grill-design`, `brand-init`, and `grill-initiative` each carry an explicit instruction to read `.claude/rules/ux-standards.md` by path.
-- [ ] `pnpm format:check` passes.
-- [ ] `grep -rniE 'v[0-9]'` over the payload's steering docs is clean, per the template's pre-release rule.
-- [ ] Every deletion is reported to the user before it lands, per `CLAUDE.md`'s context-file rule.
+- [x] `grill-product`, `grill-design`, `brand-init`, and `grill-initiative` each carry an explicit instruction to read `.claude/rules/ux-standards.md` by path.
+- [x] `pnpm format:check` passes.
+- [x] `grep -rniE 'v[0-9]'` over the payload's steering docs is clean, per the template's pre-release rule.
+- [x] Every deletion is reported to the user before it lands, per `CLAUDE.md`'s context-file rule.
 
 ## Dependencies
 
-- [ ] User review of the 129-line disposition table before the split lands. This is the single point of failure: a floor lost in the split is lost silently, and the rules carry WCAG and accessibility requirements.
-- [ ] User approval of the `curate-context:66` routing rewrite, which decides where all future UI content lands.
+- [x] User review of the 129-line disposition table before the split lands. This is the single point of failure: a floor lost in the split is lost silently, and the rules carry WCAG and accessibility requirements.
+- [x] User approval of the `curate-context:66` routing rewrite, which decides where all future UI content lands.
 
 ## Risks / open questions
 
-- [ ] Losing a rule in the split is the realistic failure mode and it fails silently. Mitigations: the disposition table is reviewed before the write, the original stays in git, and the reference-sweep grep is mechanical.
+- [x] Losing a rule in the split is the realistic failure mode and it fails silently. Mitigations: the disposition table is reviewed before the write, the original stays in git, and the reference-sweep grep is mechanical.
 - [ ] Reviewing this change seats a **four-seat** documentation board: `review-board/SKILL.md:52` seats security when the changed artifact is a control surface, and a `paths:` glob deciding whether a rule loads is enforcement.
-- [ ] `grill-design`'s fast exit gets slower in a young project: no components exist, so every early surface runs a full interview. This is correct rather than a regression — today a project can feel governed at n=1 with no component behind the grammar — but it is a real cost worth naming to instances.
-- [ ] The shallow-only survey can produce a governed-verdict against a component that turns out not to fit. Caught at build time by `implement-task`'s surface gate and human QA; costs a wasted slice, not a shipped mistake. Escalation-on-hit was considered and declined in session.
-- [ ] `BRANDING.md` and the existing `docs/branding/moodboard/` path that `brand-init` gates on now share vocabulary. Not a collision, but worth one look during the rename.
+- [x] `grill-design`'s fast exit gets slower in a young project: no components exist, so every early surface runs a full interview. This is correct rather than a regression — today a project can feel governed at n=1 with no component behind the grammar — but it is a real cost worth naming to instances.
+- [x] The shallow-only survey can produce a governed-verdict against a component that turns out not to fit. Caught at build time by `implement-task`'s surface gate and human QA; costs a wasted slice, not a shipped mistake. Escalation-on-hit was considered and declined in session.
+- [x] `BRANDING.md` and the existing `docs/branding/moodboard/` path that `brand-init` gates on now share vocabulary. Not a collision, but worth one look during the rename.
 
 ## Design decisions
 
@@ -198,4 +198,4 @@ No test runner for prose. Three checks stand in, at the seam a reader actually c
 - [x] `project-init` and `fork-points.md`: the `:142` entry narrowed to `BRANDING.md` and pointed at Stack and toolchain, three new rules-file entries there with the glob-universality trap and the pointer coupling named, a fifth entry covering the one case where init edits `paths:` rather than content, framework and styling-system detection in Phase 1, and the closing report pointer.
 - [x] The `CLAUDE.md` pointer: a `#### Frontend and UI` subsection naming the three rules files, their purposes, and their load trigger, plus the rewritten Standards line for `BRANDING.md`; the pointer coupling recorded in `fork-points.md` for all three.
 - [x] The reference sweep to zero: `CLAUDE.md`'s remaining references, `README.md`, the skills `README.md`, `template-dev.md`, `review-board/references/correctness.md`, `.claude/agents/review-correctness.md`, `brand-research.md`, and `example-initiative.md`. Both greps hit zero here.
-- [ ] `CHANGELOG.md` v2.5.0 with the migration procedure for diverged instances, and the version bump.
+- [x] `CHANGELOG.md` v2.5.0 with the migration procedure for diverged instances, and the version bump.
