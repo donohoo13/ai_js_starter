@@ -143,8 +143,8 @@ Report one state per slice:
 - Confirm shared types and consumers with LSP `findReferences`.
 - After a demolition, never `git show` the incumbent off the red commit; work from the connection map and the record.
 - A red edge naming a contract neither covers is a `DONE_WITH_CONCERNS` or a question, never a history dive.
-- Close the plan by presenting files, sequence, test seams, and risks, then `Proceeding unless you interrupt.`
-- That plan is a window to course-correct, not an approval gate.
+- Present the plan — files, sequence, test seams, risks — then continue into the build in the same turn instead of ending it.
+- Say `Proceeding unless you interrupt.` as the plan's last line and keep working. The interrupt is the entire control, which is what makes this a window to course-correct rather than an approval gate; ending the turn here converts the window into a gate nobody chose and stalls every slice on a check-in the design deliberately traded away. A slice that genuinely cannot proceed without an answer reports `BLOCKED` and says why, because a silent stop wearing a finished plan's clothes reads as progress.
 
 For a slice touching anything a user sees:
 
