@@ -70,7 +70,7 @@ Gate mechanics:
 ### Step 4 — create the worktree
 
 - With no worktree yet, ask for one confirm naming the branch and `.claude/worktrees/<branch>` inside the main checkout, slashes flattened to dashes — the harness's default worktree home, so `EnterWorktree` raises no extra approval prompt.
-- On yes, verify the checkout is on `main` first; a checkout parked elsewhere seeds the worktree from the wrong tree, so surface that and wait.
+- On yes, verify the checkout is on `main` first, for two reasons that bite on different paths: a new branch seeds from the checkout's HEAD, so a checkout parked elsewhere builds the worktree from the wrong tree, and an existing branch is refused outright while the main checkout holds it, since `gwt-add.sh` attaches rather than creates once the branch exists. Surface either and wait.
 - Then run `gwt-add.sh --no-open` and enter via `EnterWorktree`.
 - When `gwt-add.sh` exits non-zero, surface its output and stop rather than entering: every check in that tree then fails for reasons unrelated to the task.
 
@@ -82,8 +82,14 @@ Gate mechanics:
 
 ### Fallback and teardown
 
-- A declined confirm means the user creates or picks a feature branch; build there, trusting any non-`main` branch.
-- An unavailable `gwt-add.sh` or `EnterWorktree` takes the same fallback.
+A settled answer and a temporary obstacle arrive at the same moment and look alike; only the first is a new home for the task.
+
+- A declined confirm is settled and stands for the whole task: the user creates or picks a feature branch, and the build runs there, trusting any non-`main` branch. A confirm declined while a detour below is open is not that answer — it is a blocked user taking the cheapest way out of a question nobody asked them — so clear the obstruction and put the confirm again afterwards.
+- An absent `gwt-add.sh` is settled the same way, since the capability is not returning this session.
+- An `EnterWorktree` that fails after `gwt-add.sh` already succeeded is a different case, because the branch and the worktree both exist by then and git refuses that branch in the main checkout while the worktree holds it. Name the worktree's path, hand the user `git worktree remove <path>` to release the branch without deleting it, and take the fallback on that same branch — `gwt-remove.sh` is the wrong tool here, since it deletes the branch along with the worktree and a landed pre-flight commit would go with it.
+- Every other obstruction is a detour rather than a destination: name what is in the way, say what clears it, wait, then re-enter at the step that raised it — Step 2 for a worktree that exists and cannot be used, Step 4 for one that does not exist yet. A main checkout parked on another branch and a failed dependency install both clear this way, and reading either as the fallback puts the whole task in the main checkout while the worktree was still one user action away.
+- A main checkout parked on this task's own branch is not an obstruction: a previous session took the fallback and built there, so continue on that branch rather than asking the user to move off work this task already owns.
+- An obstruction the user says cannot clear this session is `BLOCKED`: report what is in the way and what would clear it, then stop and leave the task at its current status for a later session. A session waiting indefinitely and a session that finished look identical from outside.
 - Teardown is never this skill's job; `gwt-remove.sh` is the user's post-merge job.
 
 ## 3. Demolition dispatch
