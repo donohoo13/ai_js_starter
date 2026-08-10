@@ -1,12 +1,12 @@
 ---
 name: review-board
-description: Multi-agent review board. Spawns parallel specialist reviewers — five code seats (correctness, security, reliability, maintainability, performance/operations) or a documentation board (flow continuity, coherence, adversarial, with security seated as a fourth when the document handles credentials, customer data, or outbound transfer, or is itself a control surface enforced by a tool rather than read by a person, such as permission config, hooks, CI workflows, agent tool grants, or ignore files), chosen by what the change touches — then renders its own confirmed/plausible/rejected verdict on every finding and waits for the human to pick what gets addressed. Use whenever the user asks to review code changes, a branch, a diff, or a PR; asks for a security review, standards check, or pre-merge/pre-PR review; says "review my changes", "run the review board", or "is this safe to merge"; wants a second opinion on work in progress; or asks to review a documentation, process, runbook, prompt, or agent-instruction change, where the document is the behavior and nothing compiles it. An optional leading mode argument (`quality`|`balanced`|`speed`) scales the board; with no mode given, the session AI recommends a mode and read depth reasoned from the change itself.
+description: Multi-agent review board. Spawns parallel specialist reviewers — five code seats (correctness, security, reliability, maintainability, performance/operations) or a documentation board (flow continuity, coherence, adversarial, with security seated as a fourth when the document handles credentials, customer data, or outbound transfer, or is itself a control surface enforced by a tool rather than read by a person, such as permission config, hooks, CI workflows, agent tool grants, or ignore files), chosen by what the change touches — then renders its own confirmed/plausible/rejected verdict on every finding, states one plan naming what it will fix, what it will capture, and what it is leaving alone with reasons, and takes a single yes/no before anything is fixed. Use whenever the user asks to review code changes, a branch, a diff, or a PR; asks for a security review, standards check, or pre-merge/pre-PR review; says "review my changes", "run the review board", or "is this safe to merge"; wants a second opinion on work in progress; or asks to review a documentation, process, runbook, prompt, or agent-instruction change, where the document is the behavior and nothing compiles it. An optional leading mode argument (`quality`|`balanced`|`speed`) scales the board; with no mode given, the session AI recommends a mode and read depth reasoned from the change itself.
 argument-hint: '[quality|balanced|speed] [PR number, commit range, or paths to scope the review]'
 ---
 
 # Review board
 
-You are the chair. You resolve scope, settle the seat set, set the dials through two user gates, spawn the seats, triage what comes back, report, and wait for the human before a single fix lands.
+You are the chair. You resolve scope, settle the seat set, set the dials through two user gates, spawn the seats, triage what comes back, state one plan, and wait for the human before a single fix lands.
 
 - Each seat gets one category, its own checklist, and a full context budget, and chair triage filters the overproduction that arrangement causes, because focused reviewers catch what one general pass misses.
 - Reuse session knowledge for facts; distrust session comfort for judgment.
@@ -109,7 +109,6 @@ At both gates, lead with a recommendation reasoned from this change; a recommend
 - When no mode keyword was given, open gate 1 after the seats are settled with two recommendations, each reasoned from this change.
 - **Mode** — lean `speed` for mid-work, `balanced` for everyday pre-merge, and `quality` when the cost of a miss dominates, saying why for this diff.
 - **Depth posture** — this item is live only when the mode you recommend is `balanced`, since `quality` and `speed` preset depth; under either of those, state the preset as a fact the way the documentation seats' fixed depth is stated, and name the `speed` security carve-out when it applies. Under `balanced`: diff-first for code seats unless a trigger above fires, naming each escalated seat and its trigger ("I touched the auth middleware, so security reads full files; everything else diff-first").
-- Documentation depth is stated as fact and never offered, and the code board's depth posture is never carried onto documentation seats.
 - Gate 1 is one `AskUserQuestion` with the recommended shape first, and the pick feeds gate 2.
 
 ### Gate 2 — board shape
@@ -167,30 +166,33 @@ Once all reviewers have returned you become the chair, and triage is judgment, n
    - When reviewing work you did not author, lean on the evidence and let the thin spots fall to Plausible.
 4. **Render one verdict per finding, with reasoning** — **Confirmed**, **Plausible**, **Rejected**.
    - Have the spine to reject, and say why, because a pass that confirms everything was not a triage pass.
-   - When rejecting a documentation finding, its "Noted" line quotes the reviewer's own scenario alongside your reason.
+   - When rejecting a documentation finding, its line under "Not addressing" quotes the reviewer's own scenario alongside your reason.
 5. **Give each surviving finding one disposition**, decided by where the defect came from, not by how big the fix looks.
    - A finding this work introduced or worsened is fixed in this session, and size never moves it out, because this session holds the context that makes the fix cheapest.
    - A pre-existing bug needing investigation, or a real design tradeoff, gets a `/capture-task` recommendation naming which of the two — those are the only cases.
-   - Rejected and confirmed-low findings get "Noted, no action", one line each.
+   - Rejected and confirmed-low findings land under "Not addressing", one line each, and that line is the reason rather than a restatement of the title.
    - Once the dispositions are formed, order the fix-now list; have a take.
 
-## Step 7 — Report and wait
+## Step 7 — State the plan and wait
 
-- Produce Part B's two artifacts in order: write the full report — every seat's verbatim Actions, per-finding evidence, the residual check already performed — to `.ai/review/<YYYY-MM-DD>-<slug>.md`, then print the slim decision-layer report, which points at that file for every detail.
-- A bullet the human can neither answer nor act on goes in "Noted" as a one-liner.
-- Every `/capture-task` recommendation names its ground.
-- Close the report by stopping and asking, per the output-format closing line — for example: "Which findings should I address? Reply with IDs, `all confirmed`, or `none`."
+The deciding finished in Step 6. This step writes the record, says what happens next, and takes one answer; it never reopens a disposition as a question, because a chair that triages and then asks the human to triage again did the work twice and trusted it once.
+
+- Write the full report first — every seat's verbatim Actions, per-finding evidence, the residual check already performed — to `.ai/review/<YYYY-MM-DD>-<slug>.md`, then print the slim decision layer, which points at that file for every detail.
+- Print the dispositions as a plan in three groups: **Fixing**, **Capturing**, **Not addressing**. Never a menu of per-finding questions, and never a verdict-shaped shortcut like "all confirmed" — disposition follows where a defect came from, so sorting by verdict inverts it and strands findings the disposition rule made mandatory.
+- Carry the reasons, which are the only surface a human can disagree with: every "Not addressing" entry states why, every "Capturing" entry names which of the two capture cases it is, and a "Fixing" entry states its ground wherever the call is not obvious from its title. A batch confirm over bare IDs is a rubber stamp, and an option costing nothing to accept is the one that gets accepted.
+- Put a fix that would touch a decision the human already made into that finding's ground rather than into a question of its own. Every path into the board runs after the human QA gate, so nothing here is theirs to adjudicate — and a chair that noticed the reversal can name it in a clause, while one that did not notice would not have asked either.
+- Close on the plan's single yes/no, per the output-format closing line: "That is the plan — any objections?"
 
 > [!WARNING]
-> Fix nothing before the user selects. The report ends the turn.
+> Fix nothing before the human answers. The report ends the turn.
 
-- When the user declines a confirmed or plausible finding, capture the one-line why at selection time, because nobody can reconstruct it later.
+- Record the human's one-line why as they give it, because nobody can reconstruct it later.
 
 ## Step 8 — Verify, fix, and commit the fixes
 
-- For each selected finding, confirm it against the actual code first: reproduce it, trace it to root cause, and fix the source rather than the paraphrase.
-- When a selected finding does not hold up, say so and skip it rather than inventing a fix.
-- Apply fixes for exactly the selected findings and nothing else.
+- For each finding the confirmed plan fixes, verify it against the actual code first: reproduce it, trace it to root cause, and fix the source rather than the paraphrase.
+- When one does not hold up, say so and skip it rather than inventing a fix.
+- Apply fixes for exactly the plan as confirmed — the objections the human raised are amendments to it, and nothing outside it rides along.
 - When a fix lands in a gated file, load that gate's skill first.
 - After fixing, run the relevant checks; a fix without a passing check is reported as unverified, not as done.
 - Commit the fixes, staged by explicit path, each message naming the finding it closes. These are the only commits a board produces, because a commit records a change to the code and nothing else about the review is one.
@@ -198,7 +200,7 @@ Once all reviewers have returned you become the chair, and triage is judgment, n
 
 ## Step 9 — Close out the review locally
 
-- Append the outcome to the full report file — one line per finding: ID, severity, verdict, title, and the outcome, which is the fix SHA, the task path, the user's verbatim reason for declining, or rejected. Do this even when the selection was `none`, because a board that found things and changed nothing is exactly the run whose reasoning goes missing first.
+- Append the outcome to the full report file — one line per finding: ID, severity, verdict, title, and the outcome, which is the fix SHA, the task path, the human's verbatim objection, or rejected. Do this even when the plan fixed nothing, because a board that found things and changed nothing is exactly the run whose reasoning goes missing first.
 - A finding captured as a task counts as dismissed, and its line carries the task path.
 - **The review stays on this machine.** The full report file lives in the gitignored `.ai/` namespace, and the board's deliberation — verdicts, Actions, dismissal reasons — reaches no commit message, PR body, or other outbound surface on its own. A branch carries the work, not the argument about the work. The one thing that does cross is a fix commit's subject naming the finding it closes: that labels a code change rather than reporting a review, which is why Step 8 asks for it.
 - **When the user does ask for board content on an outbound surface, scrub it first.** Replace every literal credential, token, and PII value with its match count and `file:line`, and leave the raw line in the report file. A security seat's secret grep can hit a real value in a path no deny rule covers, and the evidentiary property — the command and what it returned — survives a count and a location intact.
