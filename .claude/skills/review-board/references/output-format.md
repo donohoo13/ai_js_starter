@@ -60,8 +60,8 @@ Applies to every seat, whatever the category. When the `LSP` tool is active (it 
 
 The chair produces two artifacts, in this order. Splitting them is the design, not a shortcut: the audit trail and the decision surface serve different readers, and printing the audit trail at the decision surface is how a report becomes unreadable.
 
-1. **The full report file**, written to `.ai/review/<YYYY-MM-DD>-<slug>.md` — the gitignored scratch namespace, so it survives the session and never ships. It carries everything: the header, the verdict table, the full per-finding reasoning, every seat's Actions section reproduced whole — never abridged, excerpted, reordered, or paraphrased, because dropping the narrative entries deletes exactly the seats whose work is hardest to fake — the process notes, and an Evidence appendix per finding (location, excerpt, failure scenario, suggested fix, chair's read). A seat that returned no Actions section is named in it as having returned none, its findings marked unevidenced. **The chair performs the residual check before writing this file** — reading each command against the conclusion drawn from it, since a seat can run the right command and misread its output. The close-out step appends the outcome per finding once the user has selected, which makes this file the whole record of the review: what was found, what was done about it, and why anything was declined. It is the only such record, and it never leaves the machine.
-2. **The printed report** — the decision layer only, sized so the human answers the closing question from one screen. Nothing is lost by the split; detail moves to where an auditor looks instead of where a decider reads.
+1. **The full report file**, written to `.ai/review/<YYYY-MM-DD>-<slug>.md` — the gitignored scratch namespace, so it survives the session and never ships. It carries everything: the header, the verdict table, the full per-finding reasoning, every seat's Actions section reproduced whole — never abridged, excerpted, reordered, or paraphrased, because dropping the narrative entries deletes exactly the seats whose work is hardest to fake — the process notes, and an Evidence appendix per finding (location, excerpt, failure scenario, suggested fix, chair's read). A seat that returned no Actions section is named in it as having returned none, its findings marked unevidenced. **The chair performs the residual check before writing this file** — reading each command against the conclusion drawn from it, since a seat can run the right command and misread its output. The close-out step appends the outcome per finding once the plan is confirmed, which makes this file the whole record of the review: what was found, what was done about it, and why anything was declined. It is the only such record, and it never leaves the machine.
+2. **The printed report** — the decision layer only, sized so the human answers the closing yes/no from one screen. Nothing is lost by the split; detail moves to where an auditor looks instead of where a decider reads.
 
 The printed report, exactly this structure:
 
@@ -78,27 +78,34 @@ The printed report, exactly this structure:
 | ID  | Sev | Verdict | Title | Location |
 | --- | --- | ------- | ----- | -------- |
 
-## Your call
+## The plan
 
-<Fix-order line when order matters.>
+**Fixing** <in fix order when order matters, severity otherwise>
 
-- **[ID] severity** — <at most two sentences: what is wrong and what it costs, plain language, no code.> I recommend <action> because <reason>. <Direct question>?
+- **[ID] severity** — <what is wrong and what it costs, one or two sentences, plain language, no code.> <A one-line ground whenever the call is not obvious from the title, and always when the fix touches something the user decided earlier.>
 
-## Noted, no decision needed
+**Capturing** <omit the whole group when empty>
 
-- **[ID]** <verdict> — <one line>.
+- **[ID] severity** — <what it is> — <which of the two capture cases it is: a pre-existing bug needing investigation, or a design tradeoff deserving its own decision.>
+
+**Not addressing** <omit the whole group when empty>
+
+- **[ID]** <verdict> — <the one-line reason it is not being addressed.>
 
 ## Actions digest
 
 - <seat>: <N sections, M command entries, any literal `not attempted` the seat wrote> — counts and the seat's own words only, never the chair's coverage conclusions.
 
-Which findings should I address? Reply with IDs (e.g. `SEC-1 REL-2`), `all confirmed`, or `none`.
+That is the plan — any objections?
 ```
 
 Rules that keep the printed report honest and small:
 
-- **Every "Your call" bullet is at most two sentences plus its question**, carrying a recommendation with its reason. A finding the human can neither answer nor act on goes in "Noted" as a one-liner.
-- **Plain language only above the table's pointers** — no code excerpts, stack traces, or quoted evidence in the printed report. Print a finding's evidence block inline only when the user asks, or when the question genuinely cannot be answered without the quote.
+- **The plan is stated, never asked.** Step 6 already gave every surviving finding a disposition, decided by provenance; printing those as per-finding questions throws that work away and hands the human a menu to recompute it from. Say what happens next and take one yes/no. A report that ends by asking which findings to address is a chair that did its triage and then declined to stand behind it.
+- **Every "Not addressing" entry carries its reason, and so does any "Fixing" entry whose call is not obvious from the title.** The ground is the whole reviewable surface: a list of IDs under a batch confirm is a rubber stamp, and the adversarial checklist's own rule — an option requiring justification loses to one requiring none — applies to the human as readily as to a reader of any other process. One decision carrying its reasons beats a row of pro-forma questions, but only because the reasons are there to disagree with.
+- **No slot exists for a decision the human owns**, because every path into the board runs after the human QA gate: they have already exercised the change and confirmed it does what they meant, and the board's whole subject is what their eyes missed. Where a proposed fix would touch a decision they made earlier, that is disclosed in the finding's ground and never promoted into a question — a chair that notices the reversal can say so in one clause, and a chair that does not notice would not have filled a slot either.
+- **Verdict is not a disposition axis.** Never offer selection by verdict or any `all confirmed` shorthand: disposition follows where the defect came from, so a plausible finding this work introduced is fixed while a confirmed pre-existing one may be captured, and a verdict-shaped shortcut silently inverts both.
+- **Plain language only above the table's pointers** — no code excerpts, stack traces, or quoted evidence in the printed report. Print a finding's evidence block inline only when the user asks, or when a ground genuinely cannot be stated without the quote.
 - **The Actions digest is counts and pointers**, never a summary of what was covered: paraphrasing a seat's Actions into a coverage claim is the exact conversion the contract forbids, so the digest names sizes and the full file carries the words.
 - **Order by what to do first**, severity where no fix order applies.
-- The verdict is the chair's context-based judgment, not deep verification: **Confirmed** matches the chair's understanding, **Plausible** is credible but unsettled, **Rejected** contradicts what the chair knows — stated with its why, and for a documentation finding quoting the reviewer's own one-line scenario beside it. Deep confirmation happens in the fix step, only for selected findings.
+- The verdict is the chair's context-based judgment, not deep verification: **Confirmed** matches the chair's understanding, **Plausible** is credible but unsettled, **Rejected** contradicts what the chair knows — stated with its why, and for a documentation finding quoting the reviewer's own one-line scenario beside it. Deep confirmation happens in the fix step, only for the findings the plan fixes.
